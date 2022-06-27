@@ -12,7 +12,15 @@
 
 NAME = libft.a
 
-CFLAG = -Wall -Wextra -Werror -I"./includes"
+INCLUDES = -I"./"
+
+INC_FT_PRINTF = -I"./ft_printf/includes"
+
+CFLAG = -Wall -Wextra -Werror
+
+SRC_FT_PRINTF = ./ft_printf/*.c
+
+OBJ_FT_PRINTF = ./*.o
 
 SRC = 	ft_atoi.c       \
 		ft_bzero.c      \
@@ -75,6 +83,7 @@ SRC = 	ft_atoi.c       \
 		ft_freeda.c		\
 		ft_realloc.c	\
 		ft_lstdelany.c
+
 
 OBJ =	ft_atoi.o       \
 		ft_bzero.o      \
@@ -141,11 +150,11 @@ OBJ =	ft_atoi.o       \
 all: $(NAME)
 
 $(NAME):
-	gcc -c $(SRC) $(CFLAG)
-	ar rc $(NAME) $(OBJ)
+	gcc -c $(CFLAG) $(SRC) $(SRC_FT_PRINTF) $(INCLUDES) $(INC_FT_PRINTF)
+	ar rc $(NAME) $(OBJ) $(OBJ_FT_PRINTF)
 
 clean:
-	rm -f $(OBJ)
+	rm -f $(OBJ) $(OBJ_FT_PRINTF)
 
 fclean: clean
 	rm -f $(NAME)

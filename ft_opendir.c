@@ -1,26 +1,4 @@
-#include <dirent.h>
-#include <errno.h>
-#include <unistd.h>
-#include <stdlib.h>
-#include <stdio.h>
-#include <sys/stat.h>
-#include <string.h>
-#include <pwd.h>
-#include <grp.h>
-#include <time.h>
-#include "./libft/libft.h"
-#include "/Users/jniemine/Workspace/ft_ls/libft/ft_printf/includes/ft_printf.h"
-
-typedef struct stat t_stat;
-typedef struct s_file_node t_file_node;
-
-struct s_file_node 
-{
-	t_stat stat;
-	t_stat lstat;
-	char *path; 
-	t_file_node *next;
-};
+#include "includes/ft_ls.h"
 
 //     struct stat { /* when _DARWIN_FEATURE_64_BIT_INODE is NOT defined */
 //         dev_t    st_dev;    /* device inode resides on */
@@ -48,6 +26,8 @@ void print_permissions(unsigned int st_mode, struct dirent *dp)
 	permissions[10] = '\0';
 	if (dp->d_type & DT_DIR)
 		permissions[0] = 'd';
+	else if (dp->d_type & DT_LNK)
+		permissions[0] = 'l';
 	if (st_mode & S_IRUSR)
 		permissions[1] = 'r';
 	if (st_mode & S_IWUSR)
@@ -86,9 +66,32 @@ void print_time(t_stat *stat)
 	ft_printf("%*s", ft_strlen(output) + 1, output);
 }
 
+unsigned int nb_len(long long nb)
+{
+	int len;
+
+	len = 1;
+	while (nb >= 10)
+	{
+		++len;
+		nb /= 10;
+	}
+	return (len);
+}
 /* TODO: We need to know the longest number of links and longest size beforehand to align correctly. Also the path/filename column should show links.
+link is also shown in permissions section as l. All st_blocks must be calculated together*/
+
+//We need the linked list in here.
+/*
+void width_and_total(t_stat *stat, t_width *widths)
+{
+
+}
+*/
+
 void print_stat(t_stat *stat, struct dirent *dp)
 {
+	printf("total %llu\n", stat->st_blocks);
 //	printf("%d\n", stat->st_dev);
 //	printf("%llu\n", stat->st_ino);
 	print_permissions(stat->st_mode, dp);
@@ -96,22 +99,24 @@ void print_stat(t_stat *stat, struct dirent *dp)
 //	ft_printf("%u\n", stat->st_uid);
 	ft_printf("%-*s", ft_strlen(getpwuid(stat->st_uid)->pw_name) + 2, getpwuid(stat->st_uid)->pw_name);
 //	ft_printf("%u\n", stat->st_gid);
+	ft_printf("Fu: %d\n", stat->st_gid);
+	ft_printf("Fu: %s\n", getgrgid(stat->st_gid));
+//	TODO: getgrgid returns 0, maybe for . and ..?
 	ft_printf("%s", getgrgid(stat->st_gid)->gr_name);
-//	ft_printf("%u\n", stat->st_rdev);
-	ft_printf("%*llu", ft_strlen(ft_itoa(stat->st_size)) + 2, stat->st_size); //itoa takes long long st_size is ull, do something? Or not?
-	//         struct timespec st_ctimespec;  /* time of last file status change */
+	//        struct timespec st_ctimespec;  /* time of last file status change */
 	print_time(stat);
 	ft_printf("%s\n", dp->d_name);
 //	printf("%ld\n", stat->st_mtimespec.tv_nsec);
 //	printf("%ld\n", stat->st_mtimespec.tv_sec);
-//	printf("%llu\n", stat->st_blocks);
 //	printf("%d\n", stat->st_blksize);
 //	printf("%u\n", stat->st_flags);
 //	printf("%u\n", stat->st_gen);
 }
 //int stat(const char *restrict path, struct stat *restrict buf)
+/*
 void read_stat(char *restrict path)
 {}
+*/
 
 //             ino_t      d_fileno;     /* file number of entry */
 //             __uint64_t d_seekoff;    /* seek offset (optional, used by servers) */
@@ -135,13 +140,14 @@ void read_stat(char *restrict path)
 //     } DIR;
 
 //int stat(const char *restrict path, struct stat *restrict buf)
+/*
 int main(void)
 {
 	DIR *dirp;
 	t_file_node *head;
 	struct dirent *dp;
 	struct dirent *dp2;
-	struct stat buf[1024];
+	t_stat dir_stat;
 	char *fd;
 	char path[1024] = "./";
 	int len;
@@ -155,17 +161,42 @@ int main(void)
 		if (!head)
 			;//bla bla
 	ft_strcat(head->path, path);
+//	ret = stat("../ft_ls", &dir_stat);
 	ft_strcat(head->path, dp->d_name);
 //	ft_strcat(head->path, "/");
 	ret = stat(head->path, &head->stat);
 	lstat(head->path, &head->lstat);
 	print_stat(&head->stat, dp);
 //	print_stat(&head->lstat, dp);
-	/*
 	while (dp)
 	{
 		dp = readdir(dirp);
+		if (!dp)
+			break;
+		len = ft_strlen(path) + ft_strlen(dp->d_name);
+		head->next = (t_file_node *)malloc(sizeof(t_file_node));
+		head = head->next;
+		head->path = (char *)ft_memalloc(len + 2);
+		ft_strcat(head->path, path);
+		ft_strcat(head->path, dp->d_name);
+		ret = stat(head->path, &head->stat);
+		lstat(head->path, &head->lstat);
+		print_stat(&head->stat, dp);
 	}
+	return (0);
+}
 	*/
+
+int main(void)
+{
+	t_file_node *head;
+	char path[1024] = ".";
+
+	head = create_list(opendir(path), path); 
+	while (head)	
+	{
+		print_stat(&head->stat, &head->dp);
+		head = head->next;
+	}
 	return (0);
 }
