@@ -18,15 +18,15 @@
 //         u_long   st_gen;    /* file generation number */
 //     };
 
-void print_permissions(unsigned int st_mode, struct dirent *dp)
+void print_permissions(unsigned int st_mode, t_file_node *node)
 {
 	char permissions[11];
 
 	ft_memset(permissions, '-', 10);
 	permissions[10] = '\0';
-	if (dp->d_type & DT_DIR)
+	if (node->type & DT_DIR)
 		permissions[0] = 'd';
-	else if (dp->d_type & DT_LNK)
+	else if (node->type & DT_LNK)
 		permissions[0] = 'l';
 	if (st_mode & S_IRUSR)
 		permissions[1] = 'r';
@@ -49,13 +49,14 @@ void print_permissions(unsigned int st_mode, struct dirent *dp)
 	ft_printf("%-12s", permissions);
 }
 
-void print_time(t_stat *stat)
+void print_time(t_file_node *node)
 {
 	char *time;
 	char output[27];
 
 	ft_bzero(output, 27);
-	time = ctime(&stat->st_mtimespec.tv_sec);
+//	time = ctime(&stat->st_mtimespec.tv_sec);
+	time = ctime(&node->tv_sec);
 	time += 8;
 	ft_strncpy(output, time, 3);
 	time -= 4;
@@ -89,28 +90,25 @@ void width_and_total(t_stat *stat, t_width *widths)
 }
 */
 
-void print_stat(t_stat *stat, struct dirent *dp)
+void print_stat(t_file_node *node)
 {
-	printf("total %llu\n", stat->st_blocks);
-//	printf("%d\n", stat->st_dev);
-//	printf("%llu\n", stat->st_ino);
-	print_permissions(stat->st_mode, dp);
-	ft_printf("%-*u", ft_strlen(ft_itoa(stat->st_nlink)) + 1, stat->st_nlink);
-//	ft_printf("%u\n", stat->st_uid);
-	ft_printf("%-*s", ft_strlen(getpwuid(stat->st_uid)->pw_name) + 2, getpwuid(stat->st_uid)->pw_name);
-//	ft_printf("%u\n", stat->st_gid);
-	ft_printf("Fu: %d\n", stat->st_gid);
-	ft_printf("Fu: %s\n", getgrgid(stat->st_gid));
-//	TODO: getgrgid returns 0, maybe for . and ..?
-	ft_printf("%s", getgrgid(stat->st_gid)->gr_name);
-	//        struct timespec st_ctimespec;  /* time of last file status change */
-	print_time(stat);
-	ft_printf("%s\n", dp->d_name);
-//	printf("%ld\n", stat->st_mtimespec.tv_nsec);
-//	printf("%ld\n", stat->st_mtimespec.tv_sec);
-//	printf("%d\n", stat->st_blksize);
-//	printf("%u\n", stat->st_flags);
-//	printf("%u\n", stat->st_gen);
+	//	struct passwd	*pw;
+	//	struct group	*grp;
+
+	//	pw = getpwuid(node->st_uid);
+	//	grp = getgrgid(node->st_gid);
+	//	if (!pw || !grp)
+	//	{
+	//		ft_printf("%s\n", strerror(errno));
+	//		exit (-1);
+	//	}
+		ft_printf("total %llu\n", node->st_blocks);
+		print_permissions(node->st_mode, node);
+		ft_printf("%-*u", ft_strlen(ft_itoa(node->st_nlink)) + 1, node->st_nlink);
+	//	ft_printf("%-*s", (int)ft_strlen(pw->pw_name) + 2, pw->pw_name);
+	//	ft_printf("%s", grp->gr_name);
+		print_time(node);
+		ft_printf("%s\n", node->file_name);
 }
 //int stat(const char *restrict path, struct stat *restrict buf)
 /*
@@ -146,9 +144,6 @@ int main(void)
 	DIR *dirp;
 	t_file_node *head;
 	struct dirent *dp;
-	struct dirent *dp2;
-	t_stat dir_stat;
-	char *fd;
 	char path[1024] = "./";
 	int len;
 	int ret = 5;
@@ -161,9 +156,7 @@ int main(void)
 		if (!head)
 			;//bla bla
 	ft_strcat(head->path, path);
-//	ret = stat("../ft_ls", &dir_stat);
 	ft_strcat(head->path, dp->d_name);
-//	ft_strcat(head->path, "/");
 	ret = stat(head->path, &head->stat);
 	lstat(head->path, &head->lstat);
 	print_stat(&head->stat, dp);
@@ -185,18 +178,20 @@ int main(void)
 	}
 	return (0);
 }
-	*/
-
+*/
 int main(void)
 {
 	t_file_node *head;
 	char path[1024] = ".";
 
 	head = create_list(opendir(path), path); 
+	/*
 	while (head)	
 	{
-		print_stat(&head->stat, &head->dp);
+		print_stat(&head->stat, head);
 		head = head->next;
 	}
+	*/
+	
 	return (0);
 }

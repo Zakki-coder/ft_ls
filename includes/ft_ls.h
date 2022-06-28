@@ -11,6 +11,7 @@
 #include <string.h>
 #include <pwd.h>
 #include <grp.h>
+#include <uuid/uuid.h>
 #include <time.h>
 
 #include "../libft/libft.h"
@@ -21,14 +22,21 @@ typedef struct dirent		t_dir;
 typedef struct s_file_node	t_file_node;
 
 t_file_node *create_list(DIR *dirp, char *dir_paths);
+void print_stat(t_file_node *node);
 
 struct s_file_node
 {
-	t_dir 			dp;
-	t_stat			stat;
-	t_stat			lstat;
+	t_dir 			*dp;
 	unsigned int	total_blocks;
-//	char			*file_name;
+	char			*file_name;
+	int				namelen;
+	int				type;
+	uid_t			st_uid;
+	int				st_blocks;
+	int				st_mode;
+	int				st_nlink;
+	gid_t			st_gid;
+	time_t 			tv_sec;
 	char			*path;
 	t_file_node 	*next;
 };
