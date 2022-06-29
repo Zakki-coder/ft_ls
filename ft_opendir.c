@@ -1,22 +1,29 @@
 #include "includes/ft_ls.h"
 
-//     struct stat { /* when _DARWIN_FEATURE_64_BIT_INODE is NOT defined */
-//         dev_t    st_dev;    /* device inode resides on */
-//         ino_t    st_ino;    /* inode's number */
-//         mode_t   st_mode;   /* inode protection mode */
-//         nlink_t  st_nlink;  /* number of hard links to the file */
-//         uid_t    st_uid;    /* user-id of owner */
-//         gid_t    st_gid;    /* group-id of owner */
-//         dev_t    st_rdev;   /* device type, for special file inode */
-//         struct timespec st_atimespec;  /* time of last access */
-//         struct timespec st_mtimespec;  /* time of last data modification */
-//         struct timespec st_ctimespec;  /* time of last file status change */
-//         off_t    st_size;   /* file size, in bytes */
-//         quad_t   st_blocks; /* blocks allocated for file */
-//         u_long   st_blksize;/* optimal file sys I/O ops blocksize */
-//         u_long   st_flags;  /* user defined flags for file */
-//         u_long   st_gen;    /* file generation number */
-//     };
+void error_exit(void)
+{
+	ft_printf("%s\n", strerror(errno));
+	exit (-1);
+}
+
+void get_file_type(t_file_node *node, char *permissions)
+{
+	int type;
+
+	type = node->type;
+	if (type & DT_DIR)
+		permissions[0] = 'd';
+	else if (type & DT_LNK)
+		permissions[0] = 'l';
+	else if (type & DT_BLK)
+		permissions[0] = 'b';
+	else if (type & DT_CHR)
+		permissions[0] = 'c';
+	else if (type & DT_SOCK)
+		permissions[0] = 's';
+	else if (type & DT_FIFO)
+		permissions[0] = 'p';
+}
 
 void print_permissions(unsigned int st_mode, t_file_node *node)
 {
@@ -24,10 +31,7 @@ void print_permissions(unsigned int st_mode, t_file_node *node)
 
 	ft_memset(permissions, '-', 10);
 	permissions[10] = '\0';
-	if (node->type & DT_DIR)
-		permissions[0] = 'd';
-	else if (node->type & DT_LNK)
-		permissions[0] = 'l';
+	get_file_type(node, permissions);
 	if (st_mode & S_IRUSR)
 		permissions[1] = 'r';
 	if (st_mode & S_IWUSR)
@@ -46,7 +50,7 @@ void print_permissions(unsigned int st_mode, t_file_node *node)
 		permissions[8] = 'w';
 	if (st_mode & S_IXOTH)
 		permissions[9] = 'x';
-	ft_printf("%-12s", permissions);
+	ft_printf("%-10s", permissions);
 }
 
 void print_time(t_file_node *node)
@@ -55,8 +59,9 @@ void print_time(t_file_node *node)
 	char output[27];
 
 	ft_bzero(output, 27);
-//	time = ctime(&stat->st_mtimespec.tv_sec);
-	time = ctime(&node->tv_sec);
+	time = ctime(&node->stat.st_mtimespec.tv_sec);
+	if (!time)
+		error_exit();
 	time += 8;
 	ft_strncpy(output, time, 3);
 	time -= 4;
@@ -79,119 +84,45 @@ unsigned int nb_len(long long nb)
 	}
 	return (len);
 }
-/* TODO: We need to know the longest number of links and longest size beforehand to align correctly. Also the path/filename column should show links.
-link is also shown in permissions section as l. All st_blocks must be calculated together*/
+/*	TODO: Also the path/filename column should show links.
+	TODO: Get terminal window width */
 
-//We need the linked list in here.
-/*
-void width_and_total(t_stat *stat, t_width *widths)
+void print_stat(t_file_node *node, t_width *widths)
 {
+	struct passwd	*pw;
+	struct group	*grp;
 
+	pw = getpwuid(node->stat.st_uid);
+	grp = getgrgid(node->stat.st_gid);
+	if (!pw || !grp)
+		error_exit();
+	if (node->is_head)
+		ft_printf("total %llu\n", widths->total_size);
+	print_permissions(node->stat.st_mode, node);
+	ft_printf("%*u", widths->link_col + 2, node->stat.st_nlink);
+	ft_printf(" %-*s", (int)ft_strlen(pw->pw_name) + 2, pw->pw_name);
+	ft_printf("%s", grp->gr_name);
+	ft_printf("%*d ", widths->size_col + 2, node->stat.st_size);
+	print_time(node);
+	ft_printf("%s\n", node->file_name);
 }
-*/
 
-void print_stat(t_file_node *node)
-{
-	//	struct passwd	*pw;
-	//	struct group	*grp;
-
-	//	pw = getpwuid(node->st_uid);
-	//	grp = getgrgid(node->st_gid);
-	//	if (!pw || !grp)
-	//	{
-	//		ft_printf("%s\n", strerror(errno));
-	//		exit (-1);
-	//	}
-		ft_printf("total %llu\n", node->st_blocks);
-		print_permissions(node->st_mode, node);
-		ft_printf("%-*u", ft_strlen(ft_itoa(node->st_nlink)) + 1, node->st_nlink);
-	//	ft_printf("%-*s", (int)ft_strlen(pw->pw_name) + 2, pw->pw_name);
-	//	ft_printf("%s", grp->gr_name);
-		print_time(node);
-		ft_printf("%s\n", node->file_name);
-}
-//int stat(const char *restrict path, struct stat *restrict buf)
-/*
-void read_stat(char *restrict path)
-{}
-*/
-
-//             ino_t      d_fileno;     /* file number of entry */
-//             __uint64_t d_seekoff;    /* seek offset (optional, used by servers) */
-//             __uint16_t d_reclen;     /* length of this record */
-//             __uint16_t d_namlen;     /* length of string in d_name */
-//             __uint8_t  d_type;       /* file type, see below */
-//             char    d_name[1024];    /* name must be no longer than this */
-//     };
-
-//     typedef struct _dirdesc {
-//             int     __dd_fd;      /* file descriptor associated with directory */
-//             long    __dd_loc;     /* offset in current buffer */
-//             long    __dd_size;    /* amount of data returned by getdirentries */
-//             char    *__dd_buf;    /* data buffer */
-//             int     __dd_len;     /* size of data buffer */
-//             long    __dd_seek;    /* magic cookie returned by getdirentries */
-//             long    __dd_rewind;  /* magic cookie for rewinding */
-//             int     __dd_flags;   /* flags for readdir */
-//             pthread_mutex_t __dd_lock; /* for thread locking */
-//             struct _telldir *__dd_td; /* telldir position recording */
-//     } DIR;
-
-//int stat(const char *restrict path, struct stat *restrict buf)
-/*
-int main(void)
-{
-	DIR *dirp;
-	t_file_node *head;
-	struct dirent *dp;
-	char path[1024] = "./";
-	int len;
-	int ret = 5;
-
-	dirp = opendir(path);
-	dp = readdir(dirp);
-	len = ft_strlen(path) + ft_strlen(dp->d_name);
-	head = (t_file_node *)malloc(sizeof(t_file_node));
-	head->path = (char *)ft_memalloc(len + 2);
-		if (!head)
-			;//bla bla
-	ft_strcat(head->path, path);
-	ft_strcat(head->path, dp->d_name);
-	ret = stat(head->path, &head->stat);
-	lstat(head->path, &head->lstat);
-	print_stat(&head->stat, dp);
-//	print_stat(&head->lstat, dp);
-	while (dp)
-	{
-		dp = readdir(dirp);
-		if (!dp)
-			break;
-		len = ft_strlen(path) + ft_strlen(dp->d_name);
-		head->next = (t_file_node *)malloc(sizeof(t_file_node));
-		head = head->next;
-		head->path = (char *)ft_memalloc(len + 2);
-		ft_strcat(head->path, path);
-		ft_strcat(head->path, dp->d_name);
-		ret = stat(head->path, &head->stat);
-		lstat(head->path, &head->lstat);
-		print_stat(&head->stat, dp);
-	}
-	return (0);
-}
-*/
 int main(void)
 {
 	t_file_node *head;
+	t_width		widths;
 	char path[1024] = ".";
 
-	head = create_list(opendir(path), path); 
-	/*
+	ft_bzero((void *)&widths, sizeof(widths));
+	//TODO: Protect opendir, but first put it inside loop.
+	//TODO: Remember closedir also.
+	//TODO: Readdir can return for multiple reasons, use errno to decide if exit is needed
+	head = create_list(opendir(path), path, &widths); 
 	while (head)	
 	{
-		print_stat(&head->stat, head);
+		print_stat(head, &widths);
 		head = head->next;
 	}
-	*/
 	
 	return (0);
 }
