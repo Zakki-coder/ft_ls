@@ -6,7 +6,7 @@
 /*   By: jniemine <jniemine@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/22 14:44:27 by jniemine          #+#    #+#             */
-/*   Updated: 2022/07/07 14:55:59 by jniemine         ###   ########.fr       */
+/*   Updated: 2022/07/07 15:20:31 by jniemine         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -67,13 +67,15 @@ void recursive_traverse(char **paths, int i, t_width *widths_flags)
 	if (!paths || *paths == NULL)
 		return ;
 	dirp = open_directory(*paths);
-//	if (!dirp && errno == ENOENT)
-//		recursive_traverse(++paths, ++i, &widths);
+	if (!dirp && errno == ENOENT)
+		recursive_traverse(++paths, ++i, &widths);
+	if (!dirp)
+		error_exit();
+	head = create_list(dirp, *paths, &widths);
 	dir_paths = (char **)ft_memalloc(sizeof(char *) * widths.dir_amount + 1);
 //	dir_paths[widths.dir_amount] = NULL;
 	if (!dir_paths)
 		error_exit();
-	head = create_list(dirp, *paths, &widths);
 	print_loop(head, widths, dir_paths);
 	if (*dir_paths)
 		recursive_traverse(dir_paths++, ++i, &widths);
