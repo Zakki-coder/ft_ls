@@ -17,16 +17,24 @@
 #include "../libft/libft.h"
 #include "../libft/ft_printf/includes/ft_printf.h"
 
+#define LONG_LST		2
+#define RECURSIVE		4
+#define REVERSE_ORDER	8 
+#define ALL				16
+#define TIME_ORDER		32
+
+#define ALLOWED_OPTIONS "-lRrat"
 typedef struct stat		t_stat;
 typedef struct dirent		t_dir; 
 typedef struct s_file_node	t_file_node;
-
 
 typedef struct s_width
 {
 	unsigned int	link_col;
 	unsigned int	size_col;
 	unsigned int	total_size;
+	unsigned int	flags;
+	unsigned int	dir_amount;
 }	t_width;
 
 struct s_file_node
@@ -44,7 +52,13 @@ struct s_file_node
 };
 
 t_file_node *create_list(DIR *dirp, char *dir_paths, t_width *widths);
-void print_stat(t_file_node *node, t_width *widths);
+void print_stat(t_file_node *node, t_width *widths, char **dir_paths, int *i);
 unsigned int nb_len(long long nb);
 void error_exit(void);
+int ls_get_flags(int argc, char **argv, unsigned int *flags);
+DIR *open_directory(char *path);
+void recursive_traverse(char **paths, int i, t_width *widths_flags);
+void print_loop(t_file_node *head, t_width widths, char **dir_paths);
+void debugger(char **paths);
+
 #endif
