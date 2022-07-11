@@ -6,7 +6,7 @@
 /*   By: jniemine <jniemine@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/22 14:44:27 by jniemine          #+#    #+#             */
-/*   Updated: 2022/07/07 15:20:31 by jniemine         ###   ########.fr       */
+/*   Updated: 2022/07/11 19:55:30 by jniemine         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,14 +28,27 @@ t_file_node *create_node(void)
 	return (new);
 }
 
-void print_loop(t_file_node *head, t_width widths, char **dir_paths)
+void free_lst(t_file_node *head)
 {
-	int i;
+	t_file_node *previous;
 
-	i = 0;
 	while (head)
 	{
-		//Why is it that we have local copy of widths and we are passing its addres?
+		previous = head;
+		head = head->next;
+		free(previous->file_name);
+		free(previous->path);
+		free(previous);
+	}
+}
+void print_loop(t_file_node *head, t_width widths, char **dir_paths)
+{
+	int			i;
+
+	i = 0;
+	ft_printf("\n%s:\n", head->path);
+	while (head)
+	{
 		print_stat(head, &widths, dir_paths, &i);
 		head = head->next;
 	}
@@ -61,42 +74,29 @@ void recursive_traverse(char **paths, int i, t_width *widths_flags)
 	t_width widths;
 	DIR *dirp;
 
-	printf("Dirpath: %s, %d\n", *paths, i);
 	ft_bzero((void *)&widths, sizeof(t_width));
-	widths = *widths_flags;
+	widths.flags = widths_flags->flags;
 	if (!paths || *paths == NULL)
 		return ;
 	dirp = open_directory(*paths);
 	if (!dirp && errno == ENOENT)
-		recursive_traverse(++paths, ++i, &widths);
+		recursive_traverse(++paths, ++i, &widths); //Does this work?
 	if (!dirp)
 		error_exit();
 	head = create_list(dirp, *paths, &widths);
 	dir_paths = (char **)ft_memalloc(sizeof(char *) * widths.dir_amount + 1);
-//	dir_paths[widths.dir_amount] = NULL;
-	if (!dir_paths)
+	if (!dir_paths || closedir(dirp) < 0)
 		error_exit();
 	print_loop(head, widths, dir_paths);
 	if (*dir_paths)
 		recursive_traverse(dir_paths++, ++i, &widths);
-/*	while (*dir_paths)
-	{
-//		printf("First loop: %d\n", i);
-//		debugger(dir_paths);
-		recursive_traverse(dir_paths++, ++i, &widths);
-	}
-	*/
 	if ((*paths))	
-	{
-//		printf("Second loop: %d\n", i);
-	//	debugger(paths);
 		recursive_traverse(++paths, ++i, &widths);
-	}
+	free_lst(head);
 	//TODO: Widths are not universal. Every list needs its own widths.
 	//TOTHINK: Should i do the whole linked list before printing?
 	//TODO: check print_stats TODO.
 }
-
 
 void handle_path(char *root_path, char **dest_path, t_dir *dirp)
 {
@@ -107,7 +107,7 @@ void handle_path(char *root_path, char **dest_path, t_dir *dirp)
 	if (!*dest_path)
 		error_exit();
 	ft_strcat(*dest_path, root_path);
-	if (ft_strcmp(dirp->d_name, ".") != 0 && ft_strcmp(dirp->d_name, "..") != 0)
+	if (ft_strcmp(dirp->d_name, ".") != 0/* && ft_strcmp(dirp->d_name, "..") != 0*/)
 	{
 		ft_strcat(*dest_path, "/");
 		ft_strcat(*dest_path, dirp->d_name);
@@ -164,5 +164,7 @@ t_file_node *create_list(DIR *dirp, char *path, t_width *widths)
 			head = head->next;
 		}
 	}
+	if (!filep && errno != 0)
+		error_exit();
 	return (lst_start);
 }

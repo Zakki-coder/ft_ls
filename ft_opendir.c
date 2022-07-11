@@ -6,7 +6,7 @@
 /*   By: jniemine <jniemine@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/29 17:59:01 by jniemine          #+#    #+#             */
-/*   Updated: 2022/07/07 14:24:35 by jniemine         ###   ########.fr       */
+/*   Updated: 2022/07/11 19:38:16 by jniemine         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -155,21 +155,8 @@ int main(int argc, char **argv)
 	head = create_list(dirp, argv[i], &widths_and_flags);
 	dir_paths = (char **)ft_memalloc(sizeof(char *) * widths_and_flags.dir_amount + 1);
 	print_loop(head, widths_and_flags, dir_paths);
-	printf("First debug:\n");
-	debugger(dir_paths);
 	if (widths_and_flags.flags & RECURSIVE)
 		recursive_traverse(dir_paths, i, &widths_and_flags);
-	/*
-	while (i < argc)	
-	{
-//		dirp = open_directory(argv[i]);
-//		if (dirp)
-//			head = create_list(dirp, argv[i], &widths_and_flags); 
-//		else
-//			continue ;
-//		print_stat(head, &widths_and_flags);
-//		head = head->next;
-	}
-	*/
+	free_lst(head);
 	return (0);
 }

@@ -60,5 +60,6 @@ DIR *open_directory(char *path);
 void recursive_traverse(char **paths, int i, t_width *widths_flags);
 void print_loop(t_file_node *head, t_width widths, char **dir_paths);
 void debugger(char **paths);
+void free_lst(t_file_node *head);
 
 #endif
