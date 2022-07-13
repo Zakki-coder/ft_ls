@@ -6,7 +6,7 @@
 /*   By: jniemine <jniemine@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/22 14:44:27 by jniemine          #+#    #+#             */
-/*   Updated: 2022/07/11 19:55:30 by jniemine         ###   ########.fr       */
+/*   Updated: 2022/07/12 12:18:13 by jniemine         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -131,26 +131,30 @@ void get_stat_info(t_file_node *node)
 
 
 //Arguments are opened directory and path name to that directory
+/* This reads files from one directory at a time */
 t_file_node *create_list(DIR *dirp, char *path, t_width *widths)
 {
 	t_dir *filep;
 	t_file_node *head;
 	t_file_node *lst_start;
-	unsigned int largest[2];
+//	unsigned int largest[2];
 
-	ft_memset(largest, 0, sizeof(largest));
+//	ft_memset(largest, 0, sizeof(largest));
 	head = create_node();
 	head->is_head = 1;
 	filep = readdir(dirp);
 	lst_start = head;
 	while (filep)
 	{
+		++widths->file_amount;
 		get_t_dir_info(filep, head);
 		handle_path(path, &head->path, filep);
 		get_stat_info(head);
 		if (filep->d_type & DT_DIR)
 			widths->dir_amount++;
 		head->type = filep->d_type;
+		if (widths->longest_filename < ft_strlen(head->file_name))
+			widths->longest_filename = ft_strlen(head->file_name);
 		if (widths->link_col < nb_len(head->stat.st_nlink))	
 			widths->link_col = nb_len(head->stat.st_nlink);
 		if (widths->size_col < nb_len(head->stat.st_size))	

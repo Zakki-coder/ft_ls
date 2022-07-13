@@ -13,6 +13,7 @@
 #include <grp.h>
 #include <uuid/uuid.h>
 #include <time.h>
+#include <sys/ioctl.h>
 
 #include "../libft/libft.h"
 #include "../libft/ft_printf/includes/ft_printf.h"
@@ -35,6 +36,9 @@ typedef struct s_width
 	unsigned int	total_size;
 	unsigned int	flags;
 	unsigned int	dir_amount;
+	unsigned int	file_amount;
+	unsigned int	longest_filename;
+	struct winsize	window_size;
 }	t_width;
 
 struct s_file_node
@@ -61,5 +65,6 @@ void recursive_traverse(char **paths, int i, t_width *widths_flags);
 void print_loop(t_file_node *head, t_width widths, char **dir_paths);
 void debugger(char **paths);
 void free_lst(t_file_node *head);
+void print_columns(t_file_node *head, t_width *widths);
 
 #endif
