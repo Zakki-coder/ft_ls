@@ -6,7 +6,7 @@
 /*   By: jniemine <jniemine@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/22 14:44:27 by jniemine          #+#    #+#             */
-/*   Updated: 2022/07/12 12:18:13 by jniemine         ###   ########.fr       */
+/*   Updated: 2022/07/18 17:11:27 by jniemine         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -67,6 +67,7 @@ void debugger(char **paths)
 	while (paths[i])
 		printf("%s\n", paths[i++]);
 }
+
 void recursive_traverse(char **paths, int i, t_width *widths_flags)
 {
 	char **dir_paths;

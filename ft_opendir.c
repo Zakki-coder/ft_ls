@@ -6,7 +6,7 @@
 /*   By: jniemine <jniemine@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/29 17:59:01 by jniemine          #+#    #+#             */
-/*   Updated: 2022/07/12 14:00:02 by jniemine         ###   ########.fr       */
+/*   Updated: 2022/07/18 22:47:18 by jniemine         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -154,6 +154,8 @@ int main(int argc, char **argv)
 	dirp = open_directory(argv[i]); // PROTECT
 	head = create_list(dirp, argv[i], &widths_and_flags);
 	dir_paths = (char **)ft_memalloc(sizeof(char *) * widths_and_flags.dir_amount + 1);
+	print_columns(head, &widths_and_flags);
+	lst_iter_loop(&head, ft_strcmp);
 	print_columns(head, &widths_and_flags);
 	if (widths_and_flags.flags & RECURSIVE)
 	{

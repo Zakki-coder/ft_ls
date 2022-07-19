@@ -6,7 +6,7 @@
 /*   By: jniemine <jniemine@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/12 00:13:14 by jniemine          #+#    #+#             */
-/*   Updated: 2022/07/13 15:44:21 by jniemine         ###   ########.fr       */
+/*   Updated: 2022/07/19 13:16:12 by jniemine         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,6 +27,15 @@ static int count_tab_n(int longest_filename, int *word_width)
 	return (*word_width);
 }
 
+void ft_lstappend(t_list *alst, t_list *new)
+{
+	if (!alst || !new)
+		return ;
+	while (alst->next)
+		alst = alst->next;
+	alst->next = new;
+}
+
 void make_columns(t_file_node *head/*, int words_in_line_n*/, int rows, int word_width)
 {
 	t_list		**columns;
@@ -41,19 +50,10 @@ void make_columns(t_file_node *head/*, int words_in_line_n*/, int rows, int word
 	/* First get directories */
 	while (head)
 	{
-		printf("Dir: %s\n", head->file_name);
-		fflush(stdout);
-		if (head->type & DT_DIR)
-		{
-			ft_lstadd((void *)&columns[i % rows], ft_lstnew(head->file_name, sizeof(head->file_name)));
-			if (!columns[i % rows])
-				columns[i % rows] = ft_lstnew(head->file_name, sizeof(head->file_name));
-			++i;
-		}
-		/*
-		if (i > 0 && i % rows == 0)
-			i = 0;
-			*/
+		ft_lstappend(columns[i % rows], ft_lstnew(head->file_name, ft_strlen(head->file_name)));
+		if (!columns[i % rows])
+			columns[i % rows] = ft_lstnew(head->file_name, ft_strlen(head->file_name));
+		++i;
 		head = head->next;
 	}
 	/*Debbuger*/
@@ -82,6 +82,8 @@ void print_columns(t_file_node *head, t_width *widths)
 	widths->window_size = w;
 	//We need to leave one empty column with width of word_width.
 	words_in_line_n = (w.ws_col) / count_tab_n(widths->longest_filename, &word_width);
+	if (words_in_line_n > 1)
+		words_in_line_n -= 1;
 	rows = widths->file_amount / words_in_line_n;
 	make_columns(head/*, words_in_line*/, rows, word_width);
 	/*
@@ -94,7 +96,6 @@ void print_columns(t_file_node *head, t_width *widths)
 		head = head->next;
 	}
 	*/
-	ft_printf("\n");
 	printf("file amount: %d\n", widths->file_amount);
 	printf("Word Width: %d\n", word_width);
 	printf("longest filename:%d\n", widths->longest_filename);

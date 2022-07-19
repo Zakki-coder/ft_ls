@@ -55,6 +55,9 @@ struct s_file_node
 	t_file_node 	*next;
 };
 
+void print_lst(t_file_node *head); //DEL SO MUCHO
+void lst_iter_loop(t_file_node **head, int (*f)(const char *, const char *));
+int lst_iter(t_file_node **head, int (*f)(const char *s1, const char *s2));
 t_file_node *create_list(DIR *dirp, char *dir_paths, t_width *widths);
 void print_stat(t_file_node *node, t_width *widths, char **dir_paths, int *i);
 unsigned int nb_len(long long nb);
