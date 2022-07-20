@@ -11,6 +11,16 @@ void print_lst(t_file_node *head)
 	printf("\n");
 }
 
+void debug (t_file_node *head)
+{
+	int i = 0;
+	while (head)
+	{
+		printf("%d. %s\n", ++i, head->file_name);
+		head = head->next;
+	}
+}
+
 int lst_iter(t_file_node **head, int (*f)(const char *s1, const char *s2))
 {
 	t_file_node *temp;
@@ -22,6 +32,7 @@ int lst_iter(t_file_node **head, int (*f)(const char *s1, const char *s2))
 	previous = NULL;
 	head_local = *head;
 	/* Swap the first without previous */
+//	debug(*head);
 	if (head_local->next && f(head_local->file_name, head_local->next->file_name) > 0 && ++i)
 	{
 		temp = head_local->next;
@@ -33,10 +44,9 @@ int lst_iter(t_file_node **head, int (*f)(const char *s1, const char *s2))
 	}
 	else
 	{
-		previous = head_local->next;
-		head_local = head_local->next->next;
+		previous = head_local;
+		head_local = head_local->next;
 	}
-//	debug(*head);
 	while (head_local)
 	{
 		if (head_local->next && f(head_local->file_name, head_local->next->file_name) > 0 && ++i)

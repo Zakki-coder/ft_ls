@@ -6,7 +6,7 @@
 /*   By: jniemine <jniemine@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/12 00:13:14 by jniemine          #+#    #+#             */
-/*   Updated: 2022/07/19 13:16:12 by jniemine         ###   ########.fr       */
+/*   Updated: 2022/07/20 10:53:45 by jniemine         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -96,11 +96,11 @@ void print_columns(t_file_node *head, t_width *widths)
 		head = head->next;
 	}
 	*/
-	printf("file amount: %d\n", widths->file_amount);
-	printf("Word Width: %d\n", word_width);
-	printf("longest filename:%d\n", widths->longest_filename);
-    printf ("lines %d words_in_line: %d\n", w.ws_row, words_in_line_n);
-    printf ("columns %d rows: %d\n", w.ws_col, rows);
+//	printf("file amount: %d\n", widths->file_amount);
+//	printf("Word Width: %d\n", word_width);
+//	printf("longest filename:%d\n", widths->longest_filename);
+//    printf ("lines %d words_in_line: %d\n", w.ws_row, words_in_line_n);
+//    printf ("columns %d rows: %d\n", w.ws_col, rows);
 }
 //First print directories, then filenames.
 //TODO get terminal tabsize for columns.
