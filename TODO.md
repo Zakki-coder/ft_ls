@@ -1,4 +1,4 @@
-Sorting, or columns not working perfectly. Just compare ls and ft_ls .
+Sorting, or columns not working perfectly. Just compare ls and ft_ls . DONE
 
 In the long format:      If the modification time of the file is more than 6 months in the past or future, then
      the year of the last modification is displayed in place of the hour and minute fields.
