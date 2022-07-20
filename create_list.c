@@ -6,7 +6,7 @@
 /*   By: jniemine <jniemine@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/22 14:44:27 by jniemine          #+#    #+#             */
-/*   Updated: 2022/07/18 17:11:27 by jniemine         ###   ########.fr       */
+/*   Updated: 2022/07/19 22:44:44 by jniemine         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -130,7 +130,15 @@ void get_stat_info(t_file_node *node)
 		error_exit();
 }
 
+t_dir *read_stream(DIR *dirp, int flags)
+{
+	t_dir *filep;
 
+	filep = readdir(dirp);	
+	while (filep && !(flags & ALL) && filep->d_name[0] == '.')
+		filep = readdir(dirp);
+	return (filep);
+}
 //Arguments are opened directory and path name to that directory
 /* This reads files from one directory at a time */
 t_file_node *create_list(DIR *dirp, char *path, t_width *widths)
@@ -138,12 +146,10 @@ t_file_node *create_list(DIR *dirp, char *path, t_width *widths)
 	t_dir *filep;
 	t_file_node *head;
 	t_file_node *lst_start;
-//	unsigned int largest[2];
 
-//	ft_memset(largest, 0, sizeof(largest));
 	head = create_node();
 	head->is_head = 1;
-	filep = readdir(dirp);
+	filep = read_stream(dirp, widths->flags);
 	lst_start = head;
 	while (filep)
 	{
@@ -162,7 +168,7 @@ t_file_node *create_list(DIR *dirp, char *path, t_width *widths)
 			widths->size_col = nb_len(head->stat.st_size);
 		widths->total_size += head->stat.st_blocks;
 		//Do i need to free the list if it fails?
-		filep = readdir(dirp);
+		filep = read_stream(dirp, widths->flags);
 		if (filep)
 		{
 			head->next = create_node();
