@@ -25,6 +25,7 @@
 #define TIME_ORDER		32
 
 #define ALLOWED_OPTIONS "-lRrat"
+#define ALLOWED_SORTS	"rt"
 typedef struct stat		t_stat;
 typedef struct dirent		t_dir; 
 typedef struct s_file_node	t_file_node;
@@ -55,9 +56,12 @@ struct s_file_node
 	t_file_node 	*next;
 };
 
+int time_compare(struct timespec t1, struct timespec t2);
+int reverse_strcmp(const char *s1, const char *s2);
+t_file_node *sort(t_file_node **head, int flags);
 void print_lst(t_file_node *head); //DEL SO MUCHO
-void lst_iter_loop(t_file_node **head, int (*f)(const char *, const char *));
-int lst_iter(t_file_node **head, int (*f)(const char *s1, const char *s2));
+void lst_iter_loop(t_file_node **head, int flags);
+int lst_iter(t_file_node **head, int flags);
 t_file_node *create_list(DIR *dirp, char *dir_paths, t_width *widths);
 void print_stat(t_file_node *node, t_width *widths, char **dir_paths, int *i);
 unsigned int nb_len(long long nb);

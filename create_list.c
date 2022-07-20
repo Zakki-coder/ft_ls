@@ -6,7 +6,7 @@
 /*   By: jniemine <jniemine@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/22 14:44:27 by jniemine          #+#    #+#             */
-/*   Updated: 2022/07/19 22:44:44 by jniemine         ###   ########.fr       */
+/*   Updated: 2022/07/20 18:48:01 by jniemine         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -139,6 +139,20 @@ t_dir *read_stream(DIR *dirp, int flags)
 		filep = readdir(dirp);
 	return (filep);
 }
+
+void update_widths(t_file_node *head, t_width *widths)
+{
+	++widths->file_amount;
+	if (head->type & DT_DIR)
+		widths->dir_amount++;
+	if (widths->longest_filename < ft_strlen(head->file_name))
+		widths->longest_filename = ft_strlen(head->file_name);
+	if (widths->link_col < nb_len(head->stat.st_nlink))	
+		widths->link_col = nb_len(head->stat.st_nlink);
+	if (widths->size_col < nb_len(head->stat.st_size))	
+		widths->size_col = nb_len(head->stat.st_size);
+	widths->total_size += head->stat.st_blocks;
+}
 //Arguments are opened directory and path name to that directory
 /* This reads files from one directory at a time */
 t_file_node *create_list(DIR *dirp, char *path, t_width *widths)
@@ -153,20 +167,21 @@ t_file_node *create_list(DIR *dirp, char *path, t_width *widths)
 	lst_start = head;
 	while (filep)
 	{
-		++widths->file_amount;
+	//	++widths->file_amount;
 		get_t_dir_info(filep, head);
 		handle_path(path, &head->path, filep);
 		get_stat_info(head);
-		if (filep->d_type & DT_DIR)
-			widths->dir_amount++;
+//		if (filep->d_type & DT_DIR)
+//			widths->dir_amount++;
 		head->type = filep->d_type;
-		if (widths->longest_filename < ft_strlen(head->file_name))
-			widths->longest_filename = ft_strlen(head->file_name);
-		if (widths->link_col < nb_len(head->stat.st_nlink))	
-			widths->link_col = nb_len(head->stat.st_nlink);
-		if (widths->size_col < nb_len(head->stat.st_size))	
-			widths->size_col = nb_len(head->stat.st_size);
-		widths->total_size += head->stat.st_blocks;
+		update_widths(head, widths);
+//		if (widths->longest_filename < ft_strlen(head->file_name))
+//			widths->longest_filename = ft_strlen(head->file_name);
+//		if (widths->link_col < nb_len(head->stat.st_nlink))	
+//			widths->link_col = nb_len(head->stat.st_nlink);
+//		if (widths->size_col < nb_len(head->stat.st_size))	
+//			widths->size_col = nb_len(head->stat.st_size);
+//		widths->total_size += head->stat.st_blocks;
 		//Do i need to free the list if it fails?
 		filep = read_stream(dirp, widths->flags);
 		if (filep)
@@ -177,5 +192,5 @@ t_file_node *create_list(DIR *dirp, char *path, t_width *widths)
 	}
 	if (!filep && errno != 0)
 		error_exit();
-	return (lst_start);
+	return (sort(&lst_start, widths->flags));
 }

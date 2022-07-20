@@ -5,3 +5,4 @@ make re; ./ft_ls
 #Test non-existent file
 #Test only hidden files
 #Max filename and path lengths
+#Multiple sort flags

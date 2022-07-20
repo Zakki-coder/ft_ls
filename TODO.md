@@ -1,3 +1,5 @@
+Columns between words should always be atleast one tab, now it's buggy
+
 Sorting, or columns not working perfectly. Just compare ls and ft_ls . DONE
 
 In the long format:      If the modification time of the file is more than 6 months in the past or future, then
