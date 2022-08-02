@@ -6,3 +6,5 @@ make re; ./ft_ls
 #Test only hidden files
 #Max filename and path lengths
 #Multiple sort flags
+#Test with at least one file which is divisible with tab_size
+#Test without files that are not divisible with tabsize

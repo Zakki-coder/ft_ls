@@ -6,7 +6,7 @@
 /*   By: jniemine <jniemine@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/12 00:13:14 by jniemine          #+#    #+#             */
-/*   Updated: 2022/07/20 20:40:51 by jniemine         ###   ########.fr       */
+/*   Updated: 2022/08/02 11:40:23 by jniemine         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,8 +23,10 @@ static int count_tab_n(int longest_filename, int *word_width)
 		longest_filename /= tab_stop;
 		++tab_stop_n;
 	}
-	*word_width = tab_stop_n * tab_stop + 1;
-	return (*word_width + 1);
+	*word_width = tab_stop_n * tab_stop;
+	if (longest_filename % tab_stop == 0)
+		*word_width += tab_stop;
+	return (*word_width);
 }
 
 void ft_lstappend(t_list *alst, t_list *new)
@@ -36,6 +38,7 @@ void ft_lstappend(t_list *alst, t_list *new)
 	alst->next = new;
 }
 
+/* Lexicographical ordering uses strcmp so files starting with capital letter come before */
 void make_columns(t_file_node *head/*, int words_in_line_n*/, int rows, int word_width)
 {
 	t_list		**columns;
@@ -69,23 +72,29 @@ void make_columns(t_file_node *head/*, int words_in_line_n*/, int rows, int word
 		++i;
 	}
 }
+
+/* Search largest mod 0 with filenumber if it fits to columns use that, else search smaller */
+/* Use word_width to calculate max mod seed */
+int count_rows(int file_n, int words_in_line)
+{
+	while (file_n % words_in_line != 0)
+		++file_n;
+	return (file_n / words_in_line);
+}
+
+/* If possible, leave one empty column. */
 void print_columns(t_file_node *head, t_width *widths)
 {
     struct	winsize w;
 	int		words_in_line_n;
 	int		rows;
-//	int		word_count;
 	int		word_width;
 
-//	word_count = 0;
     ioctl(STDOUT_FILENO, TIOCGWINSZ, &w);
 	widths->window_size = w;
-	//We need to leave one empty column with width of word_width.
-	words_in_line_n = (w.ws_col) / count_tab_n(widths->longest_filename + 1, &word_width);
-	if (words_in_line_n > 1)
-		words_in_line_n -= 1;
-	rows = widths->file_amount / words_in_line_n;
-	make_columns(head/*, words_in_line*/, rows, word_width);
+	words_in_line_n = (w.ws_col) / count_tab_n(widths->longest_filename, &word_width);
+	rows = count_rows(widths->file_amount, words_in_line_n);
+	make_columns(head, rows, word_width);
 	/*
 	while (head)
 	{

@@ -6,7 +6,7 @@
 /*   By: jniemine <jniemine@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/20 18:57:24 by jniemine          #+#    #+#             */
-/*   Updated: 2022/07/20 20:22:48 by jniemine         ###   ########.fr       */
+/*   Updated: 2022/08/02 12:54:42 by jniemine         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,14 +41,11 @@ char *month_rearrange(char *time)
 	return (new_date);
 }
 
-int time_compare(struct timespec t1, struct timespec t2)
+int time_compare(struct stat t1, struct stat t2)
 {
-	char *time1;
-	char *time2;
-
-	time1 = ctime(&t1.tv_sec);
-	time2 = ctime(&t2.tv_sec);
-	time1 = month_rearrange(time1); //Free
-	time2 = month_rearrange(time2); //Free
-	return (ft_strcmp(time1, time2));
+	if (t1.st_mtimespec.tv_sec > t2.st_mtimespec.tv_sec)
+		return (-1);
+	else if (t1.st_mtimespec.tv_sec == t2.st_mtimespec.tv_sec)
+		return (0);
+	return (1);
 }

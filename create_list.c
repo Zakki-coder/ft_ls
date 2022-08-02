@@ -6,7 +6,7 @@
 /*   By: jniemine <jniemine@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/22 14:44:27 by jniemine          #+#    #+#             */
-/*   Updated: 2022/07/20 18:48:01 by jniemine         ###   ########.fr       */
+/*   Updated: 2022/08/02 17:06:35 by jniemine         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,7 +46,8 @@ void print_loop(t_file_node *head, t_width widths, char **dir_paths)
 	int			i;
 
 	i = 0;
-	ft_printf("\n%s:\n", head->path);
+	if (head)
+		ft_printf("\n%s:\n", head->dir_path);
 	while (head)
 	{
 		print_stat(head, &widths, dir_paths, &i);
@@ -77,41 +78,48 @@ void recursive_traverse(char **paths, int i, t_width *widths_flags)
 
 	ft_bzero((void *)&widths, sizeof(t_width));
 	widths.flags = widths_flags->flags;
-	if (!paths || *paths == NULL)
+	if (paths == NULL || *paths == NULL || **paths == '\0')
 		return ;
 	dirp = open_directory(*paths);
-	if (!dirp && errno == ENOENT)
-		recursive_traverse(++paths, ++i, &widths); //Does this work?
+//	if (!dirp && errno == ENOENT)
+	//	recursive_traverse(++paths, ++i, &widths); //Does this work?
 	if (!dirp)
 		error_exit();
 	head = create_list(dirp, *paths, &widths);
-	dir_paths = (char **)ft_memalloc(sizeof(char *) * widths.dir_amount + 1);
+	dir_paths = (char **)ft_memalloc(sizeof(char *) * (widths.dir_amount + 1));
 	if (!dir_paths || closedir(dirp) < 0)
 		error_exit();
+	//TODO: Printer function to choose betweeen long and column
 	print_loop(head, widths, dir_paths);
-	if (*dir_paths)
+	if (dir_paths && *dir_paths)
+	{
 		recursive_traverse(dir_paths++, ++i, &widths);
-	if ((*paths))	
+	}
+	if (paths && *paths)	
+	{
 		recursive_traverse(++paths, ++i, &widths);
+	}
 	free_lst(head);
 	//TODO: Widths are not universal. Every list needs its own widths.
 	//TOTHINK: Should i do the whole linked list before printing?
 	//TODO: check print_stats TODO.
 }
 
-void handle_path(char *root_path, char **dest_path, t_dir *dirp)
+void handle_path(char *root_path, t_file_node *head, t_dir *dirp)
 {
 	int len;
 
 	len = ft_strlen(root_path) + ft_strlen(dirp->d_name) + 2; //+2 for null and ?slash?
-	*dest_path = ft_memalloc(len);
-	if (!*dest_path)
+	head->path = ft_memalloc(len);
+	head->dir_path = ft_memalloc(ft_strlen(root_path) + 1);
+	ft_strcpy(head->dir_path, root_path);
+	if (!head->path)
 		error_exit();
-	ft_strcat(*dest_path, root_path);
+	ft_strcat(head->path, root_path);
 	if (ft_strcmp(dirp->d_name, ".") != 0/* && ft_strcmp(dirp->d_name, "..") != 0*/)
 	{
-		ft_strcat(*dest_path, "/");
-		ft_strcat(*dest_path, dirp->d_name);
+		ft_strcat(head->path, "/");
+		ft_strcat(head->path, dirp->d_name);
 	}
 }
 
@@ -161,15 +169,17 @@ t_file_node *create_list(DIR *dirp, char *path, t_width *widths)
 	t_file_node *head;
 	t_file_node *lst_start;
 
-	head = create_node();
-	head->is_head = 1;
 	filep = read_stream(dirp, widths->flags);
+	if (!filep)
+		return (NULL);
+	head = create_node();
+//	head->is_head = 1;
 	lst_start = head;
 	while (filep)
 	{
 	//	++widths->file_amount;
 		get_t_dir_info(filep, head);
-		handle_path(path, &head->path, filep);
+		handle_path(path, head, filep);
 		get_stat_info(head);
 //		if (filep->d_type & DT_DIR)
 //			widths->dir_amount++;

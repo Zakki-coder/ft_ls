@@ -6,7 +6,7 @@
 /*   By: jniemine <jniemine@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/20 18:57:47 by jniemine          #+#    #+#             */
-/*   Updated: 2022/07/20 20:21:35 by jniemine         ###   ########.fr       */
+/*   Updated: 2022/08/02 16:02:19 by jniemine         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,7 @@ int sort_dispatch(t_file_node *head, int flags)
 	if (flags & REVERSE_ORDER)
 		return (reverse_strcmp(head->file_name, head->next->file_name));
 	else if (flags & TIME_ORDER)
-		return time_compare(head->stat.st_mtimespec, head->next->stat.st_mtimespec);
+		return time_compare(head->stat, head->next->stat);
 	else
 		return (ft_strcmp(head->file_name, head->next->file_name));
 }
@@ -80,5 +80,6 @@ t_file_node *sort(t_file_node **head, int flags)
 {
 	//What if multiple sorting options are given?
 	lst_iter_loop(head, flags);
+	(*head)->is_head = 1;
 	return (*head);
 }

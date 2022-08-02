@@ -52,11 +52,12 @@ struct s_file_node
 	t_stat			lstat;
 	int				namelen;
 	int				type;
+	char			*dir_path;
 	char			*path;
 	t_file_node 	*next;
 };
 
-int time_compare(struct timespec t1, struct timespec t2);
+int time_compare(struct stat t1, struct stat t2);
 int reverse_strcmp(const char *s1, const char *s2);
 t_file_node *sort(t_file_node **head, int flags);
 void print_lst(t_file_node *head); //DEL SO MUCHO
