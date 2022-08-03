@@ -57,6 +57,7 @@ struct s_file_node
 	t_file_node 	*next;
 };
 
+void choose_output_format(t_file_node *head, t_width *widths, char **dir_paths);
 int time_compare(struct stat t1, struct stat t2);
 int reverse_strcmp(const char *s1, const char *s2);
 t_file_node *sort(t_file_node **head, int flags);
@@ -73,6 +74,6 @@ void recursive_traverse(char **paths, int i, t_width *widths_flags);
 void print_loop(t_file_node *head, t_width widths, char **dir_paths);
 void debugger(char **paths);
 void free_lst(t_file_node *head);
-void print_columns(t_file_node *head, t_width *widths);
+void print_columns(t_file_node *head, t_width *widths, char **dir_paths);
 
 #endif

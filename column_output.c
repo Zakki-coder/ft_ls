@@ -6,7 +6,7 @@
 /*   By: jniemine <jniemine@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/12 00:13:14 by jniemine          #+#    #+#             */
-/*   Updated: 2022/08/02 11:40:23 by jniemine         ###   ########.fr       */
+/*   Updated: 2022/08/03 11:50:31 by jniemine         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,15 +39,17 @@ void ft_lstappend(t_list *alst, t_list *new)
 }
 
 /* Lexicographical ordering uses strcmp so files starting with capital letter come before */
-void make_columns(t_file_node *head/*, int words_in_line_n*/, int rows, int word_width)
+void make_columns(t_file_node *head, int rows, int word_width, char **dir_paths)
 {
 	t_list		**columns;
 //	int			word_count;
 //	t_file_node *head_start;
 	int			i;
+	int			j;
 
 //	word_count = 0;
 	i = 0;
+	j = 0;
 //	head_start = head;
 	columns = (t_list **)ft_memalloc(sizeof(t_list *) * (rows + 1));
 	/* First get directories */
@@ -57,6 +59,8 @@ void make_columns(t_file_node *head/*, int words_in_line_n*/, int rows, int word
 		if (!columns[i % rows])
 			columns[i % rows] = ft_lstnew(head->file_name, ft_strlen(head->file_name) + 1);
 		++i;
+		if (head->type & DT_DIR && ft_strcmp(head->file_name, ".") != 0 && ft_strcmp(head->file_name, "..") != 0)
+			dir_paths[j++] = head->path;
 		head = head->next;
 	}
 	/*Debbuger*/
@@ -73,8 +77,6 @@ void make_columns(t_file_node *head/*, int words_in_line_n*/, int rows, int word
 	}
 }
 
-/* Search largest mod 0 with filenumber if it fits to columns use that, else search smaller */
-/* Use word_width to calculate max mod seed */
 int count_rows(int file_n, int words_in_line)
 {
 	while (file_n % words_in_line != 0)
@@ -83,7 +85,7 @@ int count_rows(int file_n, int words_in_line)
 }
 
 /* If possible, leave one empty column. */
-void print_columns(t_file_node *head, t_width *widths)
+void print_columns(t_file_node *head, t_width *widths, char **dir_paths)
 {
     struct	winsize w;
 	int		words_in_line_n;
@@ -94,7 +96,7 @@ void print_columns(t_file_node *head, t_width *widths)
 	widths->window_size = w;
 	words_in_line_n = (w.ws_col) / count_tab_n(widths->longest_filename, &word_width);
 	rows = count_rows(widths->file_amount, words_in_line_n);
-	make_columns(head, rows, word_width);
+	make_columns(head, rows, word_width, dir_paths);
 	/*
 	while (head)
 	{
@@ -105,11 +107,11 @@ void print_columns(t_file_node *head, t_width *widths)
 		head = head->next;
 	}
 	*/
-	printf("file amount: %d\n", widths->file_amount);
-	printf("Word Width: %d\n", word_width);
-	printf("longest filename:%d\n", widths->longest_filename);
-    printf ("lines %d words_in_line: %d\n", w.ws_row, words_in_line_n);
-    printf ("columns %d rows: %d\n", w.ws_col, rows);
+//	printf("file amount: %d\n", widths->file_amount);
+//	printf("Word Width: %d\n", word_width);
+//	printf("longest filename:%d\n", widths->longest_filename);
+//    printf ("lines %d words_in_line: %d\n", w.ws_row, words_in_line_n);
+//    printf ("columns %d rows: %d\n", w.ws_col, rows);
 }
 //First print directories, then filenames.
 //TODO get terminal tabsize for columns.

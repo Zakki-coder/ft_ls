@@ -6,7 +6,7 @@
 /*   By: jniemine <jniemine@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/22 14:44:27 by jniemine          #+#    #+#             */
-/*   Updated: 2022/08/02 17:06:35 by jniemine         ###   ########.fr       */
+/*   Updated: 2022/08/03 11:52:51 by jniemine         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,15 +41,20 @@ void free_lst(t_file_node *head)
 		free(previous);
 	}
 }
+
 void print_loop(t_file_node *head, t_width widths, char **dir_paths)
 {
 	int			i;
 
 	i = 0;
-	if (head)
-		ft_printf("\n%s:\n", head->dir_path);
+//	if (head)
+//		ft_printf("\n%s:\n", head->dir_path);
 	while (head)
 	{
+		while (head && !(widths.flags & ALL) && head->file_name[0] == '.')
+			head = head->next;
+		if (!head)
+			break;
 		print_stat(head, &widths, dir_paths, &i);
 		head = head->next;
 	}
@@ -90,7 +95,8 @@ void recursive_traverse(char **paths, int i, t_width *widths_flags)
 	if (!dir_paths || closedir(dirp) < 0)
 		error_exit();
 	//TODO: Printer function to choose betweeen long and column
-	print_loop(head, widths, dir_paths);
+//	print_loop(head, widths, dir_paths);
+	choose_output_format(head, &widths, dir_paths);
 	if (dir_paths && *dir_paths)
 	{
 		recursive_traverse(dir_paths++, ++i, &widths);
@@ -142,9 +148,10 @@ t_dir *read_stream(DIR *dirp, int flags)
 {
 	t_dir *filep;
 
-	filep = readdir(dirp);	
-	while (filep && !(flags & ALL) && filep->d_name[0] == '.')
-		filep = readdir(dirp);
+	if (flags || flags == 0)
+		filep = readdir(dirp);	
+//	while (filep && !(flags & ALL) && filep->d_name[0] == '.')
+//		filep = readdir(dirp);
 	return (filep);
 }
 
