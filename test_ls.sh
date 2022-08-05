@@ -8,3 +8,4 @@ make re; ./ft_ls
 #Multiple sort flags
 #Test with at least one file which is divisible with tab_size
 #Test without files that are not divisible with tabsize
+#Test extended attributes (@ symbol for example, at long list)

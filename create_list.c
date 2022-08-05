@@ -6,7 +6,7 @@
 /*   By: jniemine <jniemine@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/22 14:44:27 by jniemine          #+#    #+#             */
-/*   Updated: 2022/08/03 11:52:51 by jniemine         ###   ########.fr       */
+/*   Updated: 2022/08/05 18:30:28 by jniemine         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -124,7 +124,8 @@ void handle_path(char *root_path, t_file_node *head, t_dir *dirp)
 	ft_strcat(head->path, root_path);
 	if (ft_strcmp(dirp->d_name, ".") != 0/* && ft_strcmp(dirp->d_name, "..") != 0*/)
 	{
-		ft_strcat(head->path, "/");
+		if (root_path[ft_strlen(root_path) - 1] != '/')
+			ft_strcat(head->path, "/");
 		ft_strcat(head->path, dirp->d_name);
 	}
 }
@@ -144,12 +145,14 @@ void get_stat_info(t_file_node *node)
 		error_exit();
 }
 
-t_dir *read_stream(DIR *dirp, int flags)
+/* readdir returns NULL when end has been reached or on ERROR, make error handling */
+t_dir *read_stream(DIR *dirp)
 {
 	t_dir *filep;
 
-	if (flags || flags == 0)
-		filep = readdir(dirp);	
+	filep = readdir(dirp);	
+	if (!filep && errno > 0)
+		error_exit();
 //	while (filep && !(flags & ALL) && filep->d_name[0] == '.')
 //		filep = readdir(dirp);
 	return (filep);
@@ -176,7 +179,7 @@ t_file_node *create_list(DIR *dirp, char *path, t_width *widths)
 	t_file_node *head;
 	t_file_node *lst_start;
 
-	filep = read_stream(dirp, widths->flags);
+	filep = read_stream(dirp);
 	if (!filep)
 		return (NULL);
 	head = create_node();
@@ -200,7 +203,7 @@ t_file_node *create_list(DIR *dirp, char *path, t_width *widths)
 //			widths->size_col = nb_len(head->stat.st_size);
 //		widths->total_size += head->stat.st_blocks;
 		//Do i need to free the list if it fails?
-		filep = read_stream(dirp, widths->flags);
+		filep = read_stream(dirp);
 		if (filep)
 		{
 			head->next = create_node();

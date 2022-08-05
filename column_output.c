@@ -6,7 +6,7 @@
 /*   By: jniemine <jniemine@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/12 00:13:14 by jniemine          #+#    #+#             */
-/*   Updated: 2022/08/03 11:50:31 by jniemine         ###   ########.fr       */
+/*   Updated: 2022/08/05 18:09:23 by jniemine         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,7 +59,7 @@ void make_columns(t_file_node *head, int rows, int word_width, char **dir_paths)
 		if (!columns[i % rows])
 			columns[i % rows] = ft_lstnew(head->file_name, ft_strlen(head->file_name) + 1);
 		++i;
-		if (head->type & DT_DIR && ft_strcmp(head->file_name, ".") != 0 && ft_strcmp(head->file_name, "..") != 0)
+		if (dir_paths && head->type & DT_DIR && ft_strcmp(head->file_name, ".") != 0 && ft_strcmp(head->file_name, "..") != 0)
 			dir_paths[j++] = head->path;
 		head = head->next;
 	}
@@ -72,7 +72,7 @@ void make_columns(t_file_node *head, int rows, int word_width, char **dir_paths)
 			ft_printf("%-*s", word_width, (char *)columns[i]->content);
 			columns[i] = columns[i]->next;
 		}
-		printf("\n");
+		ft_printf("\n");
 		++i;
 	}
 }

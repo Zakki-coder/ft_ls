@@ -6,7 +6,7 @@
 /*   By: jniemine <jniemine@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/29 17:59:01 by jniemine          #+#    #+#             */
-/*   Updated: 2022/08/03 11:27:50 by jniemine         ###   ########.fr       */
+/*   Updated: 2022/08/05 18:33:01 by jniemine         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -96,8 +96,7 @@ unsigned int nb_len(long long nb)
 	}
 	return (len);
 }
-/*	TODO: Also the path/filename column should show links.
-	TODO: Get terminal window width */
+/*	TODO: Also the path/filename column should show links. */
 
 void print_stat(t_file_node *node, t_width *widths, char **dir_paths, int *i)
 {
@@ -120,7 +119,7 @@ void print_stat(t_file_node *node, t_width *widths, char **dir_paths, int *i)
 	print_time(node);
 	ft_printf("%s\n", node->file_name);
 	//TODO: Probably . and .. are causing the infinite loop.
-	if (node->type & DT_DIR && ft_strcmp(name, ".") != 0 && ft_strcmp(name, "..") != 0)
+	if (dir_paths && node->type & DT_DIR && ft_strcmp(name, ".") != 0 && ft_strcmp(name, "..") != 0)
 		dir_paths[(*i)++] = node->path;
 }
 
@@ -129,6 +128,8 @@ DIR *open_directory(char *path)
 	DIR *dirp;
 
 	dirp = opendir(path);
+	if (!dirp && errno == ENOTDIR)
+		return (NULL);
 	if (!dirp && errno != ENOENT)
 		error_exit();
 	else if(!dirp)
@@ -141,29 +142,42 @@ int main(int argc, char **argv)
 	t_width		widths_and_flags;
 	int i;
 	t_file_node *head;
-	DIR *dirp;
-	char **dir_paths;
+	t_paths		paths;
+//	DIR **dirp;
+//	char **dir_paths;
 
+	i = 0;
+	ft_bzero((void *)&paths, sizeof(t_paths));
 	ft_bzero((void *)&widths_and_flags, sizeof(widths_and_flags));
+	paths.open_dir = (DIR **)ft_memalloc(sizeof(DIR *) * argc + 1);
+	paths.arg_paths = (char **)ft_memalloc(sizeof(char *) * argc + 1);
 	//TODO: Protect opendir, but first put it inside loop.
 	//TODO: Remember closedir also.
 	//TODO: Readdir can return for multiple reasons, use errno to decide if exit is needed
 	//TODO: If R flag, then we need to connect previous tail to next head.
 	//TODO: You must call create list once for the starting direcotry for recursion, to get the width. 
 	i = ls_get_flags(argc, argv, &widths_and_flags.flags);
-	dirp = open_directory(argv[i]); // PROTECT
-	head = create_list(dirp, argv[i], &widths_and_flags);
-	dir_paths = (char **)ft_memalloc(sizeof(char *) * widths_and_flags.dir_amount + 1);
-//	print_columns(head, &widths_and_flags);
-//	lst_iter_loop(&head, ft_strcmp);
-	if (widths_and_flags.flags & RECURSIVE)
+	sort_arguments(argc - i, &argv[i], &widths_and_flags, paths);
+	if (*paths.arg_paths)
+		widths_and_flags.flags |= PRINT_DIR_NAME;
+//	dirp = open_directory(argv[i]); // PROTECT
+//	if (!dirp)
+//		error_exit();
+	while (*(paths.open_dir))
 	{
-//		print_loop(head, widths_and_flags, dir_paths);
-		choose_output_format(head, &widths_and_flags, dir_paths);
-		recursive_traverse(dir_paths, i, &widths_and_flags);
-	}	
-	else
-		choose_output_format(head, &widths_and_flags, dir_paths);
-	free_lst(head);
+		head = create_list(*paths.open_dir, *paths.arg_paths, &widths_and_flags);
+		paths.dir_paths = (char **)ft_memalloc(sizeof(char *) * widths_and_flags.dir_amount + 1);
+		if (widths_and_flags.flags & RECURSIVE)
+		{
+	//		print_loop(head, widths_and_flags, dir_paths);
+			choose_output_format(head, &widths_and_flags, paths.dir_paths);
+			recursive_traverse(paths.dir_paths, i, &widths_and_flags);
+		}	
+		else
+			choose_output_format(head, &widths_and_flags, paths.dir_paths);
+		free_lst(head);
+		++paths.open_dir;
+		++paths.arg_paths;
+	}
 	return (0);
 }

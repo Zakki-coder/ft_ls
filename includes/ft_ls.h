@@ -23,12 +23,20 @@
 #define REVERSE_ORDER	8 
 #define ALL				16
 #define TIME_ORDER		32
+#define	PRINT_DIR_NAME	64
 
 #define ALLOWED_OPTIONS "-lRrat"
 #define ALLOWED_SORTS	"rt"
 typedef struct stat		t_stat;
 typedef struct dirent		t_dir; 
 typedef struct s_file_node	t_file_node;
+
+typedef struct s_dir_and_paths
+{
+	DIR		**open_dir;
+	char	**dir_paths;
+	char	**arg_paths;
+}	t_paths;
 
 typedef struct s_width
 {
@@ -57,6 +65,14 @@ struct s_file_node
 	t_file_node 	*next;
 };
 
+void handle_path(char *root_path, t_file_node *head, t_dir *dirp);
+void get_t_dir_info(t_dir *filep, t_file_node *node);
+void get_stat_info(t_file_node *node);
+void update_widths(t_file_node *head, t_width *widths);
+t_file_node *create_node(void);
+t_dir *read_stream(DIR *dirp);
+void sort_arguments(int argc, char **argv, t_width *widths, t_paths paths);
+DIR *open_directory(char *path);
 void choose_output_format(t_file_node *head, t_width *widths, char **dir_paths);
 int time_compare(struct stat t1, struct stat t2);
 int reverse_strcmp(const char *s1, const char *s2);
