@@ -6,7 +6,7 @@
 /*   By: jniemine <jniemine@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/29 17:59:01 by jniemine          #+#    #+#             */
-/*   Updated: 2022/08/06 13:19:02 by jniemine         ###   ########.fr       */
+/*   Updated: 2022/08/06 18:37:51 by jniemine         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,20 +20,20 @@ void error_exit(void)
 
 void get_file_type(t_file_node *node, char *permissions)
 {
-	int type;
+	unsigned int type;
 
 	type = node->type;
-	if (type & DT_DIR)
+	if (type == DT_DIR)
 		permissions[0] = 'd';
-//	else if (type & DT_LNK)
-//		permissions[0] = 'l';
-	else if (type & DT_BLK)
+	else if (type == DT_LNK)
+		permissions[0] = 'l';
+	else if (type == DT_BLK)
 		permissions[0] = 'b';
-	else if (type & DT_CHR)
+	else if (type == DT_CHR)
 		permissions[0] = 'c';
-//	else if (type & DT_SOCK)
-//		permissions[0] = 's';
-	else if (type & DT_FIFO)
+	else if (type == DT_SOCK)
+		permissions[0] = 's';
+	else if (type == DT_FIFO)
 		permissions[0] = 'p';
 }
 
@@ -65,23 +65,36 @@ void print_permissions(unsigned int st_mode, t_file_node *node)
 	ft_printf("%-10s", permissions);
 }
 
+/*	On unix time, day is always 86400seconds.
+	1 Month (30.44 days)	2629743 Seconds
+*/
 void print_time(t_file_node *node)
 {
-	char *time;
-	char output[27];
+	char			*timep;
+	time_t			current_time;
+	char			output[27];
+	long long int	time_difference;
 
+	current_time = time(NULL);
 	ft_bzero(output, 27);
-	time = ctime(&node->stat.st_mtimespec.tv_sec);
-	if (!time)
+	timep = ctime(&node->stat.st_mtimespec.tv_sec);
+	if (!timep)
 		error_exit();
-	time += 8;
-	ft_strncpy(output, time, 3);
-	time -= 4;
-	ft_strncat(output, time, 4);
-	time += 7;
-	ft_strncat(output, time, 5);
+	timep += 8;
+	ft_strncpy(output, timep, 3);
+	timep -= 4;
+	ft_strncat(output, timep, 4);
+	timep += 7;
+	time_difference = current_time - node->stat.st_mtimespec.tv_sec;
+	if (time_difference > (2629743 * 6) || (-1 * time_difference) > (2629743 * 6))
+	{
+		ft_strncat(output, " ", 1);
+		ft_strncat(output, timep + 9, 4);
+	}
+	else
+		ft_strncat(output, timep, 5);
 	ft_strncat(output, " ", 1);
-	ft_printf("%*s", ft_strlen(output) + 1, output);
+	ft_printf("%*s", ft_strlen(output), output);
 }
 
 unsigned int nb_len(long long nb)
@@ -96,32 +109,35 @@ unsigned int nb_len(long long nb)
 	}
 	return (len);
 }
-/*	TODO: Also the path/filename column should show links. */
 
+// Changed all stat to lstat, so that links are not followed
 void print_stat(t_file_node *node, t_width *widths, char **dir_paths, int *i)
 {
 	struct passwd	*pw;
 	struct group	*grp;
-	char *name;
+	char			*name;
+	char			link_buf[1024];
 
+	ft_bzero((void *)link_buf, 1024);
 	name = node->file_name;
-	pw = getpwuid(node->stat.st_uid);
-	grp = getgrgid(node->stat.st_gid);
+	pw = getpwuid(node->lstat.st_uid);
+	grp = getgrgid(node->lstat.st_gid);
 	if (!pw || !grp)
 		error_exit();
 	if (node->is_head)
 		ft_printf("total %llu\n", widths->total_size);
-	print_permissions(node->stat.st_mode, node);
-	ft_printf("%*u", widths->link_col + 2, node->stat.st_nlink);
+	print_permissions(node->lstat.st_mode, node);
+	ft_printf("%*u", widths->link_col + 2, node->lstat.st_nlink);
 	ft_printf(" %-*s", (int)ft_strlen(pw->pw_name) + 2, pw->pw_name);
 	ft_printf("%s", grp->gr_name);
-	ft_printf("%*d ", widths->size_col + 2, node->stat.st_size);
+	ft_printf("%*d ", widths->size_col + 2, node->lstat.st_size);
 	print_time(node);
-	if (!(widths->is_file))
+	if (readlink(node->path, link_buf, 1024) > 0)
+		ft_printf("%s -> %s\n", node->file_name, link_buf);
+	else if (!(widths->is_file))
 		ft_printf("%s\n", node->file_name);
 	else
 		ft_printf("%s\n", node->path);
-	//TODO: Probably . and .. are causing the infinite loop.
 	if (dir_paths && node->type & DT_DIR && ft_strcmp(name, ".") != 0 && ft_strcmp(name, "..") != 0)
 		dir_paths[(*i)++] = node->path;
 }

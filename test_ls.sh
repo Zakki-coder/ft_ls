@@ -9,3 +9,5 @@ make re; ./ft_ls
 #Test with at least one file which is divisible with tab_size
 #Test without files that are not divisible with tabsize
 #Test extended attributes (@ symbol for example, at long list)
+#When long list, if over six months old, show only year
+#Also when long list six months newer shows only year

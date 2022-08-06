@@ -4,6 +4,7 @@
 #include <stdio.h> //DEEELT
 
 #include <dirent.h>
+#include <time.h>
 #include <errno.h>
 #include <unistd.h>
 #include <stdlib.h>
@@ -60,7 +61,7 @@ struct s_file_node
 	t_stat			stat;
 	t_stat			lstat;
 	int				namelen;
-	int				type;
+	unsigned int	type;
 	char			*dir_path;
 	char			*path;
 	t_file_node 	*next;
@@ -77,10 +78,10 @@ DIR *open_directory(char *path);
 void choose_output_format(t_file_node *head, t_width *widths, char **dir_paths);
 int time_compare(struct stat t1, struct stat t2);
 int reverse_strcmp(const char *s1, const char *s2);
-t_file_node *sort(t_file_node **head, int flags);
+t_file_node *sort(t_file_node **head, int flags, t_width *widths);
 void print_lst(t_file_node *head); //DEL SO MUCHO
-void lst_iter_loop(t_file_node **head, int flags);
-int lst_iter(t_file_node **head, int flags);
+void lst_iter_loop(t_file_node **head, int flags, t_width *widths);
+int lst_iter(t_file_node **head, int flags, t_width *widths);
 t_file_node *create_list(DIR *dirp, char *dir_paths, t_width *widths);
 void print_stat(t_file_node *node, t_width *widths, char **dir_paths, int *i);
 unsigned int nb_len(long long nb);

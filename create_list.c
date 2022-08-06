@@ -6,7 +6,7 @@
 /*   By: jniemine <jniemine@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/22 14:44:27 by jniemine          #+#    #+#             */
-/*   Updated: 2022/08/06 13:15:54 by jniemine         ###   ########.fr       */
+/*   Updated: 2022/08/06 18:27:07 by jniemine         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -230,5 +230,5 @@ t_file_node *create_list(DIR *dirp, char *path, t_width *widths)
 	}
 	if (!filep && errno != 0)
 		error_exit();
-	return (sort(&lst_start, widths->flags));
+	return (sort(&lst_start, widths->flags, widths));
 }

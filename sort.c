@@ -6,23 +6,31 @@
 /*   By: jniemine <jniemine@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/20 18:57:47 by jniemine          #+#    #+#             */
-/*   Updated: 2022/08/05 18:33:04 by jniemine         ###   ########.fr       */
+/*   Updated: 2022/08/06 15:07:04 by jniemine         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "includes/ft_ls.h"
 
-int sort_dispatch(t_file_node *head, int flags)
+int sort_dispatch(t_file_node *head, int flags, t_width *widths)
 {
 	if (flags & REVERSE_ORDER)
+	{
+		if (widths->is_file)
+			return (reverse_strcmp(head->path, head->next->path));
 		return (reverse_strcmp(head->file_name, head->next->file_name));
+	}
 	else if (flags & TIME_ORDER)
 		return time_compare(head->stat, head->next->stat);
 	else
+	{
+		if (widths->is_file)
+			return (ft_strcmp(head->path, head->next->path));
 		return (ft_strcmp(head->file_name, head->next->file_name));
+	}
 }
 
-int lst_iter(t_file_node **head, int flags)
+int lst_iter(t_file_node **head, int flags, t_width *widths)
 {
 	t_file_node *temp;
 	t_file_node *previous;
@@ -34,7 +42,7 @@ int lst_iter(t_file_node **head, int flags)
 	head_local = *head;
 	/* Swap the first without previous */
 //	debug(*head);
-	if (head_local->next && sort_dispatch(head_local, flags) > 0 && ++i)
+	if (head_local->next && sort_dispatch(head_local, flags, widths) > 0 && ++i)
 	{
 		temp = head_local->next;
 		head_local->next = head_local->next->next;
@@ -50,7 +58,7 @@ int lst_iter(t_file_node **head, int flags)
 	}
 	while (head_local)
 	{
-		if (head_local->next && sort_dispatch(head_local, flags) > 0 && ++i)
+		if (head_local->next && sort_dispatch(head_local, flags, widths) > 0 && ++i)
 		{
 //			printf("%s and %s\n", head_local->file_name, head_local->next->file_name);
 //			fflush(stdout);
@@ -65,21 +73,21 @@ int lst_iter(t_file_node **head, int flags)
 	return (i);
 }
 
-void lst_iter_loop(t_file_node **head, int flags)
+void lst_iter_loop(t_file_node **head, int flags, t_width *widths)
 {
 	int i;
 	
-	i = lst_iter(head, flags);
+	i = lst_iter(head, flags, widths);
 	while (i)
 	{
-		i = lst_iter(head, flags);
+		i = lst_iter(head, flags, widths);
 	}
 }
 
-t_file_node *sort(t_file_node **head, int flags)
+t_file_node *sort(t_file_node **head, int flags, t_width *widths)
 {
 	//What if multiple sorting options are given?
-	lst_iter_loop(head, flags);
+	lst_iter_loop(head, flags, widths);
 	(*head)->is_head = 1;
 	return (*head);
 }

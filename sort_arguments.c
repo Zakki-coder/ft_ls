@@ -6,7 +6,7 @@
 /*   By: jniemine <jniemine@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/03 12:49:40 by jniemine          #+#    #+#             */
-/*   Updated: 2022/08/06 11:45:09 by jniemine         ###   ########.fr       */
+/*   Updated: 2022/08/06 15:04:11 by jniemine         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -85,7 +85,7 @@ void create_file_list(t_dir **filepointers, t_width *widths, char **root_paths)
 			head = head->next;
 		}
 	}
-	lst_start = sort(&lst_start, widths->flags);
+	lst_start = sort(&lst_start, widths->flags, widths);
 	lst_start->is_head = 0;
 	if (widths->flags & LONG_LST)
 		print_loop(lst_start, *widths, NULL);
