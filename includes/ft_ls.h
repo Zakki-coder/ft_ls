@@ -40,6 +40,7 @@ typedef struct s_dir_and_paths
 
 typedef struct s_width
 {
+	unsigned int	is_file;
 	unsigned int	link_col;
 	unsigned int	size_col;
 	unsigned int	total_size;

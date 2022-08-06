@@ -6,7 +6,7 @@
 /*   By: jniemine <jniemine@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/29 17:59:01 by jniemine          #+#    #+#             */
-/*   Updated: 2022/08/05 18:33:01 by jniemine         ###   ########.fr       */
+/*   Updated: 2022/08/06 13:19:02 by jniemine         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,14 +25,14 @@ void get_file_type(t_file_node *node, char *permissions)
 	type = node->type;
 	if (type & DT_DIR)
 		permissions[0] = 'd';
-	else if (type & DT_LNK)
-		permissions[0] = 'l';
+//	else if (type & DT_LNK)
+//		permissions[0] = 'l';
 	else if (type & DT_BLK)
 		permissions[0] = 'b';
 	else if (type & DT_CHR)
 		permissions[0] = 'c';
-	else if (type & DT_SOCK)
-		permissions[0] = 's';
+//	else if (type & DT_SOCK)
+//		permissions[0] = 's';
 	else if (type & DT_FIFO)
 		permissions[0] = 'p';
 }
@@ -117,7 +117,10 @@ void print_stat(t_file_node *node, t_width *widths, char **dir_paths, int *i)
 	ft_printf("%s", grp->gr_name);
 	ft_printf("%*d ", widths->size_col + 2, node->stat.st_size);
 	print_time(node);
-	ft_printf("%s\n", node->file_name);
+	if (!(widths->is_file))
+		ft_printf("%s\n", node->file_name);
+	else
+		ft_printf("%s\n", node->path);
 	//TODO: Probably . and .. are causing the infinite loop.
 	if (dir_paths && node->type & DT_DIR && ft_strcmp(name, ".") != 0 && ft_strcmp(name, "..") != 0)
 		dir_paths[(*i)++] = node->path;

@@ -6,7 +6,7 @@
 /*   By: jniemine <jniemine@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/22 14:44:27 by jniemine          #+#    #+#             */
-/*   Updated: 2022/08/05 18:30:28 by jniemine         ###   ########.fr       */
+/*   Updated: 2022/08/06 13:15:54 by jniemine         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -121,10 +121,11 @@ void handle_path(char *root_path, t_file_node *head, t_dir *dirp)
 	ft_strcpy(head->dir_path, root_path);
 	if (!head->path)
 		error_exit();
-	ft_strcat(head->path, root_path);
+	if (ft_strcmp(root_path, ".") != 0)
+		ft_strcat(head->path, root_path);
 	if (ft_strcmp(dirp->d_name, ".") != 0/* && ft_strcmp(dirp->d_name, "..") != 0*/)
 	{
-		if (root_path[ft_strlen(root_path) - 1] != '/')
+		if (ft_strcmp(root_path, ".") != 0 && root_path[ft_strlen(root_path) - 1] != '/')
 			ft_strcat(head->path, "/");
 		ft_strcat(head->path, dirp->d_name);
 	}
@@ -171,14 +172,30 @@ void update_widths(t_file_node *head, t_width *widths)
 		widths->size_col = nb_len(head->stat.st_size);
 	widths->total_size += head->stat.st_blocks;
 }
+
+int wind_over_hidden(DIR *dirp, t_dir **filep, int flags)
+{
+	if (!(flags & ALL))
+	{
+		while (*filep && (*filep)->d_name[0] == '.')
+			*filep = read_stream(dirp);
+	}
+	if (!*filep)
+		return (1);
+	return (0);
+}
 //Arguments are opened directory and path name to that directory
 /* This reads files from one directory at a time */
 t_file_node *create_list(DIR *dirp, char *path, t_width *widths)
 {
-	t_dir *filep;
-	t_file_node *head;
-	t_file_node *lst_start;
+	t_dir		*filep;
+	t_file_node	*head;
+	t_file_node	*lst_start;
+	int			flags;
 
+	flags = widths->flags;
+	ft_bzero((void *)widths, sizeof(*widths));
+	widths->flags = flags;
 	filep = read_stream(dirp);
 	if (!filep)
 		return (NULL);
@@ -187,7 +204,8 @@ t_file_node *create_list(DIR *dirp, char *path, t_width *widths)
 	lst_start = head;
 	while (filep)
 	{
-	//	++widths->file_amount;
+		if (wind_over_hidden(dirp, &filep, widths->flags))
+			break ;
 		get_t_dir_info(filep, head);
 		handle_path(path, head, filep);
 		get_stat_info(head);

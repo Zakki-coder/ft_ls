@@ -6,7 +6,7 @@
 /*   By: jniemine <jniemine@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/03 12:49:40 by jniemine          #+#    #+#             */
-/*   Updated: 2022/08/05 17:57:45 by jniemine         ###   ########.fr       */
+/*   Updated: 2022/08/06 11:45:09 by jniemine         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,7 +24,7 @@ void seperate_name_and_path(char *arg_names, char *filename, char *root_path)
 	}
 	else
 	{
-		ft_strcpy(root_path, "./");
+//		ft_strcpy(root_path, "./");
 		ft_strcat(filename, slash + 1);
 		ft_strncat(root_path, arg_names, ft_strlen(arg_names) - ft_strlen(slash));
 	}
@@ -60,6 +60,7 @@ void free_everything(char **root_paths, t_file_node *head)
 	while(root_paths[i])
 		free(root_paths[i++]);
 }
+
 /* Remember to free filepointers */
 void create_file_list(t_dir **filepointers, t_width *widths, char **root_paths)
 {
@@ -77,6 +78,7 @@ void create_file_list(t_dir **filepointers, t_width *widths, char **root_paths)
 		get_stat_info(head);
 		head->type = filep->d_type;
 		update_widths(head, widths);
+		widths->is_file = 1;
 		if (*(++filepointers))
 		{
 			head->next = create_node();
