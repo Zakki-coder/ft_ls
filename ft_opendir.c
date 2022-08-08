@@ -6,7 +6,7 @@
 /*   By: jniemine <jniemine@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/29 17:59:01 by jniemine          #+#    #+#             */
-/*   Updated: 2022/08/06 18:37:51 by jniemine         ###   ########.fr       */
+/*   Updated: 2022/08/08 10:56:47 by jniemine         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -142,18 +142,27 @@ void print_stat(t_file_node *node, t_width *widths, char **dir_paths, int *i)
 		dir_paths[(*i)++] = node->path;
 }
 
-DIR *open_directory(char *path)
+/*	ENONENT = No such file or dir
+	ENOTDIR = Exists, but not a dir */
+int open_directory(char *path, DIR **dst)
 {
-	DIR *dirp;
+//	DIR *dirp;
 
-	dirp = opendir(path);
-	if (!dirp && errno == ENOTDIR)
-		return (NULL);
-	if (!dirp && errno != ENOENT)
+	*dst = opendir(path);
+	if (!*dst && errno == ENOTDIR)
+	{
+		*dst = NULL; 
+		errno = 0;
+		return (-1);
+	}
+	if (!*dst && errno != ENOENT)
 		error_exit();
-	else if(!dirp)
+	else if(!*dst)
+	{
+		errno = 0;
 		ft_printf("ft_ls: %s: %s", path, strerror(errno));
-	return(dirp);
+	}
+	return (1);
 }
 
 int main(int argc, char **argv)
@@ -168,6 +177,7 @@ int main(int argc, char **argv)
 	i = 0;
 	ft_bzero((void *)&paths, sizeof(t_paths));
 	ft_bzero((void *)&widths_and_flags, sizeof(widths_and_flags));
+	//TODO Free all this shit
 	paths.open_dir = (DIR **)ft_memalloc(sizeof(DIR *) * argc + 1);
 	paths.arg_paths = (char **)ft_memalloc(sizeof(char *) * argc + 1);
 	//TODO: Protect opendir, but first put it inside loop.
@@ -177,12 +187,7 @@ int main(int argc, char **argv)
 	//TODO: You must call create list once for the starting direcotry for recursion, to get the width. 
 	i = ls_get_flags(argc, argv, &widths_and_flags.flags);
 	sort_arguments(argc - i, &argv[i], &widths_and_flags, paths);
-	if (*paths.arg_paths)
-		widths_and_flags.flags |= PRINT_DIR_NAME;
-//	dirp = open_directory(argv[i]); // PROTECT
-//	if (!dirp)
-//		error_exit();
-	while (*(paths.open_dir))
+	while (*paths.arg_paths)
 	{
 		head = create_list(*paths.open_dir, *paths.arg_paths, &widths_and_flags);
 		paths.dir_paths = (char **)ft_memalloc(sizeof(char *) * widths_and_flags.dir_amount + 1);
@@ -195,8 +200,9 @@ int main(int argc, char **argv)
 		else
 			choose_output_format(head, &widths_and_flags, paths.dir_paths);
 		free_lst(head);
-		++paths.open_dir;
+		widths_and_flags.flags |= PRINT_DIR_NAME;
 		++paths.arg_paths;
+		++paths.open_dir;
 	}
 	return (0);
 }

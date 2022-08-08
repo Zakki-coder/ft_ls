@@ -6,7 +6,7 @@
 /*   By: jniemine <jniemine@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/03 12:49:40 by jniemine          #+#    #+#             */
-/*   Updated: 2022/08/06 15:04:11 by jniemine         ###   ########.fr       */
+/*   Updated: 2022/08/07 20:34:46 by jniemine         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,9 +36,9 @@ t_dir *search_file_pointer(char *path, char *filename)
 	DIR		*dirp;
 	t_dir	*filep;
 
-	dirp = open_directory(path);
 	filep = NULL;
-	if (dirp)
+	dirp = NULL;
+	if (open_directory(path, &dirp) == 1)
 		filep = read_stream(dirp);
 	else
 		error_exit();
@@ -105,7 +105,7 @@ void create_filepointer(char **file_names, int k, t_width *widths)
 	int i;
 
 	filepointers = (t_dir **)ft_memalloc(sizeof(*filepointers) * k + 1);
-	root_paths = (char **)ft_memalloc(sizeof(*root_paths) * k);
+	root_paths = (char **)ft_memalloc(sizeof(*root_paths) * k + 1);
 	i = 0;
 	while(file_names[i] && i < k)
 	{
@@ -135,12 +135,16 @@ void sort_arguments(int argc, char **argv, t_width *widths, t_paths paths)
 	i = 0;
 	j = 0;
 	k = 0;
-//	paths.open_dir = (DIR **)ft_memalloc(sizeof(DIR *) * argc + 1);
+	if (!*argv && open_directory(".", paths.open_dir) == 1)
+	{
+		*paths.arg_paths = ".";
+		return ;
+	}
 	file_names = (char **)ft_memalloc(sizeof(*file_names) * argc);
 	while (i < argc)
 	{
-		dirp = open_directory(argv[i]);
-		if (dirp)
+		dirp = NULL;
+		if (open_directory(argv[i], &dirp) == 1)
 		{
 			paths.arg_paths[j] = argv[i];
 			paths.open_dir[j++] = dirp;
@@ -149,7 +153,6 @@ void sort_arguments(int argc, char **argv, t_width *widths, t_paths paths)
 			file_names[k++] = argv[i];
 		++i;
 	}
-	//Sort array, files first. Directories last. Everything in lexicographical
 	if (*file_names)
 		create_filepointer(file_names, k, widths);
 }

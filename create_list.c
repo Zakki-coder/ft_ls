@@ -6,7 +6,7 @@
 /*   By: jniemine <jniemine@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/22 14:44:27 by jniemine          #+#    #+#             */
-/*   Updated: 2022/08/06 18:27:07 by jniemine         ###   ########.fr       */
+/*   Updated: 2022/08/08 10:54:09 by jniemine         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -81,14 +81,14 @@ void recursive_traverse(char **paths, int i, t_width *widths_flags)
 	t_width widths;
 	DIR *dirp;
 
+	dirp = NULL;
 	ft_bzero((void *)&widths, sizeof(t_width));
 	widths.flags = widths_flags->flags;
 	if (paths == NULL || *paths == NULL || **paths == '\0')
 		return ;
-	dirp = open_directory(*paths);
 //	if (!dirp && errno == ENOENT)
 	//	recursive_traverse(++paths, ++i, &widths); //Does this work?
-	if (!dirp)
+	if (open_directory(*paths, &dirp) < 0)
 		error_exit();
 	head = create_list(dirp, *paths, &widths);
 	dir_paths = (char **)ft_memalloc(sizeof(char *) * (widths.dir_amount + 1));
@@ -154,8 +154,6 @@ t_dir *read_stream(DIR *dirp)
 	filep = readdir(dirp);	
 	if (!filep && errno > 0)
 		error_exit();
-//	while (filep && !(flags & ALL) && filep->d_name[0] == '.')
-//		filep = readdir(dirp);
 	return (filep);
 }
 
@@ -202,7 +200,7 @@ t_file_node *create_list(DIR *dirp, char *path, t_width *widths)
 	head = create_node();
 //	head->is_head = 1;
 	lst_start = head;
-	while (filep)
+	while (filep && dirp)
 	{
 		if (wind_over_hidden(dirp, &filep, widths->flags))
 			break ;
