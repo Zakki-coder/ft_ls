@@ -6,7 +6,7 @@
 /*   By: jniemine <jniemine@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/29 17:59:01 by jniemine          #+#    #+#             */
-/*   Updated: 2022/08/08 10:56:47 by jniemine         ###   ########.fr       */
+/*   Updated: 2022/08/09 15:15:35 by jniemine         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -155,12 +155,13 @@ int open_directory(char *path, DIR **dst)
 		errno = 0;
 		return (-1);
 	}
-	if (!*dst && errno != ENOENT)
+	if (!*dst && errno != ENOENT && errno != ENAMETOOLONG)
 		error_exit();
 	else if(!*dst)
 	{
+		ft_printf("ft_ls: %s: %s\n", path, strerror(errno));
 		errno = 0;
-		ft_printf("ft_ls: %s: %s", path, strerror(errno));
+		return (0);
 	}
 	return (1);
 }
@@ -171,8 +172,6 @@ int main(int argc, char **argv)
 	int i;
 	t_file_node *head;
 	t_paths		paths;
-//	DIR **dirp;
-//	char **dir_paths;
 
 	i = 0;
 	ft_bzero((void *)&paths, sizeof(t_paths));
@@ -190,6 +189,7 @@ int main(int argc, char **argv)
 	while (*paths.arg_paths)
 	{
 		head = create_list(*paths.open_dir, *paths.arg_paths, &widths_and_flags);
+		printf("PAATH: %s\n", *paths.arg_paths);
 		paths.dir_paths = (char **)ft_memalloc(sizeof(char *) * widths_and_flags.dir_amount + 1);
 		if (widths_and_flags.flags & RECURSIVE)
 		{

@@ -6,7 +6,7 @@
 /*   By: jniemine <jniemine@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/22 14:44:27 by jniemine          #+#    #+#             */
-/*   Updated: 2022/08/08 10:54:09 by jniemine         ###   ########.fr       */
+/*   Updated: 2022/08/09 15:22:35 by jniemine         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -76,12 +76,13 @@ void debugger(char **paths)
 
 void recursive_traverse(char **paths, int i, t_width *widths_flags)
 {
-	char **dir_paths;
-	t_file_node *head;
-	t_width widths;
-	DIR *dirp;
+	char		**dir_paths;
+	t_file_node	*head;
+	t_width		widths;
+	DIR			*dirp;
 
 	dirp = NULL;
+	head = NULL;
 	ft_bzero((void *)&widths, sizeof(t_width));
 	widths.flags = widths_flags->flags;
 	if (paths == NULL || *paths == NULL || **paths == '\0')
@@ -91,6 +92,9 @@ void recursive_traverse(char **paths, int i, t_width *widths_flags)
 	if (open_directory(*paths, &dirp) < 0)
 		error_exit();
 	head = create_list(dirp, *paths, &widths);
+	if (!(head->path))
+		return ;
+	widths.flags |= PRINT_DIR_NAME;
 	dir_paths = (char **)ft_memalloc(sizeof(char *) * (widths.dir_amount + 1));
 	if (!dir_paths || closedir(dirp) < 0)
 		error_exit();
@@ -118,17 +122,19 @@ void handle_path(char *root_path, t_file_node *head, t_dir *dirp)
 	len = ft_strlen(root_path) + ft_strlen(dirp->d_name) + 2; //+2 for null and ?slash?
 	head->path = ft_memalloc(len);
 	head->dir_path = ft_memalloc(ft_strlen(root_path) + 1);
-	ft_strcpy(head->dir_path, root_path);
-	if (!head->path)
+	if (!head->path || !head->dir_path)
 		error_exit();
-	if (ft_strcmp(root_path, ".") != 0)
+	ft_strcpy(head->dir_path, root_path);
+//	if (ft_strcmp(root_path, ".") != 0)
 		ft_strcat(head->path, root_path);
-	if (ft_strcmp(dirp->d_name, ".") != 0/* && ft_strcmp(dirp->d_name, "..") != 0*/)
-	{
-		if (ft_strcmp(root_path, ".") != 0 && root_path[ft_strlen(root_path) - 1] != '/')
+//	if (ft_strcmp(dirp->d_name, ".") != 0/* && ft_strcmp(dirp->d_name, "..") != 0*/)
+//	{
+		if (/*ft_strcmp(root_path, ".") != 0 &&*/ root_path[ft_strlen(root_path) - 1] != '/')
 			ft_strcat(head->path, "/");
 		ft_strcat(head->path, dirp->d_name);
-	}
+//	}
+//	else
+//		ft_strcat(head->path, ".");
 }
 
 void get_t_dir_info(t_dir *filep, t_file_node *node)
@@ -140,9 +146,10 @@ void get_t_dir_info(t_dir *filep, t_file_node *node)
 	ft_strcpy(node->file_name, filep->d_name);
 }
 
+/* Changed this to use only lstat */
 void get_stat_info(t_file_node *node)
 {
-	if (stat(node->path, &node->stat) < 0 || lstat(node->path, &node->lstat) < 0)
+	if (lstat(node->path, &node->stat) < 0 || lstat(node->path, &node->lstat) < 0)
 		error_exit();
 }
 
@@ -198,7 +205,6 @@ t_file_node *create_list(DIR *dirp, char *path, t_width *widths)
 	if (!filep)
 		return (NULL);
 	head = create_node();
-//	head->is_head = 1;
 	lst_start = head;
 	while (filep && dirp)
 	{
@@ -207,18 +213,9 @@ t_file_node *create_list(DIR *dirp, char *path, t_width *widths)
 		get_t_dir_info(filep, head);
 		handle_path(path, head, filep);
 		get_stat_info(head);
-//		if (filep->d_type & DT_DIR)
-//			widths->dir_amount++;
 		head->type = filep->d_type;
 		update_widths(head, widths);
-//		if (widths->longest_filename < ft_strlen(head->file_name))
-//			widths->longest_filename = ft_strlen(head->file_name);
-//		if (widths->link_col < nb_len(head->stat.st_nlink))	
-//			widths->link_col = nb_len(head->stat.st_nlink);
-//		if (widths->size_col < nb_len(head->stat.st_size))	
-//			widths->size_col = nb_len(head->stat.st_size);
-//		widths->total_size += head->stat.st_blocks;
-		//Do i need to free the list if it fails?
+		///Do i need to free the list if it fails?
 		filep = read_stream(dirp);
 		if (filep)
 		{

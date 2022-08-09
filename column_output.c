@@ -6,7 +6,7 @@
 /*   By: jniemine <jniemine@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/12 00:13:14 by jniemine          #+#    #+#             */
-/*   Updated: 2022/08/07 20:07:00 by jniemine         ###   ########.fr       */
+/*   Updated: 2022/08/09 14:07:03 by jniemine         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,17 +14,21 @@
 
 static int count_tab_n(int longest_filename, int *word_width)
 {
-	const	int tab_stop = 8;
-	int		tab_stop_n;
+	const int	tab_stop = 8;
+	int			tab_stop_n;
 
-	tab_stop_n = 0;
+	tab_stop_n = 1;
+	/*
 	while (longest_filename)
 	{
 		longest_filename /= tab_stop;
+		printf("longest: %d\n", longest_filename);
 		++tab_stop_n;
 	}
+	*/	
+	tab_stop_n = longest_filename / tab_stop;
 	*word_width = tab_stop_n * tab_stop;
-	if (longest_filename % tab_stop == 0)
+	if (*word_width % tab_stop == 0)
 		*word_width += tab_stop;
 	return (*word_width);
 }

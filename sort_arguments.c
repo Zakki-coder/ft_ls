@@ -6,7 +6,7 @@
 /*   By: jniemine <jniemine@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/03 12:49:40 by jniemine          #+#    #+#             */
-/*   Updated: 2022/08/07 20:34:46 by jniemine         ###   ########.fr       */
+/*   Updated: 2022/08/09 15:13:28 by jniemine         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,8 +40,8 @@ t_dir *search_file_pointer(char *path, char *filename)
 	dirp = NULL;
 	if (open_directory(path, &dirp) == 1)
 		filep = read_stream(dirp);
-	else
-		error_exit();
+//	else
+//		error_exit();
 	while (filep)
 	{
 		if (ft_strcmp(filep->d_name, filename) == 0)
@@ -118,6 +118,7 @@ void create_filepointer(char **file_names, int k, t_width *widths)
 	}
 	free(file_names);
 	create_file_list(filepointers, widths, root_paths);
+	widths->flags |= PRINT_DIR_NAME;
 }
 
 /* 	Open all arguments, put them in array.
@@ -126,32 +127,33 @@ void create_filepointer(char **file_names, int k, t_width *widths)
 
 void sort_arguments(int argc, char **argv, t_width *widths, t_paths paths)
 {
-	int		i;
 	int		j;
 	int		k;
+	int		open_dir_ret;
 	char	**file_names;
 	DIR		*dirp;
 	
-	i = 0;
 	j = 0;
 	k = 0;
+	open_dir_ret = 0;
 	if (!*argv && open_directory(".", paths.open_dir) == 1)
 	{
 		*paths.arg_paths = ".";
 		return ;
 	}
 	file_names = (char **)ft_memalloc(sizeof(*file_names) * argc);
-	while (i < argc)
+	while (*argv)
 	{
 		dirp = NULL;
-		if (open_directory(argv[i], &dirp) == 1)
+		open_dir_ret = open_directory(*argv, &dirp);
+		if (open_dir_ret == 1)
 		{
-			paths.arg_paths[j] = argv[i];
+			paths.arg_paths[j] = *argv;
 			paths.open_dir[j++] = dirp;
 		}
-		if (!dirp)
-			file_names[k++] = argv[i];
-		++i;
+		if (!dirp && open_dir_ret == -1)
+			file_names[k++] = *argv;
+		++argv;
 	}
 	if (*file_names)
 		create_filepointer(file_names, k, widths);
