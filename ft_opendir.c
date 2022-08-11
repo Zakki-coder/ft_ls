@@ -6,7 +6,7 @@
 /*   By: jniemine <jniemine@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/29 17:59:01 by jniemine          #+#    #+#             */
-/*   Updated: 2022/08/09 15:15:35 by jniemine         ###   ########.fr       */
+/*   Updated: 2022/08/10 21:20:10 by jniemine         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,12 +37,41 @@ void get_file_type(t_file_node *node, char *permissions)
 		permissions[0] = 'p';
 }
 
+void get_extended_permissions(t_file_node *head, char *permissions)
+{
+	ssize_t	size;
+	acl_t	acl;
+	void	*value;
+	
+	/* acl_get_link_np doesnt follow slink like acl_get_file */
+	size = listxattr(head->path, NULL, 0, XATTR_NOFOLLOW);
+	head->ext_attr_len = size;
+	acl = acl_get_link_np(head->path, ACL_TYPE_EXTENDED);
+	value = ft_memalloc(size);
+	if (size > 0)
+	{
+		permissions[10] = '@';
+		head->ext_attr = (char *)ft_memalloc(size + 1);
+		size = listxattr(head->path, head->ext_attr, size, 0);
+		head->ext_attr_p_len = getxattr(head->path, head->ext_attr, NULL, 0, 0, XATTR_NOFOLLOW);
+		head->ext_attr_p_len = getxattr(head->path, head->ext_attr + ft_strlen(head->ext_attr) + 1, value, size, 0, XATTR_NOFOLLOW);
+	}
+	else if(acl)
+	{
+		head->acl = acl;
+		permissions[10] = '+';
+	}
+	else
+		permissions[10] = ' ';
+}
+
 void print_permissions(unsigned int st_mode, t_file_node *node)
 {
-	char permissions[11];
+	char permissions[12];
 
+	/*listxatrr and getxattr */
 	ft_memset(permissions, '-', 10);
-	permissions[10] = '\0';
+	permissions[11] = '\0';
 	get_file_type(node, permissions);
 	if (st_mode & S_IRUSR)
 		permissions[1] = 'r';
@@ -62,6 +91,7 @@ void print_permissions(unsigned int st_mode, t_file_node *node)
 		permissions[8] = 'w';
 	if (st_mode & S_IXOTH)
 		permissions[9] = 'x';
+	get_extended_permissions(node, permissions);
 	ft_printf("%-10s", permissions);
 }
 
@@ -80,11 +110,14 @@ void print_time(t_file_node *node)
 	timep = ctime(&node->stat.st_mtimespec.tv_sec);
 	if (!timep)
 		error_exit();
-	timep += 8;
-	ft_strncpy(output, timep, 3);
-	timep -= 4;
-	ft_strncat(output, timep, 4);
-	timep += 7;
+	timep += 4;
+	ft_strncpy(output, timep, 4);
+//	timep += 8;
+	timep += 4;
+	ft_strncat(output, timep, 3);
+//	timep -= 4;
+//	ft_strncat(output, timep, 4);
+	timep += 3;
 	time_difference = current_time - node->stat.st_mtimespec.tv_sec;
 	if (time_difference > (2629743 * 6) || (-1 * time_difference) > (2629743 * 6))
 	{
@@ -110,6 +143,53 @@ unsigned int nb_len(long long nb)
 	return (len);
 }
 
+void print_extended_attributes(t_file_node *head, int flags)
+{
+	int			i;
+	int			tab_n;
+	int			print_len;
+	acl_entry_t	entryp;
+	acl_permset_t permsetp;
+	acl_tag_t	*tag_type;
+	ssize_t		len;
+//	void		*acl_qualifier;
+
+	i = 0;
+//	acl_qualifier = NULL;
+	tag_type = ft_memalloc(sizeof(*tag_type));
+	if(flags & EXT_ATTR && head->ext_attr)
+	{
+		while(i < head->ext_attr_len)	
+		{
+			print_len = getxattr(head->path, head->ext_attr + i, NULL, 0, 0, XATTR_NOFOLLOW);
+			tab_n = ft_strlen(head->ext_attr + i) / 8;
+			ft_printf("\t%s", head->ext_attr + i);
+			ft_printf("%*ld\n", 13 + tab_n * 8 - ft_strlen(head->ext_attr + i), print_len);
+			i += ft_strlen(head->ext_attr + i) + 1;
+		}
+	}
+	else if(flags & ACL && head->acl)
+	{
+		if (acl_get_entry(head->acl, ACL_FIRST_ENTRY, &entryp) < 0)
+			error_exit();
+		while(entryp) 
+		{
+			if(acl_get_permset(entryp, &permsetp) < 0)
+				error_exit();
+			if(acl_get_tag_type(entryp,	tag_type) < 0)
+				error_exit();
+			printf("ACL: %s\n", acl_to_text(head->acl, &len));	
+		//	acl_qualifier = acl_get_qualifier(entryp);
+			if(acl_get_entry(head->acl, ++i, &entryp) <= 0)
+				break ;
+		}
+	}
+	/*
+		acl_tag_t		ae_tag;
+		uid_t			ae_id;
+		acl_perm_t		ae_perm;
+	*/
+}
 // Changed all stat to lstat, so that links are not followed
 void print_stat(t_file_node *node, t_width *widths, char **dir_paths, int *i)
 {
@@ -127,7 +207,7 @@ void print_stat(t_file_node *node, t_width *widths, char **dir_paths, int *i)
 	if (node->is_head)
 		ft_printf("total %llu\n", widths->total_size);
 	print_permissions(node->lstat.st_mode, node);
-	ft_printf("%*u", widths->link_col + 2, node->lstat.st_nlink);
+	ft_printf("%*u", widths->link_col + 1, node->lstat.st_nlink);
 	ft_printf(" %-*s", (int)ft_strlen(pw->pw_name) + 2, pw->pw_name);
 	ft_printf("%s", grp->gr_name);
 	ft_printf("%*d ", widths->size_col + 2, node->lstat.st_size);
@@ -138,6 +218,7 @@ void print_stat(t_file_node *node, t_width *widths, char **dir_paths, int *i)
 		ft_printf("%s\n", node->file_name);
 	else
 		ft_printf("%s\n", node->path);
+	print_extended_attributes(node, widths->flags);
 	if (dir_paths && node->type & DT_DIR && ft_strcmp(name, ".") != 0 && ft_strcmp(name, "..") != 0)
 		dir_paths[(*i)++] = node->path;
 }
@@ -179,21 +260,14 @@ int main(int argc, char **argv)
 	//TODO Free all this shit
 	paths.open_dir = (DIR **)ft_memalloc(sizeof(DIR *) * argc + 1);
 	paths.arg_paths = (char **)ft_memalloc(sizeof(char *) * argc + 1);
-	//TODO: Protect opendir, but first put it inside loop.
-	//TODO: Remember closedir also.
-	//TODO: Readdir can return for multiple reasons, use errno to decide if exit is needed
-	//TODO: If R flag, then we need to connect previous tail to next head.
-	//TODO: You must call create list once for the starting direcotry for recursion, to get the width. 
 	i = ls_get_flags(argc, argv, &widths_and_flags.flags);
 	sort_arguments(argc - i, &argv[i], &widths_and_flags, paths);
 	while (*paths.arg_paths)
 	{
 		head = create_list(*paths.open_dir, *paths.arg_paths, &widths_and_flags);
-		printf("PAATH: %s\n", *paths.arg_paths);
 		paths.dir_paths = (char **)ft_memalloc(sizeof(char *) * widths_and_flags.dir_amount + 1);
 		if (widths_and_flags.flags & RECURSIVE)
 		{
-	//		print_loop(head, widths_and_flags, dir_paths);
 			choose_output_format(head, &widths_and_flags, paths.dir_paths);
 			recursive_traverse(paths.dir_paths, i, &widths_and_flags);
 		}	
@@ -202,7 +276,10 @@ int main(int argc, char **argv)
 		free_lst(head);
 		widths_and_flags.flags |= PRINT_DIR_NAME;
 		++paths.arg_paths;
+		closedir(*paths.open_dir);
+		free(*paths.arg_paths);
 		++paths.open_dir;
 	}
+	/* Free paths.arg_paths and open_dir */
 	return (0);
 }

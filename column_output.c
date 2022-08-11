@@ -6,7 +6,7 @@
 /*   By: jniemine <jniemine@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/12 00:13:14 by jniemine          #+#    #+#             */
-/*   Updated: 2022/08/09 14:07:03 by jniemine         ###   ########.fr       */
+/*   Updated: 2022/08/09 17:13:17 by jniemine         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -96,9 +96,13 @@ void print_columns(t_file_node *head, t_width *widths, char **dir_paths)
 	int		rows;
 	int		word_width;
 
-    ioctl(STDOUT_FILENO, TIOCGWINSZ, &w);
+    if(ioctl(STDOUT_FILENO, TIOCGWINSZ, &w) < 0)
+		error_exit();
 	widths->window_size = w;
-	words_in_line_n = (w.ws_col) / count_tab_n(widths->longest_filename, &word_width);
+	if (widths->flags & ONE_COLUMN)
+		words_in_line_n = 1;
+	else
+		words_in_line_n = (w.ws_col) / count_tab_n(widths->longest_filename, &word_width);
 	rows = count_rows(widths->file_amount, words_in_line_n);
 	make_columns(head, rows, word_width, dir_paths);
 	/*

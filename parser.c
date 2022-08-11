@@ -6,7 +6,7 @@
 /*   By: jniemine <jniemine@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/29 17:58:51 by jniemine          #+#    #+#             */
-/*   Updated: 2022/07/12 00:27:52 by jniemine         ###   ########.fr       */
+/*   Updated: 2022/08/10 15:32:33 by jniemine         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,6 +30,12 @@ void set_flags(char c, unsigned int *flags)
 		*flags |= ALL; 
 	else if(c == 't')
 		*flags |= TIME_ORDER; 
+	else if(c == '1')
+		*flags |= ONE_COLUMN;
+	else if(c == '@')
+		*flags |= EXT_ATTR;
+	else if(c == 'e')
+		*flags |= ACL;
 	else
 	{
 		ft_printf("ft_ls: illegal option -- %c\n", c);

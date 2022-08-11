@@ -15,16 +15,21 @@
 #include <uuid/uuid.h>
 #include <time.h>
 #include <sys/ioctl.h>
+#include <sys/xattr.h>
+#include <sys/acl.h>
 
 #include "../libft/libft.h"
 #include "../libft/ft_printf/includes/ft_printf.h"
 
+#define EXT_ATTR		1
 #define LONG_LST		2
 #define RECURSIVE		4
 #define REVERSE_ORDER	8 
 #define ALL				16
 #define TIME_ORDER		32
 #define	PRINT_DIR_NAME	64
+#define ONE_COLUMN		128
+#define ACL				256
 
 #define ALLOWED_OPTIONS "-lRrat"
 #define ALLOWED_SORTS	"rt"
@@ -62,6 +67,10 @@ struct s_file_node
 	t_stat			lstat;
 	int				namelen;
 	unsigned int	type;
+	acl_t			acl;
+	ssize_t			ext_attr_len;
+	ssize_t			ext_attr_p_len;
+	char			*ext_attr;
 	char			*dir_path;
 	char			*path;
 	t_file_node 	*next;

@@ -1,9 +1,10 @@
-which sorting to choose when multiple are given?
-Total seems to be wrong on long list
+Remember to free ext_attrb from head remember to free acl with free_acl()
 
-In the long list format dates are in FINNISH, should be in ENGLISH
-
-Columns between words should always be atleast one tab, now it's buggy
+If the file or directory has extended
+     attributes, the permissions field printed by the -l option is followed by
+     a '@' character.  Otherwise, if the file or directory has extended secu-
+     rity information (such as an access control list), the permissions field
+     printed by the -l option is followed by a '+' character.
 
 Get Extended atrributes in long format (like @ symbol)
 

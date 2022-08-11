@@ -11,3 +11,7 @@ make re; ./ft_ls
 #Test extended attributes (@ symbol for example, at long list)
 #When long list, if over six months old, show only year
 #Also when long list six months newer shows only year
+#+ and @ in long list
+#Test memleaks with -R and without, with only files and with files and directories.
+#Test leaks with nonexistent files and existing mixed also
+#Test extended attributes and @ flag
