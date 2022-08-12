@@ -6,7 +6,7 @@
 /*   By: jniemine <jniemine@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/12 00:13:14 by jniemine          #+#    #+#             */
-/*   Updated: 2022/08/09 17:13:17 by jniemine         ###   ########.fr       */
+/*   Updated: 2022/08/12 13:08:40 by jniemine         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -96,8 +96,14 @@ void print_columns(t_file_node *head, t_width *widths, char **dir_paths)
 	int		rows;
 	int		word_width;
 
+	word_width = 0;
     if(ioctl(STDOUT_FILENO, TIOCGWINSZ, &w) < 0)
-		error_exit();
+	{
+		if (isatty(STDOUT_FILENO) == 0)
+			widths->flags |= ONE_COLUMN;
+		else
+			error_exit();
+	}
 	widths->window_size = w;
 	if (widths->flags & ONE_COLUMN)
 		words_in_line_n = 1;

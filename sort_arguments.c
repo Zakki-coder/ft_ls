@@ -6,7 +6,7 @@
 /*   By: jniemine <jniemine@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/03 12:49:40 by jniemine          #+#    #+#             */
-/*   Updated: 2022/08/09 15:13:28 by jniemine         ###   ########.fr       */
+/*   Updated: 2022/08/12 14:35:11 by jniemine         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -70,7 +70,7 @@ void create_file_list(t_dir **filepointers, t_width *widths, char **root_paths)
 
 	head = create_node();
 	lst_start = head;
-	while(*filepointers)
+	while(*filepointers != NULL)
 	{
 		filep = *filepointers;
 		get_t_dir_info(filep, head);
@@ -79,7 +79,7 @@ void create_file_list(t_dir **filepointers, t_width *widths, char **root_paths)
 		head->type = filep->d_type;
 		update_widths(head, widths);
 		widths->is_file = 1;
-		if (*(++filepointers))
+		if (*(++filepointers) != NULL)
 		{
 			head->next = create_node();
 			head = head->next;
@@ -106,6 +106,8 @@ void create_filepointer(char **file_names, int k, t_width *widths)
 
 	filepointers = (t_dir **)ft_memalloc(sizeof(*filepointers) * k + 1);
 	root_paths = (char **)ft_memalloc(sizeof(*root_paths) * k + 1);
+	filepointers[k] = NULL;
+	root_paths[k] = NULL;
 	i = 0;
 	while(file_names[i] && i < k)
 	{
@@ -121,10 +123,34 @@ void create_filepointer(char **file_names, int k, t_width *widths)
 	widths->flags |= PRINT_DIR_NAME;
 }
 
+char **sort_argv(char **argv)
+{
+	char	*temp;
+	int		swap_flag;
+	int		i;
+	
+	swap_flag = 1;
+	while(swap_flag)
+	{
+		i = 0;
+		swap_flag = 0;
+		while(argv[i] != NULL)
+		{
+			if (argv[i + 1] != NULL && ft_strcmp(argv[i], argv[i + 1]) > 0)
+			{
+				temp = argv[i];
+				argv[i] = argv[i + 1];
+				argv[i + 1] = temp;
+				swap_flag = 1;
+			}
+			++i;
+		}
+	}
+	return (&argv[0]);
+}
 /* 	Open all arguments, put them in array.
 	Sort array with files first and directories last.
 	Everything in lexicographical order */
-
 void sort_arguments(int argc, char **argv, t_width *widths, t_paths paths)
 {
 	int		j;
@@ -141,8 +167,10 @@ void sort_arguments(int argc, char **argv, t_width *widths, t_paths paths)
 		*paths.arg_paths = ".";
 		return ;
 	}
-	file_names = (char **)ft_memalloc(sizeof(*file_names) * argc);
-	while (*argv)
+	argv = sort_argv(argv);
+	file_names = (char **)ft_memalloc(sizeof(*file_names) * argc + 1);
+	file_names[argc] = NULL;
+	while (*argv != NULL)
 	{
 		dirp = NULL;
 		open_dir_ret = open_directory(*argv, &dirp);
@@ -153,6 +181,8 @@ void sort_arguments(int argc, char **argv, t_width *widths, t_paths paths)
 		}
 		if (!dirp && open_dir_ret == -1)
 			file_names[k++] = *argv;
+		if (open_dir_ret == 0)
+			widths->flags |= PRINT_DIR_NAME;
 		++argv;
 	}
 	if (*file_names)

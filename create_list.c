@@ -6,7 +6,7 @@
 /*   By: jniemine <jniemine@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/22 14:44:27 by jniemine          #+#    #+#             */
-/*   Updated: 2022/08/09 15:22:35 by jniemine         ###   ########.fr       */
+/*   Updated: 2022/08/12 13:37:26 by jniemine         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -83,10 +83,12 @@ void recursive_traverse(char **paths, int i, t_width *widths_flags)
 
 	dirp = NULL;
 	head = NULL;
+	errno = 0;
 	ft_bzero((void *)&widths, sizeof(t_width));
 	widths.flags = widths_flags->flags;
 	if (paths == NULL || *paths == NULL || **paths == '\0')
 		return ;
+	ft_printf("\n");
 //	if (!dirp && errno == ENOENT)
 	//	recursive_traverse(++paths, ++i, &widths); //Does this work?
 	if (open_directory(*paths, &dirp) < 0)
@@ -96,19 +98,16 @@ void recursive_traverse(char **paths, int i, t_width *widths_flags)
 		return ;
 	widths.flags |= PRINT_DIR_NAME;
 	dir_paths = (char **)ft_memalloc(sizeof(char *) * (widths.dir_amount + 1));
+	dir_paths[widths.dir_amount] = NULL;
 	if (!dir_paths || closedir(dirp) < 0)
 		error_exit();
 	//TODO: Printer function to choose betweeen long and column
 //	print_loop(head, widths, dir_paths);
 	choose_output_format(head, &widths, dir_paths);
-	if (dir_paths && *dir_paths)
-	{
+	if (dir_paths != NULL && *dir_paths != NULL)
 		recursive_traverse(dir_paths++, ++i, &widths);
-	}
-	if (paths && *paths)	
-	{
+	if (paths != NULL && *paths != NULL)	
 		recursive_traverse(++paths, ++i, &widths);
-	}
 	free_lst(head);
 	//TODO: Widths are not universal. Every list needs its own widths.
 	//TOTHINK: Should i do the whole linked list before printing?
@@ -206,7 +205,7 @@ t_file_node *create_list(DIR *dirp, char *path, t_width *widths)
 		return (NULL);
 	head = create_node();
 	lst_start = head;
-	while (filep && dirp)
+	while (filep != NULL && dirp != NULL)
 	{
 		if (wind_over_hidden(dirp, &filep, widths->flags))
 			break ;
@@ -217,7 +216,7 @@ t_file_node *create_list(DIR *dirp, char *path, t_width *widths)
 		update_widths(head, widths);
 		///Do i need to free the list if it fails?
 		filep = read_stream(dirp);
-		if (filep)
+		if (filep != NULL)
 		{
 			head->next = create_node();
 			head = head->next;

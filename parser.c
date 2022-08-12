@@ -6,7 +6,7 @@
 /*   By: jniemine <jniemine@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/29 17:58:51 by jniemine          #+#    #+#             */
-/*   Updated: 2022/08/10 15:32:33 by jniemine         ###   ########.fr       */
+/*   Updated: 2022/08/11 17:41:09 by jniemine         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,7 @@ void print_usage(void)
 	exit (-1);
 }
 
-void set_flags(char c, unsigned int *flags)
+int set_flags(char c, unsigned int *flags)
 {
 	if(c == 'l')
 		*flags |= LONG_LST;
@@ -36,11 +36,14 @@ void set_flags(char c, unsigned int *flags)
 		*flags |= EXT_ATTR;
 	else if(c == 'e')
 		*flags |= ACL;
+	else if(c == '-')
+		return -1;
 	else
 	{
 		ft_printf("ft_ls: illegal option -- %c\n", c);
 		print_usage();
 	}
+	return (1);
 }
 
 //TODO Print illegal option and usage if illegal option.
@@ -54,7 +57,11 @@ int ls_get_flags(int argc, char **argv, unsigned int *flags)
 	while(i < argc && argv[i][0] == '-')
 	{
 		while (argv[i][++k])
-			set_flags(argv[i][k], flags);
+			if(set_flags(argv[i][k], flags) < 0)
+			{
+				*flags |= PRINT_DIR_NAME;
+				return (++i);
+			}
 		++i;
 	}
 	return (i);
