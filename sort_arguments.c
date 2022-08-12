@@ -6,7 +6,7 @@
 /*   By: jniemine <jniemine@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/03 12:49:40 by jniemine          #+#    #+#             */
-/*   Updated: 2022/08/12 14:35:11 by jniemine         ###   ########.fr       */
+/*   Updated: 2022/08/12 16:45:39 by jniemine         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -77,6 +77,7 @@ void create_file_list(t_dir **filepointers, t_width *widths, char **root_paths)
 		handle_path(*root_paths++, head, filep);
 		get_stat_info(head);
 		head->type = filep->d_type;
+		head->flags = widths->flags;
 		update_widths(head, widths);
 		widths->is_file = 1;
 		if (*(++filepointers) != NULL)

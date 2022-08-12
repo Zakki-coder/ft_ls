@@ -6,7 +6,7 @@
 /*   By: jniemine <jniemine@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/12 00:13:14 by jniemine          #+#    #+#             */
-/*   Updated: 2022/08/12 13:08:40 by jniemine         ###   ########.fr       */
+/*   Updated: 2022/08/12 16:57:22 by jniemine         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,21 +46,22 @@ void ft_lstappend(t_list *alst, t_list *new)
 void make_columns(t_file_node *head, int rows, int word_width, char **dir_paths)
 {
 	t_list		**columns;
-//	int			word_count;
-//	t_file_node *head_start;
 	int			i;
 	int			j;
 
-//	word_count = 0;
 	i = 0;
 	j = 0;
-//	head_start = head;
 	columns = (t_list **)ft_memalloc(sizeof(t_list *) * (rows + 1));
 	/* First get directories */
 	while (head)
 	{
-		ft_lstappend(columns[i % rows], ft_lstnew(head->file_name, ft_strlen(head->file_name) + 1));
-		if (!columns[i % rows])
+		if (head->flags & ONE_COLUMN)
+			ft_lstappend(columns[i % rows], ft_lstnew(head->path, ft_strlen(head->path) + 1));
+		else
+			ft_lstappend(columns[i % rows], ft_lstnew(head->file_name, ft_strlen(head->file_name) + 1));
+		if (!columns[i % rows] && head->flags & ONE_COLUMN)
+			columns[i % rows] = ft_lstnew(head->path, ft_strlen(head->path) + 1);
+		else if (!columns[i % rows])
 			columns[i % rows] = ft_lstnew(head->file_name, ft_strlen(head->file_name) + 1);
 		++i;
 		if (dir_paths && head->type & DT_DIR && ft_strcmp(head->file_name, ".") != 0 && ft_strcmp(head->file_name, "..") != 0)

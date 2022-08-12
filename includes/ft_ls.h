@@ -67,6 +67,7 @@ struct s_file_node
 	t_stat			lstat;
 	int				namelen;
 	unsigned int	type;
+	unsigned int	flags;
 	acl_t			acl;
 	ssize_t			ext_attr_len;
 	ssize_t			ext_attr_p_len;
