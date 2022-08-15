@@ -15,3 +15,4 @@ make re; ./ft_ls
 #Test memleaks with -R and without, with only files and with files and directories.
 #Test leaks with nonexistent files and existing mixed also
 #Test extended attributes and @ flag
+#Check directory with 000 permissions

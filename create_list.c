@@ -6,7 +6,7 @@
 /*   By: jniemine <jniemine@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/22 14:44:27 by jniemine          #+#    #+#             */
-/*   Updated: 2022/08/12 16:57:42 by jniemine         ###   ########.fr       */
+/*   Updated: 2022/08/15 19:25:12 by jniemine         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -80,27 +80,30 @@ void recursive_traverse(char **paths, int i, t_width *widths_flags)
 	t_file_node	*head;
 	t_width		widths;
 	DIR			*dirp;
+	int			ret;
 
 	dirp = NULL;
 	head = NULL;
 	errno = 0;
 	ft_bzero((void *)&widths, sizeof(t_width));
 	widths.flags = widths_flags->flags;
-	if (paths == NULL || *paths == NULL || **paths == '\0')
+	if (paths == NULL || *paths == NULL)
 		return ;
-	ft_printf("\n");
-//	if (!dirp && errno == ENOENT)
-	//	recursive_traverse(++paths, ++i, &widths); //Does this work?
-	if (open_directory(*paths, &dirp) < 0)
+	ft_printf("\n%s:\n", *paths);
+	ret = open_directory(*paths, &dirp);
+	if (ret < 0)
 		error_exit();
+	else if (ret == 0)
+		recursive_traverse(++paths, ++i, &widths); //Does this work?
 	head = create_list(dirp, *paths, &widths);
-	if (!(head->path))
+	/* This checked for empty head earlier, but now empty head is returned if there is only hidden files which are skipped */
+	if (!widths.dir_path || (!head && !dirp))
 		return ;
-	widths.flags |= PRINT_DIR_NAME;
+//	widths.flags |= PRINT_DIR_NAME;
 	dir_paths = (char **)ft_memalloc(sizeof(char *) * (widths.dir_amount + 1));
-	dir_paths[widths.dir_amount] = NULL;
 	if (!dir_paths || closedir(dirp) < 0)
 		error_exit();
+	dir_paths[widths.dir_amount] = NULL;
 	//TODO: Printer function to choose betweeen long and column
 //	print_loop(head, widths, dir_paths);
 	choose_output_format(head, &widths, dir_paths);
@@ -138,6 +141,8 @@ void handle_path(char *root_path, t_file_node *head, t_dir *dirp)
 
 void get_t_dir_info(t_dir *filep, t_file_node *node)
 {
+	if (!filep)
+		return ;
 	node->dp = *filep;
 	node->file_name = (char *)ft_memalloc(sizeof(char) * filep->d_namlen + 1);
 	if (!node->file_name)
@@ -157,7 +162,9 @@ t_dir *read_stream(DIR *dirp)
 {
 	t_dir *filep;
 
-	filep = readdir(dirp);	
+	filep = NULL;
+	if (dirp)
+		filep = readdir(dirp);	
 	if (!filep && errno > 0)
 		error_exit();
 	return (filep);
@@ -175,6 +182,10 @@ void update_widths(t_file_node *head, t_width *widths)
 	if (widths->size_col < nb_len(head->stat.st_size))	
 		widths->size_col = nb_len(head->stat.st_size);
 	widths->total_size += head->stat.st_blocks;
+	widths->dir_path = ft_memalloc(ft_strlen(head->dir_path) + 1);
+	if (!widths->dir_path)
+		error_exit();
+	ft_strcpy(widths->dir_path, head->dir_path);
 }
 
 int wind_over_hidden(DIR *dirp, t_dir **filep, int flags)
@@ -207,8 +218,13 @@ t_file_node *create_list(DIR *dirp, char *path, t_width *widths)
 	lst_start = head;
 	while (filep != NULL && dirp != NULL)
 	{
-		if (wind_over_hidden(dirp, &filep, widths->flags))
-			break ;
+	//	if (wind_over_hidden(dirp, &filep, widths->flags))
+	//	{
+	//		head->file_name = path;
+	//		head->dir_path = path;
+	//		update_widths(head, widths);
+	//		return (lst_start);
+	//	}
 		get_t_dir_info(filep, head);
 		handle_path(path, head, filep);
 		get_stat_info(head);

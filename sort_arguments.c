@@ -6,7 +6,7 @@
 /*   By: jniemine <jniemine@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/03 12:49:40 by jniemine          #+#    #+#             */
-/*   Updated: 2022/08/12 16:45:39 by jniemine         ###   ########.fr       */
+/*   Updated: 2022/08/15 16:24:37 by jniemine         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -179,9 +179,14 @@ void sort_arguments(int argc, char **argv, t_width *widths, t_paths paths)
 		{
 			paths.arg_paths[j] = *argv;
 			paths.open_dir[j++] = dirp;
+			paths.arg_paths[j] = NULL;
+			paths.open_dir[j] = NULL;
 		}
 		if (!dirp && open_dir_ret == -1)
+		{
 			file_names[k++] = *argv;
+			file_names[k] = NULL;
+		}
 		if (open_dir_ret == 0)
 			widths->flags |= PRINT_DIR_NAME;
 		++argv;

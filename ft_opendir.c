@@ -6,7 +6,7 @@
 /*   By: jniemine <jniemine@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/29 17:59:01 by jniemine          #+#    #+#             */
-/*   Updated: 2022/08/12 13:26:39 by jniemine         ###   ########.fr       */
+/*   Updated: 2022/08/15 19:23:34 by jniemine         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -234,6 +234,7 @@ void print_stat(t_file_node *node, t_width *widths, char **dir_paths, int *i)
 int open_directory(char *path, DIR **dst)
 {
 	char *error;
+	char *tmp;
 
 	*dst = opendir(path);
 	if (!*dst && errno == ENOTDIR)
@@ -242,14 +243,22 @@ int open_directory(char *path, DIR **dst)
 		errno = 0;
 		return (-1);
 	}
-	if (!*dst && errno != ENOENT && errno != ENAMETOOLONG)
+	if (!*dst && errno != ENOENT && errno != ENAMETOOLONG && errno != EACCES)
+	{
 		error_exit();
+	}
 	else if(!*dst)
 	{
 		error = strerror(errno);
+		tmp = ft_strrchr(path, '/');
+//		write(STDERR_FILENO, path, ft_strlen(path));
+//		write(STDERR_FILENO, "\n", 1);
 		//Using write here is it allowed?
 		write(STDERR_FILENO, "ft_ls: ", 7);
-		write(STDERR_FILENO, path, ft_strlen(path));
+		if (!tmp)
+			write(STDERR_FILENO, path, ft_strlen(path));
+		else
+			write(STDERR_FILENO, tmp + 1, ft_strlen(tmp + 1));
 		write(STDERR_FILENO, ": ", 2);
 		write(STDERR_FILENO, error, ft_strlen(error));
 		write(STDERR_FILENO, "\n", 1);
@@ -294,7 +303,7 @@ int main(int argc, char **argv)
 			choose_output_format(head, &widths_and_flags, paths.dir_paths);
 		}
 //		free_lst(head);
-		widths_and_flags.flags |= PRINT_DIR_NAME;
+//		widths_and_flags.flags |= PRINT_DIR_NAME;
 		++paths.arg_paths;
 		++paths.open_dir;
 	//	closedir(*paths.open_dir);

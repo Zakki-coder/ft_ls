@@ -6,7 +6,7 @@
 /*   By: jniemine <jniemine@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/20 18:57:47 by jniemine          #+#    #+#             */
-/*   Updated: 2022/08/09 15:36:51 by jniemine         ###   ########.fr       */
+/*   Updated: 2022/08/12 18:19:30 jniemine         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -86,8 +86,16 @@ void lst_iter_loop(t_file_node **head, int flags, t_width *widths)
 
 t_file_node *sort(t_file_node **head, int flags, t_width *widths)
 {
-	//What if multiple sorting options are given?
-	lst_iter_loop(head, flags, widths);
-	(*head)->is_head = 1;
+	while (*head != NULL && !(widths->flags & ALL) && (*head)->file_name[0] == '.')
+	{
+		*head = (*head)->next;
+		if (*head)
+			(*head)->is_head = 1;
+	}
+	if (*head != NULL)
+	{
+		lst_iter_loop(head, flags, widths);
+		(*head)->is_head = 1;
+	}
 	return (*head);
 }

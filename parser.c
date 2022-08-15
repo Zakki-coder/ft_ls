@@ -6,7 +6,7 @@
 /*   By: jniemine <jniemine@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/29 17:58:51 by jniemine          #+#    #+#             */
-/*   Updated: 2022/08/11 17:41:09 by jniemine         ###   ########.fr       */
+/*   Updated: 2022/08/15 16:21:55 by jniemine         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,15 +53,17 @@ int ls_get_flags(int argc, char **argv, unsigned int *flags)
 	int		k;
 
 	i = 1;
-	k = 0;
 	while(i < argc && argv[i][0] == '-')
 	{
+		k = 0;
 		while (argv[i][++k])
+		{
 			if(set_flags(argv[i][k], flags) < 0)
 			{
 				*flags |= PRINT_DIR_NAME;
 				return (++i);
 			}
+		}
 		++i;
 	}
 	return (i);

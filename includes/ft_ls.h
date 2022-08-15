@@ -54,6 +54,7 @@ typedef struct s_width
 	unsigned int	dir_amount;
 	unsigned int	file_amount;
 	unsigned int	longest_filename;
+	char			*dir_path;
 	struct winsize	window_size;
 }	t_width;
 
