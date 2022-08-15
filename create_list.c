@@ -6,7 +6,7 @@
 /*   By: jniemine <jniemine@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/22 14:44:27 by jniemine          #+#    #+#             */
-/*   Updated: 2022/08/15 20:53:37 by jniemine         ###   ########.fr       */
+/*   Updated: 2022/08/15 23:01:40 by jniemine         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -106,7 +106,7 @@ void recursive_traverse(char **paths, int i, t_width *widths_flags)
 	dir_paths[widths.dir_amount] = NULL;
 	//TODO: Printer function to choose betweeen long and column
 //	print_loop(head, widths, dir_paths);
-	choose_output_format(head, &widths, dir_paths, 0);
+	choose_output_format(head, &widths, dir_paths);
 	if (dir_paths != NULL && *dir_paths != NULL)
 		recursive_traverse(dir_paths++, ++i, &widths);
 	if (paths != NULL && *paths != NULL)	
@@ -178,10 +178,10 @@ void update_widths(t_file_node *head, t_width *widths)
 		widths->dir_amount++;
 	if (widths->longest_filename < ft_strlen(head->file_name))
 		widths->longest_filename = ft_strlen(head->file_name);
-	if (widths->link_col < nb_len(head->stat.st_nlink))	
-		widths->link_col = nb_len(head->stat.st_nlink);
-	if (widths->size_col < nb_len(head->stat.st_size))	
-		widths->size_col = nb_len(head->stat.st_size);
+	if (widths->link_col < nb_len(head->lstat.st_nlink))	
+		widths->link_col = nb_len(head->lstat.st_nlink);
+	if (widths->size_col < nb_len(head->lstat.st_size))	
+		widths->size_col = nb_len(head->lstat.st_size);
 	widths->total_size += head->stat.st_blocks;
 	widths->dir_path = ft_memalloc(ft_strlen(head->dir_path) + 1);
 	if (!widths->dir_path)
@@ -219,13 +219,14 @@ t_file_node *create_list(DIR *dirp, char *path, t_width *widths)
 	lst_start = head;
 	while (filep != NULL && dirp != NULL)
 	{
-	//	if (wind_over_hidden(dirp, &filep, widths->flags))
-	//	{
+		if (wind_over_hidden(dirp, &filep, widths->flags))
+		{
 	//		head->file_name = path;
 	//		head->dir_path = path;
-	//		update_widths(head, widths);
-	//		return (lst_start);
-	//	}
+			widths->dir_path = ft_memalloc(ft_strlen(path) + 1);
+			ft_strcpy(widths->dir_path, path);
+			return (NULL);
+		}
 		get_t_dir_info(filep, head);
 		handle_path(path, head, filep);
 		get_stat_info(head);

@@ -60,8 +60,6 @@ int lst_iter(t_file_node **head, int flags, t_width *widths)
 	{
 		if (head_local->next && sort_dispatch(head_local, flags, widths) > 0 && ++i)
 		{
-//			printf("%s and %s\n", head_local->file_name, head_local->next->file_name);
-//			fflush(stdout);
 			temp = head_local->next;
 			previous->next = head_local->next;
 			head_local->next = head_local->next->next;
@@ -94,6 +92,8 @@ t_file_node *sort(t_file_node **head, int flags, t_width *widths)
 	}
 	if (*head != NULL)
 	{
+		if (widths->flags & TIME_ORDER)
+			lst_iter_loop(head, 0, widths);
 		lst_iter_loop(head, flags, widths);
 		(*head)->is_head = 1;
 	}

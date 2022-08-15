@@ -6,7 +6,7 @@
 /*   By: jniemine <jniemine@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/29 17:59:01 by jniemine          #+#    #+#             */
-/*   Updated: 2022/08/15 20:43:08 by jniemine         ###   ########.fr       */
+/*   Updated: 2022/08/15 23:09:16 by jniemine         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -286,22 +286,22 @@ int main(int argc, char **argv)
 	paths.open_dir[argc] = NULL;
 	i = ls_get_flags(argc, argv, &widths_and_flags.flags);
 	sort_arguments(argc - i, &argv[i], &widths_and_flags, paths);
-	i = 0;
 	while (*paths.arg_paths != NULL)
 	{
 		errno = 0;
 		head = create_list(*paths.open_dir, *paths.arg_paths, &widths_and_flags);
 		paths.dir_paths = (char **)ft_memalloc(sizeof(char *) * widths_and_flags.dir_amount + 1);
-		if (widths_and_flags.flags & RECURSIVE)
+		paths.dir_paths[widths_and_flags.dir_amount] = NULL;
+		if (head && widths_and_flags.flags & RECURSIVE)
 		{
-			choose_output_format(head, &widths_and_flags, paths.dir_paths, 0);
+			choose_output_format(head, &widths_and_flags, paths.dir_paths);
 			recursive_traverse(paths.dir_paths, i, &widths_and_flags);
 		}	
 		else
 		{
 			if (*(paths.arg_paths + 1) != NULL)
 				widths_and_flags.flags |= PRINT_DIR_NAME;
-			choose_output_format(head, &widths_and_flags, paths.dir_paths, 0);
+			choose_output_format(head, &widths_and_flags, paths.dir_paths);
 		}
 //		free_lst(head);
 	//	widths_and_flags.flags |= PRINT_DIR_NAME;

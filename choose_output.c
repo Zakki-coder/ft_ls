@@ -6,19 +6,22 @@
 /*   By: jniemine <jniemine@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/03 11:19:19 by jniemine          #+#    #+#             */
-/*   Updated: 2022/08/15 20:43:41 by jniemine         ###   ########.fr       */
+/*   Updated: 2022/08/15 22:40:56 by jniemine         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "includes/ft_ls.h"
 
 /* CHANGELOG: Changed dir_path to widths Shouldnt it has alla the dir info and node the file info?*/
-void choose_output_format(t_file_node *head, t_width *widths, char **dir_paths, int nl)
+void choose_output_format(t_file_node *head, t_width *widths, char **dir_paths)
 {
 	if (widths && widths->flags & PRINT_DIR_NAME)
 	{	
-		if (nl > 0)
+		if (widths->flags & PRINT_NL)
+		{
 			ft_printf("\n");
+			widths->flags ^= PRINT_NL;
+		}
 		ft_printf("%s:\n", widths->dir_path);
 	}
 //	while (head != NULL && !(widths->flags & ALL) && head->file_name[0] == '.')

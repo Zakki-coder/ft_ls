@@ -30,6 +30,7 @@
 #define	PRINT_DIR_NAME	64
 #define ONE_COLUMN		128
 #define ACL				256
+#define PRINT_NL		512
 
 #define ALLOWED_OPTIONS "-lRrat"
 #define ALLOWED_SORTS	"rt"
@@ -86,7 +87,7 @@ t_file_node *create_node(void);
 t_dir *read_stream(DIR *dirp);
 void sort_arguments(int argc, char **argv, t_width *widths, t_paths paths);
 int open_directory(char *path, DIR **dst);
-void choose_output_format(t_file_node *head, t_width *widths, char **dir_paths, int i);
+void choose_output_format(t_file_node *head, t_width *widths, char **dir_paths);
 int time_compare(struct stat t1, struct stat t2);
 int reverse_strcmp(const char *s1, const char *s2);
 t_file_node *sort(t_file_node **head, int flags, t_width *widths);

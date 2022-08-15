@@ -6,7 +6,7 @@
 /*   By: jniemine <jniemine@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/03 12:49:40 by jniemine          #+#    #+#             */
-/*   Updated: 2022/08/15 20:24:09 by jniemine         ###   ########.fr       */
+/*   Updated: 2022/08/15 21:36:44 by jniemine         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -172,7 +172,6 @@ void sort_arguments(int argc, char **argv, t_width *widths, t_paths paths)
 	file_names = (char **)ft_memalloc(sizeof(*file_names) * argc + 1);
 	if (!file_names)
 		error_exit();
-	file_names[argc] = NULL;
 	while (*argv != NULL)
 	{
 		dirp = NULL;
@@ -193,8 +192,10 @@ void sort_arguments(int argc, char **argv, t_width *widths, t_paths paths)
 			widths->flags |= PRINT_DIR_NAME;
 		++argv;
 	}
-	if (*file_names)
-		create_filepointer(file_names, k, widths);
 	if (j > 1)
 		widths->flags |= PRINT_DIR_NAME;
+	if (*paths.arg_paths && *file_names)
+		widths->flags |= PRINT_NL;
+	if (*file_names)
+		create_filepointer(file_names, k, widths);
 }
