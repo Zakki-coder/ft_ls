@@ -6,7 +6,7 @@
 /*   By: jniemine <jniemine@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/22 14:44:27 by jniemine          #+#    #+#             */
-/*   Updated: 2022/08/15 19:25:12 by jniemine         ###   ########.fr       */
+/*   Updated: 2022/08/15 20:53:37 by jniemine         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -89,7 +89,7 @@ void recursive_traverse(char **paths, int i, t_width *widths_flags)
 	widths.flags = widths_flags->flags;
 	if (paths == NULL || *paths == NULL)
 		return ;
-	ft_printf("\n%s:\n", *paths);
+	ft_printf("%s%s:\n", "\n./", *paths);
 	ret = open_directory(*paths, &dirp);
 	if (ret < 0)
 		error_exit();
@@ -106,7 +106,7 @@ void recursive_traverse(char **paths, int i, t_width *widths_flags)
 	dir_paths[widths.dir_amount] = NULL;
 	//TODO: Printer function to choose betweeen long and column
 //	print_loop(head, widths, dir_paths);
-	choose_output_format(head, &widths, dir_paths);
+	choose_output_format(head, &widths, dir_paths, 0);
 	if (dir_paths != NULL && *dir_paths != NULL)
 		recursive_traverse(dir_paths++, ++i, &widths);
 	if (paths != NULL && *paths != NULL)	
@@ -128,10 +128,11 @@ void handle_path(char *root_path, t_file_node *head, t_dir *dirp)
 		error_exit();
 	ft_strcpy(head->dir_path, root_path);
 //	if (ft_strcmp(root_path, ".") != 0)
+	if (ft_strcmp(root_path, ".") != 0)
 		ft_strcat(head->path, root_path);
 //	if (ft_strcmp(dirp->d_name, ".") != 0/* && ft_strcmp(dirp->d_name, "..") != 0*/)
 //	{
-		if (/*ft_strcmp(root_path, ".") != 0 &&*/ root_path[ft_strlen(root_path) - 1] != '/')
+		if (ft_strlen(head->path) > 0 && head->path[ft_strlen(head->path) - 1] != '/')
 			ft_strcat(head->path, "/");
 		ft_strcat(head->path, dirp->d_name);
 //	}
