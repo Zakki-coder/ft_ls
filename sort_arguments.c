@@ -6,7 +6,7 @@
 /*   By: jniemine <jniemine@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/03 12:49:40 by jniemine          #+#    #+#             */
-/*   Updated: 2022/08/16 16:22:22 by jniemine         ###   ########.fr       */
+/*   Updated: 2022/08/16 18:20:06 by jniemine         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -88,7 +88,6 @@ void create_file_list(t_dir **filepointers, t_width *widths, char **root_paths)
 		}
 	}
 	lst_start = sort(&lst_start, widths->flags, widths);
-	printf("CRASH\n");
 	lst_start->is_head = 0;
 	if (widths->flags & LONG_LST)
 		print_loop(lst_start, *widths, NULL);
@@ -120,6 +119,7 @@ void create_filepointer(char **file_names, int k, t_width *widths)
 		root_paths[i] = (char *)ft_memalloc(ft_strlen(path) + 1);
 		ft_strcpy(root_paths[i], path);
 		filepointers[i++] = search_file_pointer(path, filename);
+		filepointers[i] = NULL;
 	}
 	free(file_names);
 	create_file_list(filepointers, widths, root_paths);

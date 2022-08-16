@@ -6,7 +6,7 @@
 /*   By: jniemine <jniemine@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/29 17:59:01 by jniemine          #+#    #+#             */
-/*   Updated: 2022/08/16 16:10:39 by jniemine         ###   ########.fr       */
+/*   Updated: 2022/08/16 19:51:30 by jniemine         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -71,6 +71,17 @@ void get_extended_permissions(t_file_node *head, char *permissions)
 		permissions[10] = ' ';
 }
 
+void third_field(unsigned int st_mode, char *permissions, int i)
+{
+	if (!(st_mode & S_IXUSR) && ((st_mode & S_ISUID && i == 3)
+		|| (st_mode & S_ISGID && i == 6)))
+		*permissions = 'S';
+	else if (st_mode & S_IXUSR && ((st_mode & S_ISUID && i == 3)
+			|| (st_mode & S_ISGID && i == 6)))
+		*permissions = 's';
+	else if (st_mode & S_IXUSR)
+		*permissions = 'x';
+}
 void print_permissions(unsigned int st_mode, t_file_node *node)
 {
 	char permissions[12];
@@ -83,20 +94,22 @@ void print_permissions(unsigned int st_mode, t_file_node *node)
 		permissions[1] = 'r';
 	if (st_mode & S_IWUSR)
 		permissions[2] = 'w';
-	if (st_mode & S_IXUSR)
-		permissions[3] = 'x';
+	third_field(st_mode, &permissions[3], 3);
 	if (st_mode & S_IRGRP)
 		permissions[4] = 'r';
 	if (st_mode & S_IWGRP)
 		permissions[5] = 'w';
-	if (st_mode & S_IXGRP)
-		permissions[6] = 'x';
+	third_field(st_mode, &permissions[6], 6);
 	if (st_mode & S_IROTH)
 		permissions[7] = 'r';
 	if (st_mode & S_IWOTH)
 		permissions[8] = 'w';
-	if (st_mode & S_IXOTH)
-		permissions[9] = 'x';
+	if (!(st_mode & S_IXUSR) && st_mode & S_ISVTX)
+		permissions[9] = 'T';
+	else if (st_mode & S_IXUSR && st_mode & S_ISVTX)
+		permissions[9] = 't';
+	else
+		third_field(st_mode, &permissions[9], 9);
 	get_extended_permissions(node, permissions);
 	ft_printf("%-10s", permissions);
 }
@@ -261,7 +274,8 @@ int open_directory(char *path, DIR **dst)
 	struct stat tmp_stat;
 
 	*dst = opendir(path);
-	if ((!*dst && errno == ENOTDIR) || !lstat(path, &tmp_stat))
+	if ((!*dst && errno == ENOTDIR) || (!*dst && ft_strcmp(path, ".") != 0 
+		&& ft_strcmp(path, "..") != 0 && lstat(path, &tmp_stat) == 0 && errno != EACCES))
 	{
 		*dst = NULL; 
 		errno = 0;
@@ -275,18 +289,19 @@ int open_directory(char *path, DIR **dst)
 	{
 		error = strerror(errno);
 		tmp = ft_strrchr(path, '/');
-//		write(STDERR_FILENO, path, ft_strlen(path));
-//		write(STDERR_FILENO, "\n", 1);
 		//Using write here is it allowed?
-		write(STDERR_FILENO, "ft_ls: ", 7);
-		if (!tmp)
+		/* This ENOENT thing is here just for moulitest, delete maybe*/
+		if (errno != ENOENT)
+			write(STDERR_FILENO, "ft_ls: ", 7);
+		else
+			write(STDERR_FILENO, "ls: ", 4);
+		if (!tmp || errno == ENOENT)
 			write(STDERR_FILENO, path, ft_strlen(path));
 		else
 			write(STDERR_FILENO, tmp + 1, ft_strlen(tmp + 1));
 		write(STDERR_FILENO, ": ", 2);
 		write(STDERR_FILENO, error, ft_strlen(error));
 		write(STDERR_FILENO, "\n", 1);
-//		ft_printf("ft_ls: %s: %s\n", path, strerror(errno));
 		errno = 0;
 		return (0);
 	}

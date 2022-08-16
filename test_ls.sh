@@ -17,3 +17,5 @@ make re; ./ft_ls
 #Test extended attributes and @ flag
 #Check directory with 000 permissions
 #ft_ls *
+#test with only . and only ..
+#Sticky bit chmod 7777
