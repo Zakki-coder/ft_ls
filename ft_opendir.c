@@ -6,7 +6,7 @@
 /*   By: jniemine <jniemine@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/29 17:59:01 by jniemine          #+#    #+#             */
-/*   Updated: 2022/08/15 23:09:16 by jniemine         ###   ########.fr       */
+/*   Updated: 2022/08/16 16:10:39 by jniemine         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -101,6 +101,28 @@ void print_permissions(unsigned int st_mode, t_file_node *node)
 	ft_printf("%-10s", permissions);
 }
 
+void over_six_months(char *output, char *timep, long long int time_difference)
+{
+	int start;
+	int len;
+	
+	start = 0;
+	len = 0;
+	if (time_difference > (2629743 * 6) || (-1 * time_difference) > (2629743 * 6))
+	{
+		while (timep[9 + start] && timep[9 + start] == ' ')
+			++start;
+		if (!timep[9 + 1])
+			start = 0;
+		while (timep[9 + start + len] && timep[9 + start + len] <= '9'
+			&& timep[9 + start + len] >= '0')
+			++len;
+		ft_strncat(output, " ", 1);
+		ft_strncat(output, timep + 9 + start, len);
+	}
+	else
+		ft_strncat(output, timep, 5);
+}
 /*	On unix time, day is always 86400seconds.
 	1 Month (30.44 days)	2629743 Seconds
 */
@@ -125,13 +147,14 @@ void print_time(t_file_node *node)
 //	ft_strncat(output, timep, 4);
 	timep += 3;
 	time_difference = current_time - node->stat.st_mtimespec.tv_sec;
-	if (time_difference > (2629743 * 6) || (-1 * time_difference) > (2629743 * 6))
-	{
-		ft_strncat(output, " ", 1);
-		ft_strncat(output, timep + 9, 4);
-	}
-	else
-		ft_strncat(output, timep, 5);
+	over_six_months(output, timep, time_difference);
+//	if (time_difference > (2629743 * 6) || (-1 * time_difference) > (2629743 * 6))
+//	{
+//		ft_strncat(output, " ", 1);
+//		ft_strncat(output, timep + 9, 4);
+//	}
+//	else
+//		ft_strncat(output, timep, 5);
 	ft_strncat(output, " ", 1);
 	ft_printf("%*s", ft_strlen(output), output);
 }
@@ -235,9 +258,10 @@ int open_directory(char *path, DIR **dst)
 {
 	char *error;
 	char *tmp;
+	struct stat tmp_stat;
 
 	*dst = opendir(path);
-	if (!*dst && errno == ENOTDIR)
+	if ((!*dst && errno == ENOTDIR) || !lstat(path, &tmp_stat))
 	{
 		*dst = NULL; 
 		errno = 0;

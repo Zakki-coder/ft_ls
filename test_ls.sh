@@ -16,3 +16,4 @@ make re; ./ft_ls
 #Test leaks with nonexistent files and existing mixed also
 #Test extended attributes and @ flag
 #Check directory with 000 permissions
+#ft_ls *

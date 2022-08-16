@@ -6,7 +6,7 @@
 /*   By: jniemine <jniemine@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/03 12:49:40 by jniemine          #+#    #+#             */
-/*   Updated: 2022/08/15 21:36:44 by jniemine         ###   ########.fr       */
+/*   Updated: 2022/08/16 16:22:22 by jniemine         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -70,6 +70,7 @@ void create_file_list(t_dir **filepointers, t_width *widths, char **root_paths)
 
 	head = create_node();
 	lst_start = head;
+	/* TODO CRASH, WHY IS FILEPOINTERS EMPTY???? */
 	while(*filepointers != NULL)
 	{
 		filep = *filepointers;
@@ -87,6 +88,7 @@ void create_file_list(t_dir **filepointers, t_width *widths, char **root_paths)
 		}
 	}
 	lst_start = sort(&lst_start, widths->flags, widths);
+	printf("CRASH\n");
 	lst_start->is_head = 0;
 	if (widths->flags & LONG_LST)
 		print_loop(lst_start, *widths, NULL);

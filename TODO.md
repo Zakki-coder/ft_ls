@@ -1,4 +1,6 @@
-./ft_ls -1 Debug_dir/a Debug_dir/b Debug_dir/c Debug_dir/d Debug_dir/e Debug_dir/f Debug_dir/z
+compile_ft_ls ;ft_ls b
+
+ft_ls *
 
 Remember to free ext_attrb from head remember to free acl with free_acl()
 

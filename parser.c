@@ -6,7 +6,7 @@
 /*   By: jniemine <jniemine@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/29 17:58:51 by jniemine          #+#    #+#             */
-/*   Updated: 2022/08/15 16:21:55 by jniemine         ###   ########.fr       */
+/*   Updated: 2022/08/16 15:24:30 by jniemine         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,11 +36,13 @@ int set_flags(char c, unsigned int *flags)
 		*flags |= EXT_ATTR;
 	else if(c == 'e')
 		*flags |= ACL;
-	else if(c == '-')
-		return -1;
+//	else if(c == '-')
+//		return (-1);
 	else
 	{
-		ft_printf("ft_ls: illegal option -- %c\n", c);
+		write(STDERR_FILENO, "ft_ls: illegal option -- ", 25);
+		write(STDERR_FILENO, &c, 1);
+		write(STDERR_FILENO, "\n", 1);
 		print_usage();
 	}
 	return (1);
@@ -56,14 +58,12 @@ int ls_get_flags(int argc, char **argv, unsigned int *flags)
 	while(i < argc && argv[i][0] == '-')
 	{
 		k = 0;
+		if (argv[i][1] == '\0' || argv[i][1] == ' ')
+			return (i);
+		if ((argv[i][1] == '-' && ft_strlen(argv[i]) == 2) )
+			return (++i);
 		while (argv[i][++k])
-		{
-			if(set_flags(argv[i][k], flags) < 0)
-			{
-				*flags |= PRINT_DIR_NAME;
-				return (++i);
-			}
-		}
+			set_flags(argv[i][k], flags);
 		++i;
 	}
 	return (i);
