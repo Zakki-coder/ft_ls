@@ -6,7 +6,7 @@
 /*   By: jniemine <jniemine@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/29 17:58:51 by jniemine          #+#    #+#             */
-/*   Updated: 2022/08/16 15:24:30 by jniemine         ###   ########.fr       */
+/*   Updated: 2022/08/17 12:27:48 by jniemine         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,7 +21,11 @@ void print_usage(void)
 int set_flags(char c, unsigned int *flags)
 {
 	if(c == 'l')
+	{
+		if (*flags & ONE_COLUMN)
+			*flags ^= ONE_COLUMN;
 		*flags |= LONG_LST;
+	}
 	else if(c == 'R')
 		*flags |= RECURSIVE; 
 	else if(c == 'r')
@@ -31,13 +35,15 @@ int set_flags(char c, unsigned int *flags)
 	else if(c == 't')
 		*flags |= TIME_ORDER; 
 	else if(c == '1')
+	{
+		if (*flags & LONG_LST)
+			*flags ^= LONG_LST;
 		*flags |= ONE_COLUMN;
+	}
 	else if(c == '@')
 		*flags |= EXT_ATTR;
 	else if(c == 'e')
 		*flags |= ACL;
-//	else if(c == '-')
-//		return (-1);
 	else
 	{
 		write(STDERR_FILENO, "ft_ls: illegal option -- ", 25);

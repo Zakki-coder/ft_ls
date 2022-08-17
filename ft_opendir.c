@@ -6,7 +6,7 @@
 /*   By: jniemine <jniemine@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/29 17:59:01 by jniemine          #+#    #+#             */
-/*   Updated: 2022/08/16 19:51:30 by jniemine         ###   ########.fr       */
+/*   Updated: 2022/08/17 15:08:34 by jniemine         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -232,7 +232,7 @@ void print_extended_attributes(t_file_node *head, int flags)
 		acl_perm_t		ae_perm;
 	*/
 }
-// Changed all stat to lstat, so that links are not followed
+
 void print_stat(t_file_node *node, t_width *widths, char **dir_paths, int *i)
 {
 	struct passwd	*pw;
@@ -255,7 +255,7 @@ void print_stat(t_file_node *node, t_width *widths, char **dir_paths, int *i)
 	ft_printf("%*d ", widths->size_col + 2, node->lstat.st_size);
 	print_time(node);
 	if (readlink(node->path, link_buf, 1024) > 0)
-		ft_printf("%s -> %s\n", node->file_name, link_buf);
+		ft_printf("%s -> %s\n", node->path, link_buf);//ft_printf("%s -> %s\n", node->file_name, link_buf);
 	else if (!(widths->is_file))
 		ft_printf("%s\n", node->file_name);
 	else

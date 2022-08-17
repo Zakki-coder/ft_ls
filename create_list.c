@@ -6,7 +6,7 @@
 /*   By: jniemine <jniemine@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/22 14:44:27 by jniemine          #+#    #+#             */
-/*   Updated: 2022/08/15 23:01:40 by jniemine         ###   ########.fr       */
+/*   Updated: 2022/08/17 13:04:34 by jniemine         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -89,7 +89,10 @@ void recursive_traverse(char **paths, int i, t_width *widths_flags)
 	widths.flags = widths_flags->flags;
 	if (paths == NULL || *paths == NULL)
 		return ;
-	ft_printf("%s%s:\n", "\n./", *paths);
+	if (!ft_strncmp(*paths, "/", 1))
+		ft_printf("\n%s\n", *paths);
+	else
+		ft_printf("%s%s:\n", "\n./", *paths);
 	ret = open_directory(*paths, &dirp);
 	if (ret < 0)
 		error_exit();
@@ -117,7 +120,7 @@ void recursive_traverse(char **paths, int i, t_width *widths_flags)
 	//TODO: check print_stats TODO.
 }
 
-void handle_path(char *root_path, t_file_node *head, t_dir *dirp)
+void handle_path(char *root_path, t_file_node *head, t_dir *dirp, int flags)
 {
 	int len;
 
@@ -127,17 +130,13 @@ void handle_path(char *root_path, t_file_node *head, t_dir *dirp)
 	if (!head->path || !head->dir_path)
 		error_exit();
 	ft_strcpy(head->dir_path, root_path);
-//	if (ft_strcmp(root_path, ".") != 0)
+	if ((flags & RECURSIVE || flags & ONE_COLUMN) && ft_strncmp(root_path, "./", 2) == 0)
+		root_path += 2;
 	if (ft_strcmp(root_path, ".") != 0)
 		ft_strcat(head->path, root_path);
-//	if (ft_strcmp(dirp->d_name, ".") != 0/* && ft_strcmp(dirp->d_name, "..") != 0*/)
-//	{
-		if (ft_strlen(head->path) > 0 && head->path[ft_strlen(head->path) - 1] != '/')
-			ft_strcat(head->path, "/");
-		ft_strcat(head->path, dirp->d_name);
-//	}
-//	else
-//		ft_strcat(head->path, ".");
+	if (ft_strlen(head->path) > 0 && head->path[ft_strlen(head->path) - 1] != '/')
+		ft_strcat(head->path, "/");
+	ft_strcat(head->path, dirp->d_name);
 }
 
 void get_t_dir_info(t_dir *filep, t_file_node *node)
@@ -228,7 +227,7 @@ t_file_node *create_list(DIR *dirp, char *path, t_width *widths)
 			return (NULL);
 		}
 		get_t_dir_info(filep, head);
-		handle_path(path, head, filep);
+		handle_path(path, head, filep, widths->flags);
 		get_stat_info(head);
 		head->type = filep->d_type;
 		update_widths(head, widths);
