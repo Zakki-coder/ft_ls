@@ -50,6 +50,8 @@ typedef struct s_width
 	unsigned int	is_file;
 	unsigned int	link_col;
 	unsigned int	size_col;
+	unsigned int	max_usr_col;
+	unsigned int	max_grp_col;
 	unsigned int	total_size;
 	unsigned int	flags;
 	unsigned int	dir_amount;
@@ -64,18 +66,20 @@ struct s_file_node
 	int				is_head;
 	t_dir 			dp;
 	unsigned int	total_blocks;
-	char			*file_name;
+	char			*file_name;		//Free
 	t_stat			stat;
 	t_stat			lstat;
+	char			*usr;	//Free
+	char			*grp;	//Free
 	int				namelen;
 	unsigned int	type;
 	unsigned int	flags;
 	acl_t			acl;
 	ssize_t			ext_attr_len;
 	ssize_t			ext_attr_p_len;
-	char			*ext_attr;
-	char			*dir_path;
-	char			*path;
+	char			*ext_attr;		//Free
+	char			*dir_path;		//Free
+	char			*path;			//Maybe free?
 	t_file_node 	*next;
 };
 

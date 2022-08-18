@@ -19,3 +19,5 @@ make re; ./ft_ls
 #ft_ls *
 #test with only . and only ..
 #Sticky bit chmod 7777
+#ft_ls -t /usr/
+#ft_ls -Rl /usr/bin

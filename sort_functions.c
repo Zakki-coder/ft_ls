@@ -6,7 +6,7 @@
 /*   By: jniemine <jniemine@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/20 18:57:24 by jniemine          #+#    #+#             */
-/*   Updated: 2022/08/02 12:54:42 by jniemine         ###   ########.fr       */
+/*   Updated: 2022/08/18 14:26:27 by jniemine         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,6 +46,11 @@ int time_compare(struct stat t1, struct stat t2)
 	if (t1.st_mtimespec.tv_sec > t2.st_mtimespec.tv_sec)
 		return (-1);
 	else if (t1.st_mtimespec.tv_sec == t2.st_mtimespec.tv_sec)
-		return (0);
+	{
+		if (t1.st_mtimespec.tv_nsec > t2.st_mtimespec.tv_nsec)
+			return (-1);
+		else if (t1.st_mtimespec.tv_nsec == t2.st_mtimespec.tv_nsec)
+			return (0);
+	}
 	return (1);
 }

@@ -6,7 +6,7 @@
 /*   By: jniemine <jniemine@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/22 14:44:27 by jniemine          #+#    #+#             */
-/*   Updated: 2022/08/17 13:04:34 by jniemine         ###   ########.fr       */
+/*   Updated: 2022/08/17 21:03:34 by jniemine         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -90,7 +90,7 @@ void recursive_traverse(char **paths, int i, t_width *widths_flags)
 	if (paths == NULL || *paths == NULL)
 		return ;
 	if (!ft_strncmp(*paths, "/", 1))
-		ft_printf("\n%s\n", *paths);
+		ft_printf("\n%s:\n", *paths);
 	else
 		ft_printf("%s%s:\n", "\n./", *paths);
 	ret = open_directory(*paths, &dirp);
@@ -150,10 +150,21 @@ void get_t_dir_info(t_dir *filep, t_file_node *node)
 	ft_strcpy(node->file_name, filep->d_name);
 }
 
-/* Changed this to use only lstat */
+/* Get user and group info also */
 void get_stat_info(t_file_node *node)
 {
+	struct passwd	*pw;
+	struct group	*grp;
+
 	if (lstat(node->path, &node->stat) < 0 || lstat(node->path, &node->lstat) < 0)
+		error_exit();
+	pw = getpwuid(node->lstat.st_uid);
+	grp = getgrgid(node->lstat.st_gid);
+	if (!pw || !grp)
+		error_exit();
+	node->usr = ft_strdup(pw->pw_name);
+	node->grp = ft_strdup(grp->gr_name);
+	if (!node->usr || !node->grp)
 		error_exit();
 }
 
@@ -172,20 +183,29 @@ t_dir *read_stream(DIR *dirp)
 
 void update_widths(t_file_node *head, t_width *widths)
 {
+	unsigned int len;
+
 	++widths->file_amount;
 	if (head->type & DT_DIR)
 		widths->dir_amount++;
-	if (widths->longest_filename < ft_strlen(head->file_name))
-		widths->longest_filename = ft_strlen(head->file_name);
+	len = ft_strlen(head->file_name);
+	if (widths->longest_filename < len)
+		widths->longest_filename = len;
+	/* Really could just compare ints and do nb_len for the biggest later in print */
 	if (widths->link_col < nb_len(head->lstat.st_nlink))	
 		widths->link_col = nb_len(head->lstat.st_nlink);
 	if (widths->size_col < nb_len(head->lstat.st_size))	
 		widths->size_col = nb_len(head->lstat.st_size);
+	len = ft_strlen(head->usr);
+	if (widths->max_usr_col < len)
+		widths->max_usr_col = len;
+	len = ft_strlen(head->grp);
+	if (widths->max_grp_col < len)
+		widths->max_grp_col = len;
 	widths->total_size += head->stat.st_blocks;
-	widths->dir_path = ft_memalloc(ft_strlen(head->dir_path) + 1);
+	widths->dir_path = ft_strdup(head->dir_path);
 	if (!widths->dir_path)
 		error_exit();
-	ft_strcpy(widths->dir_path, head->dir_path);
 }
 
 int wind_over_hidden(DIR *dirp, t_dir **filep, int flags)

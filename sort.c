@@ -92,8 +92,6 @@ t_file_node *sort(t_file_node **head, int flags, t_width *widths)
 	}
 	if (*head != NULL)
 	{
-		if (widths->flags & TIME_ORDER)
-			lst_iter_loop(head, 0, widths);
 		lst_iter_loop(head, flags, widths);
 		(*head)->is_head = 1;
 	}

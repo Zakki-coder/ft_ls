@@ -6,7 +6,7 @@
 /*   By: jniemine <jniemine@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/29 17:59:01 by jniemine          #+#    #+#             */
-/*   Updated: 2022/08/17 15:08:34 by jniemine         ###   ########.fr       */
+/*   Updated: 2022/08/17 21:18:16 by jniemine         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -73,13 +73,15 @@ void get_extended_permissions(t_file_node *head, char *permissions)
 
 void third_field(unsigned int st_mode, char *permissions, int i)
 {
-	if (!(st_mode & S_IXUSR) && ((st_mode & S_ISUID && i == 3)
-		|| (st_mode & S_ISGID && i == 6)))
+	if ((!(st_mode & S_IXUSR) && st_mode & S_ISUID && i == 3)
+		|| (!(st_mode & S_IXGRP) && st_mode & S_ISGID && i == 6))
 		*permissions = 'S';
-	else if (st_mode & S_IXUSR && ((st_mode & S_ISUID && i == 3)
-			|| (st_mode & S_ISGID && i == 6)))
+	else if ((st_mode & S_IXUSR && st_mode & S_ISUID && i == 3)
+			|| (st_mode & S_IXGRP && st_mode & S_ISGID && i == 6))
 		*permissions = 's';
-	else if (st_mode & S_IXUSR)
+	else if ((st_mode & S_IXUSR && i == 3) 
+		|| (st_mode & S_IXGRP && i == 6)
+		|| (st_mode & S_IXOTH && i == 9))
 		*permissions = 'x';
 }
 void print_permissions(unsigned int st_mode, t_file_node *node)
@@ -235,27 +237,21 @@ void print_extended_attributes(t_file_node *head, int flags)
 
 void print_stat(t_file_node *node, t_width *widths, char **dir_paths, int *i)
 {
-	struct passwd	*pw;
-	struct group	*grp;
 	char			*name;
 	char			link_buf[1024];
 
 	ft_bzero((void *)link_buf, 1024);
 	name = node->file_name;
-	pw = getpwuid(node->lstat.st_uid);
-	grp = getgrgid(node->lstat.st_gid);
-	if (!pw || !grp)
-		error_exit();
 	if (node->is_head)
 		ft_printf("total %llu\n", widths->total_size);
 	print_permissions(node->lstat.st_mode, node);
 	ft_printf("%*u", widths->link_col + 1, node->lstat.st_nlink);
-	ft_printf(" %-*s", (int)ft_strlen(pw->pw_name) + 2, pw->pw_name);
-	ft_printf("%s", grp->gr_name);
+	ft_printf(" %-*s", widths->max_usr_col + 2, node->usr);
+	ft_printf("%-*s", widths->max_grp_col, node->grp);
 	ft_printf("%*d ", widths->size_col + 2, node->lstat.st_size);
 	print_time(node);
 	if (readlink(node->path, link_buf, 1024) > 0)
-		ft_printf("%s -> %s\n", node->path, link_buf);//ft_printf("%s -> %s\n", node->file_name, link_buf);
+		/*ft_printf("%s -> %s\n", node->path, link_buf);*/ft_printf("%s -> %s\n", node->file_name, link_buf);
 	else if (!(widths->is_file))
 		ft_printf("%s\n", node->file_name);
 	else
@@ -291,7 +287,7 @@ int open_directory(char *path, DIR **dst)
 		tmp = ft_strrchr(path, '/');
 		//Using write here is it allowed?
 		/* This ENOENT thing is here just for moulitest, delete maybe*/
-		if (errno != ENOENT)
+		if (errno != ENOENT && errno != EACCES)
 			write(STDERR_FILENO, "ft_ls: ", 7);
 		else
 			write(STDERR_FILENO, "ls: ", 4);
