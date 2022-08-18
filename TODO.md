@@ -1,3 +1,5 @@
+MINOR MAJOR
+
 compile_ft_ls ;ft_ls b
 
 ft_ls *

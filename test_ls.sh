@@ -22,3 +22,4 @@ make re; ./ft_ls
 #ft_ls -t /usr/
 #ft_ls -Rl /usr/bin
 #touch -t 201312101830.55 a ;touch -t 201312101830.55 B 
+#Dir with chmod 000 try ft_ls dir and ft_ls dir/
