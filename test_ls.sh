@@ -21,3 +21,4 @@ make re; ./ft_ls
 #Sticky bit chmod 7777
 #ft_ls -t /usr/
 #ft_ls -Rl /usr/bin
+#touch -t 201312101830.55 a ;touch -t 201312101830.55 B 
