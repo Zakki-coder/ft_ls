@@ -6,7 +6,7 @@
 /*   By: jniemine <jniemine@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/22 14:44:27 by jniemine          #+#    #+#             */
-/*   Updated: 2022/08/17 21:03:34 by jniemine         ###   ########.fr       */
+/*   Updated: 2022/08/18 17:48:49 by jniemine         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -151,6 +151,7 @@ void get_t_dir_info(t_dir *filep, t_file_node *node)
 }
 
 /* Get user and group info also */
+/* Get device minor and major also */
 void get_stat_info(t_file_node *node)
 {
 	struct passwd	*pw;
@@ -166,6 +167,8 @@ void get_stat_info(t_file_node *node)
 	node->grp = ft_strdup(grp->gr_name);
 	if (!node->usr || !node->grp)
 		error_exit();
+	node->d_minor = minor(node->stat.st_rdev);
+	node->d_major = major(node->stat.st_rdev);
 }
 
 /* readdir returns NULL when end has been reached or on ERROR, make error handling */

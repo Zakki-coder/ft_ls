@@ -6,7 +6,7 @@
 /*   By: jniemine <jniemine@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/03 12:49:40 by jniemine          #+#    #+#             */
-/*   Updated: 2022/08/17 12:50:55 by jniemine         ###   ########.fr       */
+/*   Updated: 2022/08/18 23:29:08 by jniemine         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,7 +26,8 @@ void seperate_name_and_path(char *arg_names, char *filename, char *root_path)
 	{
 //		ft_strcpy(root_path, "./");
 		ft_strcat(filename, slash + 1);
-		ft_strncat(root_path, arg_names, ft_strlen(arg_names) - ft_strlen(slash));
+		//THIS DIDNT HAVE +1 YESTERDAY
+		ft_strncat(root_path, arg_names, ft_strlen(arg_names) - ft_strlen(slash + 1));
 	}
 }
 

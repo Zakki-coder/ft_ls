@@ -6,7 +6,7 @@
 /*   By: jniemine <jniemine@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/29 17:59:01 by jniemine          #+#    #+#             */
-/*   Updated: 2022/08/17 21:18:16 by jniemine         ###   ########.fr       */
+/*   Updated: 2022/08/18 23:24:09 by jniemine         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,6 +59,7 @@ void get_extended_permissions(t_file_node *head, char *permissions)
 		permissions[10] = '@';
 		head->ext_attr = (char *)ft_memalloc(size + 1);
 		size = listxattr(head->path, head->ext_attr, size, 0);
+		/* Wtf is going on in here, where is this ext_attr_p_len used???? */
 		head->ext_attr_p_len = getxattr(head->path, head->ext_attr, NULL, 0, 0, XATTR_NOFOLLOW);
 		head->ext_attr_p_len = getxattr(head->path, head->ext_attr + ft_strlen(head->ext_attr) + 1, value, size, 0, XATTR_NOFOLLOW);
 	}
@@ -84,6 +85,7 @@ void third_field(unsigned int st_mode, char *permissions, int i)
 		|| (st_mode & S_IXOTH && i == 9))
 		*permissions = 'x';
 }
+
 void print_permissions(unsigned int st_mode, t_file_node *node)
 {
 	char permissions[12];
@@ -113,7 +115,7 @@ void print_permissions(unsigned int st_mode, t_file_node *node)
 	else
 		third_field(st_mode, &permissions[9], 9);
 	get_extended_permissions(node, permissions);
-	ft_printf("%-10s", permissions);
+	ft_printf("%-11s", permissions);
 }
 
 void over_six_months(char *output, char *timep, long long int time_difference)
@@ -196,10 +198,9 @@ void print_extended_attributes(t_file_node *head, int flags)
 	acl_permset_t permsetp;
 	acl_tag_t	*tag_type;
 	ssize_t		len;
-//	void		*acl_qualifier;
 
 	i = 0;
-//	acl_qualifier = NULL;
+	/* Maybe you already have the lengths saved in struct */
 	tag_type = ft_memalloc(sizeof(*tag_type));
 	if(flags & EXT_ATTR && head->ext_attr)
 	{
@@ -222,7 +223,7 @@ void print_extended_attributes(t_file_node *head, int flags)
 				error_exit();
 			if(acl_get_tag_type(entryp,	tag_type) < 0)
 				error_exit();
-			printf("ACL: %s\n", acl_to_text(head->acl, &len));	
+			ft_printf("ACL: %s\n", acl_to_text(head->acl, &len));	
 		//	acl_qualifier = acl_get_qualifier(entryp);
 			if(acl_get_entry(head->acl, ++i, &entryp) <= 0)
 				break ;
@@ -233,6 +234,14 @@ void print_extended_attributes(t_file_node *head, int flags)
 		uid_t			ae_id;
 		acl_perm_t		ae_perm;
 	*/
+}
+
+void print_size_col(t_file_node *node, t_width *widths)
+{
+	if (node->type == DT_BLK || node->type == DT_CHR)
+		ft_printf(" %d, %d ", node->d_major, node->d_minor); 
+	else
+		ft_printf("%*d ", widths->size_col + 2, node->lstat.st_size);
 }
 
 void print_stat(t_file_node *node, t_width *widths, char **dir_paths, int *i)
@@ -246,9 +255,10 @@ void print_stat(t_file_node *node, t_width *widths, char **dir_paths, int *i)
 		ft_printf("total %llu\n", widths->total_size);
 	print_permissions(node->lstat.st_mode, node);
 	ft_printf("%*u", widths->link_col + 1, node->lstat.st_nlink);
-	ft_printf(" %-*s", widths->max_usr_col + 2, node->usr);
-	ft_printf("%-*s", widths->max_grp_col, node->grp);
-	ft_printf("%*d ", widths->size_col + 2, node->lstat.st_size);
+	ft_printf("%*s", widths->max_usr_col + 1, node->usr);
+	ft_printf("%*s", widths->max_grp_col + 2, node->grp);
+	print_size_col(node, widths);
+//	ft_printf("%*d ", widths->size_col + 2, node->lstat.st_size);
 	print_time(node);
 	if (readlink(node->path, link_buf, 1024) > 0)
 		/*ft_printf("%s -> %s\n", node->path, link_buf);*/ft_printf("%s -> %s\n", node->file_name, link_buf);
@@ -261,6 +271,20 @@ void print_stat(t_file_node *node, t_width *widths, char **dir_paths, int *i)
 		dir_paths[(*i)++] = node->path;
 }
 
+/* This tests if the folder has attribute rootles */
+/*
+int test_special_case_rootless(char *path)
+{
+	char	link[1024];
+
+	if (path[ft_strlen(path) - 1] == '/')
+		return (0);
+	ft_bzero(link, 1024);
+	if(readlink(path, link, 1023) > 0)
+		return (1);
+	return (0);
+}
+*/
 /*	ENONENT = No such file or dir
 	ENOTDIR = Exists, but not a dir */
 int open_directory(char *path, DIR **dst)
@@ -269,6 +293,13 @@ int open_directory(char *path, DIR **dst)
 	char *tmp;
 	struct stat tmp_stat;
 
+/*
+	if (test_special_case_rootless(path))
+	{
+		*dst = NULL;
+		return (-1);
+	}
+*/
 	*dst = opendir(path);
 	if ((!*dst && errno == ENOTDIR) || (!*dst && ft_strcmp(path, ".") != 0 
 		&& ft_strcmp(path, "..") != 0 && lstat(path, &tmp_stat) == 0 && errno != EACCES))

@@ -9,6 +9,7 @@
 #include <unistd.h>
 #include <stdlib.h>
 #include <sys/stat.h>
+#include <sys/types.h>
 #include <string.h>
 #include <pwd.h>
 #include <grp.h>
@@ -69,6 +70,8 @@ struct s_file_node
 	char			*file_name;		//Free
 	t_stat			stat;
 	t_stat			lstat;
+	unsigned int	d_minor;
+	unsigned int	d_major;
 	char			*usr;	//Free
 	char			*grp;	//Free
 	int				namelen;

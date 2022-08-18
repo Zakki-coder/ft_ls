@@ -1,4 +1,4 @@
-MINOR MAJOR
+Seperate_name_and_path was changed, open_dir has new function test_special_case
 
 compile_ft_ls ;ft_ls b
 
