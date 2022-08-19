@@ -6,7 +6,7 @@
 /*   By: jniemine <jniemine@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/29 17:59:01 by jniemine          #+#    #+#             */
-/*   Updated: 2022/08/19 23:31:52 by jniemine         ###   ########.fr       */
+/*   Updated: 2022/08/19 23:49:08 by jniemine         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,11 +53,11 @@ void get_extended_permissions(t_file_node *head, char *permissions)
 	
 	/* acl_get_link_np doesnt follow slink like acl_get_file */
 	size = listxattr(head->path, NULL, 0, XATTR_NOFOLLOW);
-	head->ext_attr_len = size;
 	acl = acl_get_link_np(head->path, ACL_TYPE_EXTENDED);
 //	value = ft_memalloc(size);
 	if (size > 0)
 	{
+		head->ext_attr_len = size;
 		if (permissions != NULL)
 			permissions[10] = '@';
 		head->ext_attr = (char *)ft_memalloc(size + 1);
@@ -215,7 +215,7 @@ void print_extended_attributes(t_file_node *head, int flags)
 	i = 0;
 	/* Maybe you already have the lengths saved in struct */
 //	tag_type = ft_memalloc(sizeof(*tag_type));
-	if(flags & EXT_ATTR && head->ext_attr)
+	if(flags & EXT_ATTR && head->ext_attr != NULL)
 	{
 		while(i < head->ext_attr_len)	
 		{
@@ -240,8 +240,6 @@ void print_extended_attributes(t_file_node *head, int flags)
 		//	if(acl_get_tag_type(entryp,	tag_type) < 0)
 		//		error_exit();
 			ret = acl_to_text(head->acl, &len);
-			printf("%s", ret);
-			fflush(stdout);
 			parse_acl(ret + k, i++);
 			k += ft_strlen(ret) + 1;
 			//	if(acl_get_entry(head->acl, ++i, &entryp) <= 0)
