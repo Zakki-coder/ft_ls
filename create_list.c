@@ -6,7 +6,7 @@
 /*   By: jniemine <jniemine@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/22 14:44:27 by jniemine          #+#    #+#             */
-/*   Updated: 2022/08/19 19:20:12 by jniemine         ###   ########.fr       */
+/*   Updated: 2022/08/19 21:08:03 by jniemine         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -74,50 +74,49 @@ void debugger(char **paths)
 		printf("%s\n", paths[i++]);
 }
 
+static int check_path(char ***paths, DIR **dirp, int *i, t_width *widths)
+{
+	int ret;
+
+	if (*paths == NULL || **paths == NULL)
+		return (-1);
+	if (!ft_strncmp(**paths, "/", 1))
+		ft_printf("\n%s:\n", **paths);
+	else
+		ft_printf("%s%s:\n", "\n./", **paths);
+	ret = open_directory(**paths, dirp);
+	if (ret < 0)
+		error_exit();
+	else if (ret == 0)	
+		recursive_traverse(++(*paths), ++(*i), widths);
+	return (1);
+}
+
 void recursive_traverse(char **paths, int i, t_width *widths_flags)
 {
 	char		**dir_paths;
 	t_file_node	*head;
 	t_width		widths;
 	DIR			*dirp;
-	int			ret;
 
 	dirp = NULL;
 	head = NULL;
 	errno = 0;
 	ft_bzero((void *)&widths, sizeof(t_width));
 	widths.flags = widths_flags->flags;
-	if (paths == NULL || *paths == NULL)
+	if(check_path(&paths, &dirp, &i, &widths) < 0)
 		return ;
-	if (!ft_strncmp(*paths, "/", 1))
-		ft_printf("\n%s:\n", *paths);
-	else
-		ft_printf("%s%s:\n", "\n./", *paths);
-	ret = open_directory(*paths, &dirp);
-	if (ret < 0)
-		error_exit();
-	else if (ret == 0)
-		recursive_traverse(++paths, ++i, &widths); //Does this work?
 	head = create_list(dirp, *paths, &widths);
-	/* This checked for empty head earlier, but now empty head is returned if there is only hidden files which are skipped */
-	if (!widths.dir_path || (!head && !dirp))
-		return ;
-//	widths.flags |= PRINT_DIR_NAME;
 	dir_paths = (char **)ft_memalloc(sizeof(char *) * (widths.dir_amount + 1));
 	if (!dir_paths || closedir(dirp) < 0)
 		error_exit();
 	dir_paths[widths.dir_amount] = NULL;
-	//TODO: Printer function to choose betweeen long and column
-//	print_loop(head, widths, dir_paths);
 	choose_output_format(head, &widths, dir_paths);
 	if (dir_paths != NULL && *dir_paths != NULL)
 		recursive_traverse(dir_paths++, ++i, &widths);
 	if (paths != NULL && *paths != NULL)	
 		recursive_traverse(++paths, ++i, &widths);
 	free_lst(head);
-	//TODO: Widths are not universal. Every list needs its own widths.
-	//TOTHINK: Should i do the whole linked list before printing?
-	//TODO: check print_stats TODO.
 }
 
 void handle_path(char *root_path, t_file_node *head, t_dir *dirp, int flags)
@@ -262,7 +261,6 @@ t_file_node *create_list(DIR *dirp, char *path, t_width *widths)
 		get_stat_info(head);
 		head->type = filep->d_type;
 		update_widths(head, widths);
-		///Do i need to free the list if it fails?
 		filep = read_stream(dirp);
 		if (filep != NULL)
 		{
@@ -271,14 +269,6 @@ t_file_node *create_list(DIR *dirp, char *path, t_width *widths)
 			head = head->next;
 		}
 	}
-	/*
-	while(lst_start != NULL)
-	{
-		printf("LST: %s and %p\n", lst_start->file_name, lst_start);
-		fflush(stdout);
-		lst_start = lst_start->next;
-	}
-	*/
 	if (!filep && errno != 0)
 		error_exit();
 	return (sort(&lst_start, widths->flags, widths));

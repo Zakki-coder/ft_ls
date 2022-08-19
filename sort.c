@@ -40,8 +40,6 @@ int lst_iter(t_file_node **head, int flags, t_width *widths)
 	i = 0;
 	previous = NULL;
 	head_local = *head;
-	/* Swap the first without previous */
-//	debug(*head);
 	if (head_local->next && sort_dispatch(head_local, flags, widths) > 0 && ++i)
 	{
 		temp = head_local->next;

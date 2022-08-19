@@ -1,1 +1,0 @@
--l -a -r -t flags are just different ways of sorting the folder, -R flag actually is a way of moving. So -R ust calls given sorting order on every folder it traverses trough. Managment of columns info should probably be the first info to collect.

@@ -6,13 +6,14 @@
 /*   By: jniemine <jniemine@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/29 17:59:01 by jniemine          #+#    #+#             */
-/*   Updated: 2022/08/19 17:29:57 by jniemine         ###   ########.fr       */
+/*   Updated: 2022/08/19 21:26:54 by jniemine         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "includes/ft_ls.h"
 
 /* Using write here */
+/*
 void error_exit(void)
 {
 	char *error;
@@ -23,6 +24,7 @@ void error_exit(void)
 //	ft_printf("%s\n", strerror(errno));
 	exit (-1);
 }
+*/
 
 void get_file_type(t_file_node *node, char *permissions)
 {
@@ -159,25 +161,15 @@ void print_time(t_file_node *node)
 		error_exit();
 	timep += 4;
 	ft_strncpy(output, timep, 4);
-//	timep += 8;
 	timep += 4;
 	ft_strncat(output, timep, 3);
-//	timep -= 4;
-//	ft_strncat(output, timep, 4);
 	timep += 3;
 	time_difference = current_time - node->stat.st_mtimespec.tv_sec;
 	over_six_months(output, timep, time_difference);
-//	if (time_difference > (2629743 * 6) || (-1 * time_difference) > (2629743 * 6))
-//	{
-//		ft_strncat(output, " ", 1);
-//		ft_strncat(output, timep + 9, 4);
-//	}
-//	else
-//		ft_strncat(output, timep, 5);
-//	ft_strncat(output, " ", 1);
 	ft_printf("%-*s", ft_strlen(output) + 1, output);
 }
 
+/*
 unsigned int nb_len(long long nb)
 {
 	int len;
@@ -190,6 +182,7 @@ unsigned int nb_len(long long nb)
 	}
 	return (len);
 }
+*/
 
 void print_extended_attributes(t_file_node *head, int flags)
 {
@@ -226,16 +219,10 @@ void print_extended_attributes(t_file_node *head, int flags)
 			if(acl_get_tag_type(entryp,	tag_type) < 0)
 				error_exit();
 			ft_printf("ACL: %s\n", acl_to_text(head->acl, &len));	
-		//	acl_qualifier = acl_get_qualifier(entryp);
 			if(acl_get_entry(head->acl, ++i, &entryp) <= 0)
 				break ;
 		}
 	}
-	/*
-		acl_tag_t		ae_tag;
-		uid_t			ae_id;
-		acl_perm_t		ae_perm;
-	*/
 }
 
 void print_size_col(t_file_node *node, t_width *widths)
@@ -260,7 +247,6 @@ void print_stat(t_file_node *node, t_width *widths, char **dir_paths, int *i)
 	ft_printf("%-*s", widths->max_usr_col + 2, node->usr);
 	ft_printf("%-*s", widths->max_grp_col + 1, node->grp);
 	print_size_col(node, widths);
-//	ft_printf("%*d ", widths->size_col + 2, node->lstat.st_size);
 	print_time(node);
 	if (readlink(node->path, link_buf, 1024) > 0)
 	{
@@ -355,7 +341,6 @@ int open_directory(char *path, DIR **dst)
 	{
 		error = strerror(errno);
 		tmp = ft_strrchr(path, '/');
-		//Using write here is it allowed?
 		/* This ENOENT thing is here just for moulitest, delete maybe*/
 		if (errno != ENOENT && errno != EACCES)
 			write(STDERR_FILENO, "ft_ls: ", 7);
@@ -372,6 +357,29 @@ int open_directory(char *path, DIR **dst)
 		return (0);
 	}
 	return (1);
+}
+
+void close_and_free_paths(t_paths paths)
+{
+	while(paths.arg_paths && *paths.arg_paths)
+	{
+		if (paths.open_dir && *paths.open_dir)
+		{
+			if (closedir(*paths.open_dir) < 0)
+				error_exit();
+			++(*paths.open_dir);
+		}
+		if (paths.dir_paths && *paths.dir_paths)
+		{
+			free(*paths.dir_paths);
+			++(*paths.dir_paths);
+		}
+		free((*paths.arg_paths));
+		++(*paths.arg_paths);
+	}
+	free(paths.open_dir);
+	free(paths.arg_paths);
+	free(paths.dir_paths);
 }
 
 int main(int argc, char **argv)
@@ -408,15 +416,13 @@ int main(int argc, char **argv)
 				widths_and_flags.flags |= PRINT_DIR_NAME;
 			choose_output_format(head, &widths_and_flags, paths.dir_paths);
 		}
-//		free_lst(head);
-	//	widths_and_flags.flags |= PRINT_DIR_NAME;
+		free_lst(head);
 		++paths.arg_paths;
 		++paths.open_dir;
-	//	closedir(*paths.open_dir);
-//		free(*paths.arg_paths);
 		if (*paths.arg_paths != NULL)
 			ft_printf("\n");
 	}
+	close_and_free_paths(paths);
 	/* Free paths.arg_paths and open_dir */
 	return (0);
 }

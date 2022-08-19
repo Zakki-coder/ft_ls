@@ -6,7 +6,7 @@
 /*   By: jniemine <jniemine@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/12 00:13:14 by jniemine          #+#    #+#             */
-/*   Updated: 2022/08/15 19:42:45 by jniemine         ###   ########.fr       */
+/*   Updated: 2022/08/19 20:44:01 by jniemine         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,14 +18,6 @@ static int count_tab_n(int longest_filename, int *word_width)
 	int			tab_stop_n;
 
 	tab_stop_n = 1;
-	/*
-	while (longest_filename)
-	{
-		longest_filename /= tab_stop;
-		printf("longest: %d\n", longest_filename);
-		++tab_stop_n;
-	}
-	*/	
 	tab_stop_n = longest_filename / tab_stop;
 	*word_width = tab_stop_n * tab_stop;
 	if (*word_width % tab_stop == 0)
@@ -112,21 +104,6 @@ void print_columns(t_file_node *head, t_width *widths, char **dir_paths)
 		words_in_line_n = (w.ws_col) / count_tab_n(widths->longest_filename, &word_width);
 	rows = count_rows(widths->file_amount, words_in_line_n);
 	make_columns(head, rows, word_width, dir_paths);
-	/*
-	while (head)
-	{
-		++word_count;
-		ft_printf("%-*s", word_width, head->file_name);
-		if ((word_count % words_in_line_n) == 0)
-			ft_printf("\n");
-		head = head->next;
-	}
-	*/
-//	printf("file amount: %d\n", widths->file_amount);
-//	printf("Word Width: %d\n", word_width);
-//	printf("longest filename:%d\n", widths->longest_filename);
-//    printf ("lines %d words_in_line: %d\n", w.ws_row, words_in_line_n);
-//    printf ("columns %d rows: %d\n", w.ws_col, rows);
 }
 //First print directories, then filenames.
 //TODO get terminal tabsize for columns.
