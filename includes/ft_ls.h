@@ -65,7 +65,6 @@ typedef struct s_width
 struct s_file_node
 {
 	int				is_head;
-	t_dir 			dp;
 	unsigned int	total_blocks;
 	char			*file_name;		//Free
 	t_stat			stat;

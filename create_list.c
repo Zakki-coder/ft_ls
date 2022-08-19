@@ -6,7 +6,7 @@
 /*   By: jniemine <jniemine@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/22 14:44:27 by jniemine          #+#    #+#             */
-/*   Updated: 2022/08/19 21:08:03 by jniemine         ###   ########.fr       */
+/*   Updated: 2022/08/19 21:54:21 by jniemine         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,6 +36,10 @@ void free_lst(t_file_node *head)
 	{
 		previous = head;
 		head = head->next;
+		free(previous->usr);
+		free(previous->grp);
+		free(previous->ext_attr);
+		free(previous->dir_path);
 		free(previous->file_name);
 		free(previous->path);
 		free(previous);
@@ -142,7 +146,6 @@ void get_t_dir_info(t_dir *filep, t_file_node *node)
 {
 	if (!filep)
 		return ;
-	node->dp = *filep;
 	node->file_name = (char *)ft_memalloc(sizeof(char) * filep->d_namlen + 1);
 	if (!node->file_name)
 		error_exit();

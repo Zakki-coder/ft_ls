@@ -6,7 +6,7 @@
 /*   By: jniemine <jniemine@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/29 17:59:01 by jniemine          #+#    #+#             */
-/*   Updated: 2022/08/19 21:26:54 by jniemine         ###   ########.fr       */
+/*   Updated: 2022/08/19 23:31:52 by jniemine         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,22 +49,21 @@ void get_extended_permissions(t_file_node *head, char *permissions)
 {
 	ssize_t	size;
 	acl_t	acl;
-	void	*value;
+//	void	*value;
 	
 	/* acl_get_link_np doesnt follow slink like acl_get_file */
 	size = listxattr(head->path, NULL, 0, XATTR_NOFOLLOW);
 	head->ext_attr_len = size;
 	acl = acl_get_link_np(head->path, ACL_TYPE_EXTENDED);
-	value = ft_memalloc(size);
+//	value = ft_memalloc(size);
 	if (size > 0)
 	{
 		if (permissions != NULL)
 			permissions[10] = '@';
 		head->ext_attr = (char *)ft_memalloc(size + 1);
 		/*size =*/ listxattr(head->path, head->ext_attr, size, 0);
-		/* Wtf is going on in here, where is this ext_attr_p_len used???? */
-		head->ext_attr_p_len = getxattr(head->path, head->ext_attr, NULL, 0, 0, XATTR_NOFOLLOW);
-		head->ext_attr_p_len = getxattr(head->path, head->ext_attr + ft_strlen(head->ext_attr) + 1, value, size, 0, XATTR_NOFOLLOW);
+	//	head->ext_attr_p_len = getxattr(head->path, head->ext_attr, NULL, 0, 0, XATTR_NOFOLLOW);
+	//	head->ext_attr_p_len = getxattr(head->path, head->ext_attr + ft_strlen(head->ext_attr) + 1, value, size, 0, XATTR_NOFOLLOW);
 	}
 	else if(acl)
 	{
@@ -74,6 +73,7 @@ void get_extended_permissions(t_file_node *head, char *permissions)
 	}
 	else if (permissions != NULL)
 		permissions[10] = ' ';
+//	free(value);
 }
 
 void third_field(unsigned int st_mode, char *permissions, int i)
@@ -184,19 +184,37 @@ unsigned int nb_len(long long nb)
 }
 */
 
+void parse_acl(char *acl, int i)
+{
+	char buf[256];
+
+	ft_bzero(buf, 256);
+	acl += ft_strchr(acl, '\n') + 1 - acl;
+	ft_strncpy(buf, acl, ft_strchr(acl, ':') - acl + 1);	
+	acl = ft_strchr(ft_strchr(acl, ':') + 1, ':') + 1;
+	ft_strncat(buf, acl, ft_strchr(acl, ':') - acl);
+	acl = ft_strchr(ft_strchr(acl, ':') + 1, ':') + 1;
+	ft_strcat(buf, " ");
+	ft_strncat(buf, acl, ft_strchr(acl, ':') - acl);
+	acl = ft_strchr(acl, ':') + 1;
+	ft_printf(" %d: %s\n", i, buf);
+}
+
 void print_extended_attributes(t_file_node *head, int flags)
 {
 	int			i;
+	int			k;
 	int			tab_n;
 	int			print_len;
-	acl_entry_t	entryp;
-	acl_permset_t permsetp;
-	acl_tag_t	*tag_type;
+//	acl_entry_t	entryp;
+//	acl_permset_t permsetp;
+//	acl_tag_t	*tag_type;
 	ssize_t		len;
+	char		*ret;
 
 	i = 0;
 	/* Maybe you already have the lengths saved in struct */
-	tag_type = ft_memalloc(sizeof(*tag_type));
+//	tag_type = ft_memalloc(sizeof(*tag_type));
 	if(flags & EXT_ATTR && head->ext_attr)
 	{
 		while(i < head->ext_attr_len)	
@@ -210,17 +228,24 @@ void print_extended_attributes(t_file_node *head, int flags)
 	}
 	else if(flags & ACL && head->acl)
 	{
-		if (acl_get_entry(head->acl, ACL_FIRST_ENTRY, &entryp) < 0)
-			error_exit();
-		while(entryp) 
+		len = 1;
+		k = 0;
+		i = 0;
+	//	if (acl_get_entry(head->acl, ACL_FIRST_ENTRY, &entryp) < 0)
+	//		error_exit();
+		while(k < len) 
 		{
-			if(acl_get_permset(entryp, &permsetp) < 0)
-				error_exit();
-			if(acl_get_tag_type(entryp,	tag_type) < 0)
-				error_exit();
-			ft_printf("ACL: %s\n", acl_to_text(head->acl, &len));	
-			if(acl_get_entry(head->acl, ++i, &entryp) <= 0)
-				break ;
+		//	if(acl_get_permset(entryp, &permsetp) < 0)
+		//		error_exit();
+		//	if(acl_get_tag_type(entryp,	tag_type) < 0)
+		//		error_exit();
+			ret = acl_to_text(head->acl, &len);
+			printf("%s", ret);
+			fflush(stdout);
+			parse_acl(ret + k, i++);
+			k += ft_strlen(ret) + 1;
+			//	if(acl_get_entry(head->acl, ++i, &entryp) <= 0)
+			//		break ;
 		}
 	}
 }
@@ -367,19 +392,18 @@ void close_and_free_paths(t_paths paths)
 		{
 			if (closedir(*paths.open_dir) < 0)
 				error_exit();
-			++(*paths.open_dir);
+			++(paths.open_dir);
 		}
 		if (paths.dir_paths && *paths.dir_paths)
 		{
 			free(*paths.dir_paths);
-			++(*paths.dir_paths);
+			free(paths.dir_paths);
+			++(paths.dir_paths);
 		}
 		free((*paths.arg_paths));
-		++(*paths.arg_paths);
+		free((paths.arg_paths));
+		++(paths.arg_paths);
 	}
-	free(paths.open_dir);
-	free(paths.arg_paths);
-	free(paths.dir_paths);
 }
 
 int main(int argc, char **argv)
@@ -392,7 +416,6 @@ int main(int argc, char **argv)
 	i = 0;
 	ft_bzero((void *)&paths, sizeof(t_paths));
 	ft_bzero((void *)&widths_and_flags, sizeof(widths_and_flags));
-	//TODO Free all this shit, THESE DOESTN WRITE NULL AT SCHOOL
 	paths.open_dir = (DIR **)ft_memalloc(sizeof(DIR *) * argc + 1);
 	paths.arg_paths = (char **)ft_memalloc(sizeof(char *) * argc + 1);
 	paths.arg_paths[argc] = NULL;
@@ -423,6 +446,5 @@ int main(int argc, char **argv)
 			ft_printf("\n");
 	}
 	close_and_free_paths(paths);
-	/* Free paths.arg_paths and open_dir */
 	return (0);
 }
