@@ -6,7 +6,7 @@
 /*   By: jniemine <jniemine@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/22 14:44:27 by jniemine          #+#    #+#             */
-/*   Updated: 2022/08/18 17:48:49 by jniemine         ###   ########.fr       */
+/*   Updated: 2022/08/19 19:20:12 by jniemine         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -228,9 +228,12 @@ t_file_node *create_list(DIR *dirp, char *path, t_width *widths)
 {
 	t_dir		*filep;
 	t_file_node	*head;
+	t_file_node	*prev;
 	t_file_node	*lst_start;
 	int			flags;
+	int			something_has_been_created;
 
+	something_has_been_created = 0;
 	flags = widths->flags;
 	ft_bzero((void *)widths, sizeof(*widths));
 	widths->flags = flags;
@@ -243,12 +246,17 @@ t_file_node *create_list(DIR *dirp, char *path, t_width *widths)
 	{
 		if (wind_over_hidden(dirp, &filep, widths->flags))
 		{
-	//		head->file_name = path;
-	//		head->dir_path = path;
-			widths->dir_path = ft_memalloc(ft_strlen(path) + 1);
-			ft_strcpy(widths->dir_path, path);
-			return (NULL);
+			if (!something_has_been_created)
+			{
+				widths->dir_path = ft_memalloc(ft_strlen(path) + 1);
+				ft_strcpy(widths->dir_path, path);
+				return(NULL);
+			}
+			free_lst(prev->next);
+			prev->next = NULL;
+			break ;
 		}
+		something_has_been_created = 1;
 		get_t_dir_info(filep, head);
 		handle_path(path, head, filep, widths->flags);
 		get_stat_info(head);
@@ -259,9 +267,18 @@ t_file_node *create_list(DIR *dirp, char *path, t_width *widths)
 		if (filep != NULL)
 		{
 			head->next = create_node();
+			prev = head;
 			head = head->next;
 		}
 	}
+	/*
+	while(lst_start != NULL)
+	{
+		printf("LST: %s and %p\n", lst_start->file_name, lst_start);
+		fflush(stdout);
+		lst_start = lst_start->next;
+	}
+	*/
 	if (!filep && errno != 0)
 		error_exit();
 	return (sort(&lst_start, widths->flags, widths));

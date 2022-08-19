@@ -6,7 +6,7 @@
 /*   By: jniemine <jniemine@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/03 12:49:40 by jniemine          #+#    #+#             */
-/*   Updated: 2022/08/18 23:29:08 by jniemine         ###   ########.fr       */
+/*   Updated: 2022/08/19 16:39:41 by jniemine         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,8 +14,10 @@
 
 void seperate_name_and_path(char *arg_names, char *filename, char *root_path)
 {
-	char *slash;
+	char	*slash;
+	int		n;
 	
+	n = 1;
 	slash = ft_strrchr(arg_names, '/');
 	if (!slash)
 	{
@@ -25,9 +27,11 @@ void seperate_name_and_path(char *arg_names, char *filename, char *root_path)
 	else
 	{
 //		ft_strcpy(root_path, "./");
-		ft_strcat(filename, slash + 1);
+//		if (slash == &arg_names[0])
+//			n = 0;
+		ft_strcat(filename, slash + n);
 		//THIS DIDNT HAVE +1 YESTERDAY
-		ft_strncat(root_path, arg_names, ft_strlen(arg_names) - ft_strlen(slash + 1));
+		ft_strncat(root_path, arg_names, ft_strlen(arg_names) - ft_strlen(slash + n));
 	}
 }
 
@@ -152,6 +156,46 @@ char **sort_argv(char **argv)
 	}
 	return (&argv[0]);
 }
+
+/* TODO First we should do open dir, if it succeeds, then test special case, if it is rootless then closedir */
+/*
+void test_special_case_rootless(char ***argv, char **filenames, int *k)
+{
+	char		link[1024];
+	char		*buf;
+	int			len;
+	int			is_rootless;
+	DIR			*dirp;
+
+	is_rootless = 0;
+	if ((**argv)[ft_strlen(**argv) - 1] == '/')
+		return ;
+	open_directory(**argv, &dirp);
+	closedir(dirp);
+	ft_bzero(link, 1024);
+	len = listxattr(**argv, NULL, 0, XATTR_NOFOLLOW);
+	if (len < 0)
+		error_exit();
+	buf = ft_memalloc(len + 1);
+	len = listxattr(**argv, buf, len, XATTR_NOFOLLOW);
+	if (len < 0)
+		error_exit();
+	len = 0;
+	while(buf[len] && !is_rootless)
+	{
+		if (ft_strcmp(&buf[len], "com.apple.rootless") == 0)
+			is_rootless = 1;
+		len = ft_strlen(buf) + 1;
+	}
+	if(is_rootless && readlink(**argv, link, 1023) > 0)
+	{
+		filenames[(*k)++] = **argv;
+		filenames[(*k)] = NULL;
+		++(*argv);
+	}
+	free (buf);
+}
+*/
 /* 	Open all arguments, put them in array.
 	Sort array with files first and directories last.
 	Everything in lexicographical order */
@@ -178,6 +222,8 @@ void sort_arguments(int argc, char **argv, t_width *widths, t_paths paths)
 	while (*argv != NULL)
 	{
 		dirp = NULL;
+		if (*argv == NULL)
+			break ;
 		open_dir_ret = open_directory(*argv, &dirp);
 		if (open_dir_ret == 1)
 		{
@@ -186,10 +232,12 @@ void sort_arguments(int argc, char **argv, t_width *widths, t_paths paths)
 			paths.arg_paths[j] = NULL;
 			paths.open_dir[j] = NULL;
 		}
-		if (!dirp && open_dir_ret == -1)
+		if (!dirp && (open_dir_ret == -1 || open_dir_ret == -2))
 		{
 			file_names[k++] = *argv;
 			file_names[k] = NULL;
+			if (open_dir_ret == -2)
+				widths->is_file = 1;
 		}
 		if (open_dir_ret == 0)
 			widths->flags |= PRINT_DIR_NAME;

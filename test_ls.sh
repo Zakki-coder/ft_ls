@@ -24,3 +24,4 @@ make re; ./ft_ls
 #touch -t 201312101830.55 a ;touch -t 201312101830.55 B 
 #Dir with chmod 000 try ft_ls dir and ft_ls dir/
 #ft_ls -l /etc
+#test /var/run without -a flag

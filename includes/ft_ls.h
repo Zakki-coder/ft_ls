@@ -87,6 +87,7 @@ struct s_file_node
 };
 
 void handle_path(char *root_path, t_file_node *head, t_dir *dirp, int flags);
+void get_extended_permissions(t_file_node *head, char *permissions);
 void get_t_dir_info(t_dir *filep, t_file_node *node);
 void get_stat_info(t_file_node *node);
 void update_widths(t_file_node *head, t_width *widths);

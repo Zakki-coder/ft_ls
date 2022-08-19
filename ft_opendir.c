@@ -6,7 +6,7 @@
 /*   By: jniemine <jniemine@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/29 17:59:01 by jniemine          #+#    #+#             */
-/*   Updated: 2022/08/18 23:24:09 by jniemine         ###   ########.fr       */
+/*   Updated: 2022/08/19 17:29:57 by jniemine         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,9 +56,10 @@ void get_extended_permissions(t_file_node *head, char *permissions)
 	value = ft_memalloc(size);
 	if (size > 0)
 	{
-		permissions[10] = '@';
+		if (permissions != NULL)
+			permissions[10] = '@';
 		head->ext_attr = (char *)ft_memalloc(size + 1);
-		size = listxattr(head->path, head->ext_attr, size, 0);
+		/*size =*/ listxattr(head->path, head->ext_attr, size, 0);
 		/* Wtf is going on in here, where is this ext_attr_p_len used???? */
 		head->ext_attr_p_len = getxattr(head->path, head->ext_attr, NULL, 0, 0, XATTR_NOFOLLOW);
 		head->ext_attr_p_len = getxattr(head->path, head->ext_attr + ft_strlen(head->ext_attr) + 1, value, size, 0, XATTR_NOFOLLOW);
@@ -66,9 +67,10 @@ void get_extended_permissions(t_file_node *head, char *permissions)
 	else if(acl)
 	{
 		head->acl = acl;
-		permissions[10] = '+';
+		if (permissions != NULL)
+			permissions[10] = '+';
 	}
-	else
+	else if (permissions != NULL)
 		permissions[10] = ' ';
 }
 
@@ -172,8 +174,8 @@ void print_time(t_file_node *node)
 //	}
 //	else
 //		ft_strncat(output, timep, 5);
-	ft_strncat(output, " ", 1);
-	ft_printf("%*s", ft_strlen(output), output);
+//	ft_strncat(output, " ", 1);
+	ft_printf("%-*s", ft_strlen(output) + 1, output);
 }
 
 unsigned int nb_len(long long nb)
@@ -241,7 +243,7 @@ void print_size_col(t_file_node *node, t_width *widths)
 	if (node->type == DT_BLK || node->type == DT_CHR)
 		ft_printf(" %d, %d ", node->d_major, node->d_minor); 
 	else
-		ft_printf("%*d ", widths->size_col + 2, node->lstat.st_size);
+		ft_printf("%*d ", widths->size_col + 1, node->lstat.st_size);
 }
 
 void print_stat(t_file_node *node, t_width *widths, char **dir_paths, int *i)
@@ -254,14 +256,19 @@ void print_stat(t_file_node *node, t_width *widths, char **dir_paths, int *i)
 	if (node->is_head)
 		ft_printf("total %llu\n", widths->total_size);
 	print_permissions(node->lstat.st_mode, node);
-	ft_printf("%*u", widths->link_col + 1, node->lstat.st_nlink);
-	ft_printf("%*s", widths->max_usr_col + 1, node->usr);
-	ft_printf("%*s", widths->max_grp_col + 2, node->grp);
+	ft_printf("%*u ", widths->link_col + 1, node->lstat.st_nlink);
+	ft_printf("%-*s", widths->max_usr_col + 2, node->usr);
+	ft_printf("%-*s", widths->max_grp_col + 1, node->grp);
 	print_size_col(node, widths);
 //	ft_printf("%*d ", widths->size_col + 2, node->lstat.st_size);
 	print_time(node);
 	if (readlink(node->path, link_buf, 1024) > 0)
-		/*ft_printf("%s -> %s\n", node->path, link_buf);*/ft_printf("%s -> %s\n", node->file_name, link_buf);
+	{
+		if (!(widths->is_file))
+			ft_printf("%s -> %s\n", node->file_name, link_buf);
+		else
+			ft_printf("%s -> %s\n", node->path, link_buf);
+	}
 	else if (!(widths->is_file))
 		ft_printf("%s\n", node->file_name);
 	else
@@ -271,6 +278,40 @@ void print_stat(t_file_node *node, t_width *widths, char **dir_paths, int *i)
 		dir_paths[(*i)++] = node->path;
 }
 
+int test_special_case_rootless(char *path, DIR *dst)
+{
+	char		link[1024];
+	char		*buf;
+	int			len;
+	int			is_rootless;
+
+	is_rootless = 0;
+	if ((path)[ft_strlen(path) - 1] == '/')
+		return (0);
+	ft_bzero(link, 1024);
+	len = listxattr(path, NULL, 0, XATTR_NOFOLLOW);
+	if (len < 0)
+		error_exit();
+	buf = ft_memalloc(len + 1);
+	len = listxattr(path, buf, len, XATTR_NOFOLLOW);
+	if (len < 0)
+		error_exit();
+	len = 0;
+	while(buf[len] && !is_rootless)
+	{
+		if (ft_strcmp(&buf[len], "com.apple.rootless") == 0)
+			is_rootless = 1;
+		len = ft_strlen(buf) + 1;
+	}
+	if (is_rootless)
+	{
+		closedir(dst);
+		++path;
+		return (1);
+	}
+	free (buf);
+	return (0);
+}
 /* This tests if the folder has attribute rootles */
 /*
 int test_special_case_rootless(char *path)
@@ -293,14 +334,12 @@ int open_directory(char *path, DIR **dst)
 	char *tmp;
 	struct stat tmp_stat;
 
-/*
-	if (test_special_case_rootless(path))
+	*dst = opendir(path);
+	if (*dst && test_special_case_rootless(path, *dst))
 	{
 		*dst = NULL;
-		return (-1);
+		return (-2);
 	}
-*/
-	*dst = opendir(path);
 	if ((!*dst && errno == ENOTDIR) || (!*dst && ft_strcmp(path, ".") != 0 
 		&& ft_strcmp(path, "..") != 0 && lstat(path, &tmp_stat) == 0 && errno != EACCES))
 	{
