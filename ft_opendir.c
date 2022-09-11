@@ -6,7 +6,7 @@
 /*   By: jniemine <jniemine@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/29 17:59:01 by jniemine          #+#    #+#             */
-/*   Updated: 2022/09/11 18:21:29 by jniemine         ###   ########.fr       */
+/*   Updated: 2022/09/11 18:42:44 by jniemine         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -192,40 +192,7 @@ void print_stat(t_file_node *node, t_width *widths, char **dir_paths, int *i)
 		dir_paths[(*i)++] = node->path;
 }
 
-int test_special_case_rootless(char *path, DIR *dst)
-{
-	char		link[1024];
-	char		*buf;
-	int			len;
-	int			is_rootless;
 
-	is_rootless = 0;
-	if ((path)[ft_strlen(path) - 1] == '/')
-		return (0);
-	ft_bzero(link, 1024);
-	len = listxattr(path, NULL, 0, XATTR_NOFOLLOW);
-	if (len < 0)
-		error_exit();
-	buf = ft_memalloc(len + 1);
-	len = listxattr(path, buf, len, XATTR_NOFOLLOW);
-	if (len < 0)
-		error_exit();
-	len = 0;
-	while(buf[len] && !is_rootless)
-	{
-		if (ft_strcmp(&buf[len], "com.apple.rootless") == 0)
-			is_rootless = 1;
-		len = ft_strlen(buf) + 1;
-	}
-	if (is_rootless)
-	{
-		closedir(dst);
-		++path;
-		return (1);
-	}
-	free (buf);
-	return (0);
-}
 /* This tests if the folder has attribute rootles */
 /*
 int test_special_case_rootless(char *path)
@@ -242,50 +209,7 @@ int test_special_case_rootless(char *path)
 */
 /*	ENONENT = No such file or dir
 	ENOTDIR = Exists, but not a dir */
-int open_directory(char *path, DIR **dst)
-{
-	char *error;
-	char *tmp;
-	struct stat tmp_stat;
 
-	*dst = opendir(path);
-	if (*dst && test_special_case_rootless(path, *dst))
-	{
-		*dst = NULL;
-		return (-2);
-	}
-	if ((!*dst && errno == ENOTDIR) || (!*dst && ft_strcmp(path, ".") != 0 
-		&& ft_strcmp(path, "..") != 0 && lstat(path, &tmp_stat) == 0 && errno != EACCES))
-	{
-		*dst = NULL; 
-		errno = 0;
-		return (-1);
-	}
-	if (!*dst && errno != ENOENT && errno != ENAMETOOLONG && errno != EACCES)
-	{
-		error_exit();
-	}
-	else if(!*dst)
-	{
-		error = strerror(errno);
-		tmp = ft_strrchr(path, '/');
-		/* This ENOENT thing is here just for moulitest, delete maybe*/
-		if (errno != ENOENT && errno != EACCES)
-			write(STDERR_FILENO, "ft_ls: ", 7);
-		else
-			write(STDERR_FILENO, "ls: ", 4);
-		if (!tmp || errno == ENOENT)
-			write(STDERR_FILENO, path, ft_strlen(path));
-		else
-			write(STDERR_FILENO, tmp + 1, ft_strlen(tmp + 1));
-		write(STDERR_FILENO, ": ", 2);
-		write(STDERR_FILENO, error, ft_strlen(error));
-		write(STDERR_FILENO, "\n", 1);
-		errno = 0;
-		return (0);
-	}
-	return (1);
-}
 
 void close_and_free_paths(t_paths paths)
 {
