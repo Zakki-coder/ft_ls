@@ -2,7 +2,6 @@
 # define FT_LS
 
 #include <stdio.h> //DEEELT
-
 #include <dirent.h>
 #include <time.h>
 #include <errno.h>
@@ -85,8 +84,9 @@ struct s_file_node
 	t_file_node 	*next;
 };
 
+void print_permissions(unsigned int st_mode, t_file_node *node);
 void handle_path(char *root_path, t_file_node *head, t_dir *dirp, int flags);
-void get_extended_permissions(t_file_node *head, char *permissions);
+//void get_extended_permissions(t_file_node *head, char *permissions);
 void get_t_dir_info(t_dir *filep, t_file_node *node);
 void get_stat_info(t_file_node *node);
 void update_widths(t_file_node *head, t_width *widths);
@@ -111,5 +111,4 @@ void print_loop(t_file_node *head, t_width widths, char **dir_paths);
 void debugger(char **paths);
 void free_lst(t_file_node *head);
 void print_columns(t_file_node *head, t_width *widths, char **dir_paths);
-
 #endif

@@ -6,7 +6,7 @@
 /*   By: jniemine <jniemine@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/29 17:59:01 by jniemine          #+#    #+#             */
-/*   Updated: 2022/08/19 23:49:08 by jniemine         ###   ########.fr       */
+/*   Updated: 2022/09/11 18:21:29 by jniemine         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,101 +26,6 @@ void error_exit(void)
 }
 */
 
-void get_file_type(t_file_node *node, char *permissions)
-{
-	unsigned int type;
-
-	type = node->type;
-	if (type == DT_DIR)
-		permissions[0] = 'd';
-	else if (type == DT_LNK)
-		permissions[0] = 'l';
-	else if (type == DT_BLK)
-		permissions[0] = 'b';
-	else if (type == DT_CHR)
-		permissions[0] = 'c';
-	else if (type == DT_SOCK)
-		permissions[0] = 's';
-	else if (type == DT_FIFO)
-		permissions[0] = 'p';
-}
-
-void get_extended_permissions(t_file_node *head, char *permissions)
-{
-	ssize_t	size;
-	acl_t	acl;
-//	void	*value;
-	
-	/* acl_get_link_np doesnt follow slink like acl_get_file */
-	size = listxattr(head->path, NULL, 0, XATTR_NOFOLLOW);
-	acl = acl_get_link_np(head->path, ACL_TYPE_EXTENDED);
-//	value = ft_memalloc(size);
-	if (size > 0)
-	{
-		head->ext_attr_len = size;
-		if (permissions != NULL)
-			permissions[10] = '@';
-		head->ext_attr = (char *)ft_memalloc(size + 1);
-		/*size =*/ listxattr(head->path, head->ext_attr, size, 0);
-	//	head->ext_attr_p_len = getxattr(head->path, head->ext_attr, NULL, 0, 0, XATTR_NOFOLLOW);
-	//	head->ext_attr_p_len = getxattr(head->path, head->ext_attr + ft_strlen(head->ext_attr) + 1, value, size, 0, XATTR_NOFOLLOW);
-	}
-	else if(acl)
-	{
-		head->acl = acl;
-		if (permissions != NULL)
-			permissions[10] = '+';
-	}
-	else if (permissions != NULL)
-		permissions[10] = ' ';
-//	free(value);
-}
-
-void third_field(unsigned int st_mode, char *permissions, int i)
-{
-	if ((!(st_mode & S_IXUSR) && st_mode & S_ISUID && i == 3)
-		|| (!(st_mode & S_IXGRP) && st_mode & S_ISGID && i == 6))
-		*permissions = 'S';
-	else if ((st_mode & S_IXUSR && st_mode & S_ISUID && i == 3)
-			|| (st_mode & S_IXGRP && st_mode & S_ISGID && i == 6))
-		*permissions = 's';
-	else if ((st_mode & S_IXUSR && i == 3) 
-		|| (st_mode & S_IXGRP && i == 6)
-		|| (st_mode & S_IXOTH && i == 9))
-		*permissions = 'x';
-}
-
-void print_permissions(unsigned int st_mode, t_file_node *node)
-{
-	char permissions[12];
-
-	/*listxatrr and getxattr */
-	ft_memset(permissions, '-', 10);
-	permissions[11] = '\0';
-	get_file_type(node, permissions);
-	if (st_mode & S_IRUSR)
-		permissions[1] = 'r';
-	if (st_mode & S_IWUSR)
-		permissions[2] = 'w';
-	third_field(st_mode, &permissions[3], 3);
-	if (st_mode & S_IRGRP)
-		permissions[4] = 'r';
-	if (st_mode & S_IWGRP)
-		permissions[5] = 'w';
-	third_field(st_mode, &permissions[6], 6);
-	if (st_mode & S_IROTH)
-		permissions[7] = 'r';
-	if (st_mode & S_IWOTH)
-		permissions[8] = 'w';
-	if (!(st_mode & S_IXUSR) && st_mode & S_ISVTX)
-		permissions[9] = 'T';
-	else if (st_mode & S_IXUSR && st_mode & S_ISVTX)
-		permissions[9] = 't';
-	else
-		third_field(st_mode, &permissions[9], 9);
-	get_extended_permissions(node, permissions);
-	ft_printf("%-11s", permissions);
-}
 
 void over_six_months(char *output, char *timep, long long int time_difference)
 {
@@ -404,38 +309,26 @@ void close_and_free_paths(t_paths paths)
 	}
 }
 
-int main(int argc, char **argv)
+void	loop_paths_and_print(t_width *widths, int i, t_paths paths)
 {
-	t_width		widths_and_flags;
-	int i;
 	t_file_node *head;
-	t_paths		paths;
 
-	i = 0;
-	ft_bzero((void *)&paths, sizeof(t_paths));
-	ft_bzero((void *)&widths_and_flags, sizeof(widths_and_flags));
-	paths.open_dir = (DIR **)ft_memalloc(sizeof(DIR *) * argc + 1);
-	paths.arg_paths = (char **)ft_memalloc(sizeof(char *) * argc + 1);
-	paths.arg_paths[argc] = NULL;
-	paths.open_dir[argc] = NULL;
-	i = ls_get_flags(argc, argv, &widths_and_flags.flags);
-	sort_arguments(argc - i, &argv[i], &widths_and_flags, paths);
 	while (*paths.arg_paths != NULL)
 	{
 		errno = 0;
-		head = create_list(*paths.open_dir, *paths.arg_paths, &widths_and_flags);
-		paths.dir_paths = (char **)ft_memalloc(sizeof(char *) * widths_and_flags.dir_amount + 1);
-		paths.dir_paths[widths_and_flags.dir_amount] = NULL;
-		if (head && widths_and_flags.flags & RECURSIVE)
+		head = create_list(*paths.open_dir, *paths.arg_paths, widths);
+		paths.dir_paths = (char **)ft_memalloc(sizeof(char *) * widths->dir_amount + 1);
+		paths.dir_paths[widths->dir_amount] = NULL;
+		if (head && widths->flags & RECURSIVE)
 		{
-			choose_output_format(head, &widths_and_flags, paths.dir_paths);
-			recursive_traverse(paths.dir_paths, i, &widths_and_flags);
+			choose_output_format(head, widths, paths.dir_paths);
+			recursive_traverse(paths.dir_paths, i, widths);
 		}	
 		else
 		{
 			if (*(paths.arg_paths + 1) != NULL)
-				widths_and_flags.flags |= PRINT_DIR_NAME;
-			choose_output_format(head, &widths_and_flags, paths.dir_paths);
+				widths->flags |= PRINT_DIR_NAME;
+			choose_output_format(head, widths, paths.dir_paths);
 		}
 		free_lst(head);
 		++paths.arg_paths;
@@ -443,6 +336,22 @@ int main(int argc, char **argv)
 		if (*paths.arg_paths != NULL)
 			ft_printf("\n");
 	}
+}
+
+int main(int argc, char **argv)
+{
+	t_width		widths_and_flags;
+	int i;
+	t_paths		paths;
+
+	i = 0;
+	ft_bzero((void *)&paths, sizeof(t_paths));
+	ft_bzero((void *)&widths_and_flags, sizeof(widths_and_flags));
+	paths.open_dir = (DIR **)ft_memalloc(sizeof(DIR *) * argc + 1);
+	paths.arg_paths = (char **)ft_memalloc(sizeof(char *) * argc + 1);
+	i = ls_get_flags(argc, argv, &widths_and_flags.flags);
+	sort_arguments(argc - i, &argv[i], &widths_and_flags, paths);
+	loop_paths_and_print(&widths_and_flags, i, paths);
 	close_and_free_paths(paths);
 	return (0);
 }
