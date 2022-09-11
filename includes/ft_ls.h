@@ -84,6 +84,7 @@ struct s_file_node
 	t_file_node 	*next;
 };
 
+void make_columns(t_file_node *head, int rows, int word_width, char **dirs);
 void print_extended_attributes(t_file_node *head, int flags);
 void print_permissions(unsigned int st_mode, t_file_node *node);
 void handle_path(char *root_path, t_file_node *head, t_dir *dirp, int flags);

@@ -6,13 +6,13 @@
 /*   By: jniemine <jniemine@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/12 00:13:14 by jniemine          #+#    #+#             */
-/*   Updated: 2022/08/19 20:44:01 by jniemine         ###   ########.fr       */
+/*   Updated: 2022/09/11 21:15:01 by jniemine         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "includes/ft_ls.h"
 
-static int count_tab_n(int longest_filename, int *word_width)
+static int	count_tab_n(int longest_filename, int *word_width)
 {
 	const int	tab_stop = 8;
 	int			tab_stop_n;
@@ -25,56 +25,7 @@ static int count_tab_n(int longest_filename, int *word_width)
 	return (*word_width);
 }
 
-void ft_lstappend(t_list *alst, t_list *new)
-{
-	if (!alst || !new)
-		return ;
-	while (alst->next)
-		alst = alst->next;
-	alst->next = new;
-}
-
-/* Lexicographical ordering uses strcmp so files starting with capital letter come before */
-void make_columns(t_file_node *head, int rows, int word_width, char **dir_paths)
-{
-	t_list		**columns;
-	int			i;
-	int			j;
-
-	i = 0;
-	j = 0;
-	columns = (t_list **)ft_memalloc(sizeof(t_list *) * (rows + 1));
-	/* First get directories */
-	while (head)
-	{
-		if (head->flags & ONE_COLUMN)
-			ft_lstappend(columns[i % rows], ft_lstnew(head->path, ft_strlen(head->path) + 1));
-		else
-			ft_lstappend(columns[i % rows], ft_lstnew(head->file_name, ft_strlen(head->file_name) + 1));
-		if (!columns[i % rows] && head->flags & ONE_COLUMN)
-			columns[i % rows] = ft_lstnew(head->path, ft_strlen(head->path) + 1);
-		else if (!columns[i % rows])
-			columns[i % rows] = ft_lstnew(head->file_name, ft_strlen(head->file_name) + 1);
-		++i;
-		if (dir_paths && head->type & DT_DIR && ft_strcmp(head->file_name, ".") != 0 && ft_strcmp(head->file_name, "..") != 0)
-			dir_paths[j++] = head->path;
-		head = head->next;
-	}
-	/*Debbuger*/
-	i = 0;
-	while (columns[i])
-	{
-		while (columns[i])
-		{
-			ft_printf("%-*s", word_width, (char *)columns[i]->content);
-			columns[i] = columns[i]->next;
-		}
-		ft_printf("\n");
-		++i;
-	}
-}
-
-int count_rows(int file_n, int words_in_line)
+int	count_rows(int file_n, int words_in_line)
 {
 	while (file_n % words_in_line != 0)
 		++file_n;
@@ -82,15 +33,15 @@ int count_rows(int file_n, int words_in_line)
 }
 
 /* If possible, leave one empty column. */
-void print_columns(t_file_node *head, t_width *widths, char **dir_paths)
+void	print_columns(t_file_node *head, t_width *widths, char **dir_paths)
 {
-    struct	winsize w;
-	int		words_in_line_n;
-	int		rows;
-	int		word_width;
+	struct winsize	w;
+	int				words_in_line_n;
+	int				rows;
+	int				word_width;
 
 	word_width = 0;
-    if(ioctl(STDOUT_FILENO, TIOCGWINSZ, &w) < 0)
+	if (ioctl(STDOUT_FILENO, TIOCGWINSZ, &w) < 0)
 	{
 		if (isatty(STDOUT_FILENO) == 0)
 			widths->flags |= ONE_COLUMN;
@@ -101,7 +52,8 @@ void print_columns(t_file_node *head, t_width *widths, char **dir_paths)
 	if (widths->flags & ONE_COLUMN)
 		words_in_line_n = 1;
 	else
-		words_in_line_n = (w.ws_col) / count_tab_n(widths->longest_filename, &word_width);
+		words_in_line_n = (w.ws_col)
+			/ count_tab_n(widths->longest_filename, &word_width);
 	rows = count_rows(widths->file_amount, words_in_line_n);
 	make_columns(head, rows, word_width, dir_paths);
 }
