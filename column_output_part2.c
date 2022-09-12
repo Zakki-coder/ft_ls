@@ -6,7 +6,7 @@
 /*   By: jniemine <jniemine@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/11 21:12:00 by jniemine          #+#    #+#             */
-/*   Updated: 2022/09/11 21:14:46 by jniemine         ###   ########.fr       */
+/*   Updated: 2022/09/12 18:08:09 by jniemine         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -65,7 +65,7 @@ void	make_columns(t_file_node *head, int rows, int word_width, char **dirs)
 		if (head->flags & ONE_COLUMN)
 			ft_lstappend(columns[i % rows], head->path);
 		else
-			ft_lstappend(columns[i % rows], head->path);
+			ft_lstappend(columns[i % rows], head->file_name);
 		if (!columns[i % rows] && head->flags & ONE_COLUMN)
 			columns[i % rows] = ft_lstnew(head->path,
 					ft_strlen(head->path) + 1);

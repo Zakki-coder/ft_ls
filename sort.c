@@ -6,7 +6,7 @@
 /*   By: jniemine <jniemine@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/12 13:18:38 by jniemine          #+#    #+#             */
-/*   Updated: 2022/09/12 13:40:15 by jniemine         ###   ########.fr       */
+/*   Updated: 2022/09/12 15:16:01 by jniemine         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -79,10 +79,10 @@ int	lst_iter(t_file_node **head, int flags, t_width *widths)
 	return (iter_split(head_local, previous, flags, widths) + i);
 }
 
-void lst_iter_loop(t_file_node **head, int flags, t_width *widths)
+void	lst_iter_loop(t_file_node **head, int flags, t_width *widths)
 {
-	int i;
-	
+	int	i;
+
 	i = lst_iter(head, flags, widths);
 	while (i)
 	{
@@ -90,9 +90,10 @@ void lst_iter_loop(t_file_node **head, int flags, t_width *widths)
 	}
 }
 
-t_file_node *sort(t_file_node **head, int flags, t_width *widths)
+t_file_node	*sort(t_file_node **head, int flags, t_width *widths)
 {
-	while (*head != NULL && !(widths->flags & ALL) && (*head)->file_name[0] == '.')
+	while (*head != NULL && !(widths->flags & ALL)
+		&& (*head)->file_name[0] == '.')
 	{
 		*head = (*head)->next;
 		if (*head)

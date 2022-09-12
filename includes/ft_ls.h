@@ -43,6 +43,8 @@ typedef struct s_dir_and_paths
 	DIR		**open_dir;
 	char	**dir_paths;
 	char	**arg_paths;
+	int		i;
+	int		j;
 }	t_paths;
 
 typedef struct s_width
