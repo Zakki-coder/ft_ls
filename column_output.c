@@ -6,7 +6,7 @@
 /*   By: jniemine <jniemine@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/12 00:13:14 by jniemine          #+#    #+#             */
-/*   Updated: 2022/09/11 21:15:01 by jniemine         ###   ########.fr       */
+/*   Updated: 2022/09/12 23:39:06 by jniemine         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,6 +55,7 @@ void	print_columns(t_file_node *head, t_width *widths, char **dir_paths)
 		words_in_line_n = (w.ws_col)
 			/ count_tab_n(widths->longest_filename, &word_width);
 	rows = count_rows(widths->file_amount, words_in_line_n);
+	head->flags = widths->flags;
 	make_columns(head, rows, word_width, dir_paths);
 }
 //First print directories, then filenames.

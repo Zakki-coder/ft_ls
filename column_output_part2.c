@@ -6,7 +6,7 @@
 /*   By: jniemine <jniemine@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/11 21:12:00 by jniemine          #+#    #+#             */
-/*   Updated: 2022/09/12 18:08:09 by jniemine         ###   ########.fr       */
+/*   Updated: 2022/09/13 00:09:51 by jniemine         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,17 +58,24 @@ void	make_columns(t_file_node *head, int rows, int word_width, char **dirs)
 	t_list		**columns;
 	int			i;
 	int			j;
+	int			flags;
 
+	flags = head->flags;
 	columns = init_helper(&i, &j, rows);
 	while (head)
 	{
-		if (head->flags & ONE_COLUMN)
-			ft_lstappend(columns[i % rows], head->path);
+		if (head->is_hidden && !(flags & ALL))
+		{
+			head = head->next;
+			continue;
+		}
+		if (flags & ONE_COLUMN)
+			ft_lstappend(columns[i % rows], head->file_name);
 		else
 			ft_lstappend(columns[i % rows], head->file_name);
-		if (!columns[i % rows] && head->flags & ONE_COLUMN)
-			columns[i % rows] = ft_lstnew(head->path,
-					ft_strlen(head->path) + 1);
+		if (!columns[i % rows] && flags & ONE_COLUMN)
+			columns[i % rows] = ft_lstnew(head->file_name,
+					ft_strlen(head->file_name) + 1);
 		else if (!columns[i % rows])
 			columns[i % rows] = ft_lstnew(head->file_name,
 					ft_strlen(head->file_name) + 1);

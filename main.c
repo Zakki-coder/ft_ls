@@ -6,7 +6,7 @@
 /*   By: jniemine <jniemine@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/29 17:59:01 by jniemine          #+#    #+#             */
-/*   Updated: 2022/09/12 19:06:37 by jniemine         ###   ########.fr       */
+/*   Updated: 2022/09/12 23:12:56 by jniemine         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,8 +14,8 @@
 
 static void	close_and_free_paths(t_paths paths)
 {
-	char **start_arg;
-	char **start_dir;
+	char	**start_arg;
+	char	**start_dir;
 
 	start_arg = paths.arg_paths;
 	start_dir = paths.dir_paths;
@@ -43,12 +43,12 @@ static void	loop_paths_and_print(t_width *widths, int i, t_paths paths)
 {
 	t_file_node	*head;
 
-	while (*paths.arg_paths != NULL)
+	while (*paths.arg_paths != NULL && *paths.open_dir != NULL)
 	{
 		errno = 0;
 		head = create_list(*paths.open_dir, *paths.arg_paths, widths);
-		paths.dir_paths = ft_memalloc(sizeof(char *) * (widths->dir_amount + 1));
-		paths.dir_paths[widths->dir_amount] = NULL;
+		paths.dir_paths = ft_memalloc(sizeof(char *)
+				* (widths->dir_amount + 1));
 		if (head && widths->flags & RECURSIVE)
 		{
 			choose_output_format(head, widths, paths.dir_paths);
