@@ -5,17 +5,17 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: jniemine <jniemine@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2022/07/20 18:57:47 by jniemine          #+#    #+#             */
-/*   Updated: 2022/08/12 18:19:30 jniemine         ###   ########.fr       */
+/*   Created: 2022/09/12 13:18:38 by jniemine          #+#    #+#             */
+/*   Updated: 2022/09/12 13:40:15 by jniemine         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "includes/ft_ls.h"
 
-int sort_dispatch(t_file_node *head, int flags, t_width *widths)
+int	sort_dispatch(t_file_node *head, int flags, t_width *widths)
 {
 	if (flags & TIME_ORDER)
-		return time_compare(head->stat, head->next->stat);
+		return (time_compare(head->stat, head->next->stat));
 	else if (flags & REVERSE_ORDER)
 	{
 		if (widths->is_file)
@@ -30,12 +30,34 @@ int sort_dispatch(t_file_node *head, int flags, t_width *widths)
 	}
 }
 
-int lst_iter(t_file_node **head, int flags, t_width *widths)
+int	iter_split(t_file_node *head, t_file_node *prev, int flags, t_width *widths)
 {
-	t_file_node *temp;
-	t_file_node *previous;
-	t_file_node *head_local;
-	int i;
+	t_file_node	*temp;
+	int			i;
+
+	i = 0;
+	while (head)
+	{
+		if (head->next && sort_dispatch(head, flags, widths) > 0
+			&& ++i)
+		{
+			temp = head->next;
+			prev->next = head->next;
+			head->next = head->next->next;
+			temp->next = head;
+		}
+		prev = head;
+		head = head->next;
+	}
+	return (i);
+}
+
+int	lst_iter(t_file_node **head, int flags, t_width *widths)
+{
+	t_file_node	*temp;
+	t_file_node	*previous;
+	t_file_node	*head_local;
+	int			i;
 
 	i = 0;
 	previous = NULL;
@@ -47,26 +69,14 @@ int lst_iter(t_file_node **head, int flags, t_width *widths)
 		temp->next = head_local;
 		previous = head_local;
 		(*head) = temp;
-		head_local = head_local->next;	
+		head_local = head_local->next;
 	}
 	else
 	{
 		previous = head_local;
 		head_local = head_local->next;
 	}
-	while (head_local)
-	{
-		if (head_local->next && sort_dispatch(head_local, flags, widths) > 0 && ++i)
-		{
-			temp = head_local->next;
-			previous->next = head_local->next;
-			head_local->next = head_local->next->next;
-			temp->next = head_local;
-		}
-		previous = head_local;
-		head_local = head_local->next;
-	}
-	return (i);
+	return (iter_split(head_local, previous, flags, widths) + i);
 }
 
 void lst_iter_loop(t_file_node **head, int flags, t_width *widths)
