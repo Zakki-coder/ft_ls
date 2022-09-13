@@ -6,7 +6,7 @@
 /*   By: jniemine <jniemine@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/11 19:31:18 by jniemine          #+#    #+#             */
-/*   Updated: 2022/09/11 19:55:44 by jniemine         ###   ########.fr       */
+/*   Updated: 2022/09/13 19:16:43 by jniemine         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -91,7 +91,7 @@ void	print_stat(t_file_node *node, t_width *widths, char **dir_paths, int *i)
 	ft_printf("%-*s", widths->max_usr_col + 2, node->usr);
 	ft_printf("%-*s", widths->max_grp_col + 1, node->grp);
 	if (node->type == DT_BLK || node->type == DT_CHR)
-		ft_printf(" %d, %d ", node->d_major, node->d_minor);
+		ft_printf("  %d,   %d ", node->d_major, node->d_minor);
 	else
 		ft_printf("%*d ", widths->size_col + 1, node->lstat.st_size);
 	print_time(node);

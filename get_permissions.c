@@ -6,7 +6,7 @@
 /*   By: jniemine <jniemine@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/11 17:40:07 by jniemine          #+#    #+#             */
-/*   Updated: 2022/09/11 17:59:49 by jniemine         ###   ########.fr       */
+/*   Updated: 2022/09/13 20:46:31 by jniemine         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,11 +25,11 @@ static void	get_extended_permissions(t_file_node *head, char *permissions)
 		if (permissions != NULL)
 			permissions[10] = '@';
 		head->ext_attr = (char *)ft_memalloc(size + 1);
-		listxattr(head->path, head->ext_attr, size, 0);
+		listxattr(head->path, head->ext_attr, size, XATTR_NOFOLLOW);
 	}
 	else if (acl)
 	{
-		head->acl = acl;
+//		head->acl = acl;
 		if (permissions != NULL)
 			permissions[10] = '+';
 	}

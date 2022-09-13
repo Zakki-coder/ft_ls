@@ -6,7 +6,7 @@
 /*   By: jniemine <jniemine@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/29 17:58:51 by jniemine          #+#    #+#             */
-/*   Updated: 2022/08/17 12:27:48 by jniemine         ###   ########.fr       */
+/*   Updated: 2022/09/13 20:48:12 by jniemine         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,8 +42,8 @@ int set_flags(char c, unsigned int *flags)
 	}
 	else if(c == '@')
 		*flags |= EXT_ATTR;
-	else if(c == 'e')
-		*flags |= ACL;
+//	else if(c == 'e')
+//		*flags |= ACL;
 	else
 	{
 		write(STDERR_FILENO, "ft_ls: illegal option -- ", 25);

@@ -6,7 +6,7 @@
 /*   By: jniemine <jniemine@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/11 18:36:55 by jniemine          #+#    #+#             */
-/*   Updated: 2022/09/13 17:33:22 by jniemine         ###   ########.fr       */
+/*   Updated: 2022/09/13 19:00:07 by jniemine         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,6 +33,7 @@ static int	rootless_split(char *buf, int is_rootless, char **path, DIR *dst)
 	return (0);
 }
 
+/* ft_ls -l /etc and ft_ls -l /etc/ */
 static int	test_special_case_rootless(char *path, DIR *dst)
 {
 	char		link[1024];
