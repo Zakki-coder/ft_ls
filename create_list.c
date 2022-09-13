@@ -6,7 +6,7 @@
 /*   By: jniemine <jniemine@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/22 14:44:27 by jniemine          #+#    #+#             */
-/*   Updated: 2022/09/13 00:04:37 by jniemine         ###   ########.fr       */
+/*   Updated: 2022/09/13 16:59:36 by jniemine         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,7 +54,11 @@ void	print_loop(t_file_node *head, t_width widths, char **dir_paths)
 	while (head)
 	{
 		while (head && !(widths.flags & ALL) && head->is_hidden)
+		{
+			head->is_head = 0;
 			head = head->next;
+			head->is_head = 1;
+		}
 		if (!head)
 			break ;
 		print_stat(head, &widths, dir_paths, &i);
@@ -84,7 +88,7 @@ static int	check_path(char ***paths, DIR **dirp, int *i, t_width *widths)
 {
 	int	ret;
 
-	if (*paths == NULL || **paths == NULL)
+	if ((*paths) == NULL || (**paths) == NULL)
 		return (-1);
 	if (!ft_strncmp(**paths, "/", 1))
 		ft_printf("\n%s:\n", **paths);
@@ -94,7 +98,9 @@ static int	check_path(char ***paths, DIR **dirp, int *i, t_width *widths)
 	if (ret < 0)
 		error_exit();
 	else if (ret == 0)
+	{
 		recursive_traverse(++(*paths), ++(*i), widths);
+	}
 	return (1);
 }
 
@@ -110,7 +116,7 @@ void	recursive_traverse(char **paths, int i, t_width *widths_flags)
 	errno = 0;
 	ft_bzero((void *)&widths, sizeof(t_width));
 	widths.flags = widths_flags->flags;
-	if (check_path(&paths, &dirp, &i, &widths) < 0)
+	if (check_path(&paths, &dirp, &i, &widths) < 0 || *paths == NULL)
 		return ;
 	head = create_list(dirp, *paths, &widths);
 	dir_paths = (char **)ft_memalloc(sizeof(char *) * (widths.dir_amount + 1));

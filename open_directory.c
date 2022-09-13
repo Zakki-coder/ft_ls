@@ -6,7 +6,7 @@
 /*   By: jniemine <jniemine@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/11 18:36:55 by jniemine          #+#    #+#             */
-/*   Updated: 2022/09/11 18:57:48 by jniemine         ###   ########.fr       */
+/*   Updated: 2022/09/13 17:33:22 by jniemine         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,8 +41,11 @@ static int	test_special_case_rootless(char *path, DIR *dst)
 	int			is_rootless;
 
 	is_rootless = 0;
-	if ((path)[ft_strlen(path) - 1] == '/')
+	if ((path)[ft_strlen(path) - 1] == '/' || (readlink(path, link, 1024) <= 0 && errno == EINVAL))
+	{
+		errno = 0;
 		return (0);
+	}
 	ft_bzero(link, 1024);
 	len = listxattr(path, NULL, 0, XATTR_NOFOLLOW);
 	if (len < 0)
@@ -82,6 +85,7 @@ int	open_directory(char *path, DIR **dst)
 	struct stat	tmp_stat;
 
 	*dst = opendir(path);
+
 	if (*dst && test_special_case_rootless(path, *dst))
 	{
 		*dst = NULL;
