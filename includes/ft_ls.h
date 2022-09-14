@@ -6,7 +6,7 @@
 /*   By: jniemine <jniemine@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/15 00:15:10 by jniemine          #+#    #+#             */
-/*   Updated: 2022/09/15 00:25:03 by jniemine         ###   ########.fr       */
+/*   Updated: 2022/09/15 00:33:19 by jniemine         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -98,32 +98,28 @@ struct s_file_node
 };
 
 void		create_filepointer(char **file_names, int k, t_width *widths);
-void		create_file_list(t_dir **fileps, t_width *widths, char **root_paths);
-void		make_columns(t_file_node *head, int rows, int word_width, char **dirs);
+void		create_file_list(t_dir **fileps, t_width *widths, char **r_paths);
+void		make_columns(t_file_node *hd, int rows, int w_width, char **dirs);
 void		print_extended_attributes(t_file_node *head, int flags);
 void		print_permissions(unsigned int st_mode, t_file_node *node);
-void		handle_path(char *root_path, t_file_node *head, t_dir *dirp, int flags);
+void		handle_path(char *r_path, t_file_node *hd, t_dir *dirp, int flags);
 void		get_t_dir_info(t_dir *filep, t_file_node *node);
 void		get_stat_info(t_file_node *node);
 void		update_widths(t_file_node *head, t_width *widths);
 t_file_node	*create_node(void);
 t_dir		*read_stream(DIR *dirp);
-void		sort_arguments(int argc, char **argv, t_width *widths, t_paths paths);
+void		sort_arguments(int argc, char **argv, t_width *w, t_paths p);
 int			open_directory(char *path, DIR **dst, t_width *widths);
-void		choose_output_format(t_file_node *head, t_width *widths, char **dir_paths);
+void		choose_output_format(t_file_node *hd, t_width *w, char **dir_paths);
 int			time_compare(struct stat t1, struct stat t2);
 int			reverse_strcmp(const char *s1, const char *s2);
 t_file_node	*sort(t_file_node **head, int flags, t_width *widths);
-void		print_lst(t_file_node *head); //DEL SO MUCHO
-void		lst_iter_loop(t_file_node **head, int flags, t_width *widths);
-int			lst_iter(t_file_node **head, int flags, t_width *widths);
 t_file_node	*create_list(DIR *dirp, char *dir_paths, t_width *widths);
 uint		nb_len(long long nb);
 void		error_exit(void);
 int			ls_get_flags(int argc, char **argv, unsigned int *flags);
 void		recursive_traverse(char **paths, int i, t_width *widths_flags);
 void		print_long_f(t_file_node *head, t_width widths, char **dir_paths);
-void		debugger(char **paths);
 void		free_lst(t_file_node *head);
 void		print_columns(t_file_node *head, t_width *widths, char **dir_paths);
 #endif

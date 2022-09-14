@@ -6,7 +6,7 @@
 /*   By: jniemine <jniemine@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/12 13:18:38 by jniemine          #+#    #+#             */
-/*   Updated: 2022/09/14 20:05:26 by jniemine         ###   ########.fr       */
+/*   Updated: 2022/09/15 00:29:10 by jniemine         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,7 +52,7 @@ int	iter_split(t_file_node *head, t_file_node *prev, int flags, t_width *widths)
 	return (i);
 }
 
-int	lst_iter(t_file_node **head, int flags, t_width *widths)
+static int	lst_iter(t_file_node **head, int flags, t_width *widths)
 {
 	t_file_node	*temp;
 	t_file_node	*previous;
@@ -79,7 +79,7 @@ int	lst_iter(t_file_node **head, int flags, t_width *widths)
 	return (iter_split(head_local, previous, flags, widths) + i);
 }
 
-void	lst_iter_loop(t_file_node **head, int flags, t_width *widths)
+static void	lst_iter_loop(t_file_node **head, int flags, t_width *widths)
 {
 	int	i;
 
