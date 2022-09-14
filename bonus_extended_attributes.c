@@ -6,7 +6,7 @@
 /*   By: jniemine <jniemine@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/11 20:00:45 by jniemine          #+#    #+#             */
-/*   Updated: 2022/09/13 20:49:14 by jniemine         ###   ########.fr       */
+/*   Updated: 2022/09/14 19:16:25 by jniemine         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,7 +49,6 @@ void print_extended_attributes(t_file_node *head, int flags)
 	{
 		while(i < head->ext_attr_len)	
 		{
-			print_len = getxattr(head->path, head->ext_attr + i, NULL, 0, 0, XATTR_NOFOLLOW);
 			print_len = getxattr(head->path, head->ext_attr + i, NULL, 0, 0, XATTR_NOFOLLOW);
 			tab_n = ft_strlen(head->ext_attr + i) / 8;
 			ft_printf("\t%s", head->ext_attr + i);
