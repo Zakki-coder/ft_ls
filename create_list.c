@@ -6,7 +6,7 @@
 /*   By: jniemine <jniemine@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/22 14:44:27 by jniemine          #+#    #+#             */
-/*   Updated: 2022/09/13 16:59:36 by jniemine         ###   ########.fr       */
+/*   Updated: 2022/09/14 20:41:54 by jniemine         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,24 +26,6 @@ t_file_node	*create_node(void)
 	new->path = NULL;
 	new->next = NULL;
 	return (new);
-}
-
-void	free_lst(t_file_node *head)
-{
-	t_file_node	*previous;
-
-	while (head)
-	{
-		previous = head;
-		head = head->next;
-		free(previous->usr);
-		free(previous->grp);
-		free(previous->ext_attr);
-		free(previous->dir_path);
-		free(previous->file_name);
-		free(previous->path);
-		free(previous);
-	}
 }
 
 void	print_loop(t_file_node *head, t_width widths, char **dir_paths)
@@ -67,70 +49,6 @@ void	print_loop(t_file_node *head, t_width widths, char **dir_paths)
 	return ;
 }
 
-//Create local list, fill it with directory names.
-//While there are names in dir list, read list.
-//If list empty, return.
-/*Count number of directories in create_list
-	and create list of directories in print
-	*/
-/*
-void debugger(char **paths)
-{
-	int i;
-	
-	i = 0;
-	while (paths[i])
-		printf("%s\n", paths[i++]);
-}
-*/
-
-static int	check_path(char ***paths, DIR **dirp, int *i, t_width *widths)
-{
-	int	ret;
-
-	if ((*paths) == NULL || (**paths) == NULL)
-		return (-1);
-	if (!ft_strncmp(**paths, "/", 1))
-		ft_printf("\n%s:\n", **paths);
-	else
-		ft_printf("%s%s:\n", "\n./", **paths);
-	ret = open_directory(**paths, dirp);
-	if (ret < 0)
-		error_exit();
-	else if (ret == 0)
-	{
-		recursive_traverse(++(*paths), ++(*i), widths);
-	}
-	return (1);
-}
-
-void	recursive_traverse(char **paths, int i, t_width *widths_flags)
-{
-	char		**dir_paths;
-	t_file_node	*head;
-	t_width		widths;
-	DIR			*dirp;
-
-	dirp = NULL;
-	head = NULL;
-	errno = 0;
-	ft_bzero((void *)&widths, sizeof(t_width));
-	widths.flags = widths_flags->flags;
-	if (check_path(&paths, &dirp, &i, &widths) < 0 || *paths == NULL)
-		return ;
-	head = create_list(dirp, *paths, &widths);
-	dir_paths = (char **)ft_memalloc(sizeof(char *) * (widths.dir_amount + 1));
-	if (!dir_paths || closedir(dirp) < 0)
-		error_exit();
-	dir_paths[widths.dir_amount] = NULL;
-	choose_output_format(head, &widths, dir_paths);
-	if (dir_paths != NULL && *dir_paths != NULL)
-		recursive_traverse(dir_paths++, ++i, &widths);
-	if (paths != NULL && *paths != NULL)
-		recursive_traverse(++paths, ++i, &widths);
-	free_lst(head);
-}
-
 void	handle_path(char *root_path, t_file_node *head, t_dir *filep, int flags)
 {
 	int	len;
@@ -150,7 +68,7 @@ void	handle_path(char *root_path, t_file_node *head, t_dir *filep, int flags)
 		&& head->path[ft_strlen(head->path) - 1] != '/')
 		ft_strcat(head->path, "/");
 	ft_strcat(head->path, filep->d_name);
-	if (filep->d_name[0] == '.' /*&& ft_strcmp(filep->d_name, ".") != 0 && ft_strcmp(filep->d_name, "..") != 0*/)
+	if (filep->d_name[0] == '.')
 		head->is_hidden = 1;
 }
 
@@ -186,18 +104,10 @@ void	get_stat_info(t_file_node *node)
 	node->d_major = major(node->stat.st_rdev);
 }
 
-/* readdir returns NULL when end has been reached
-	or on ERROR, make error handling */
-t_dir	*read_stream(DIR *dirp)
+static void update_width_split(t_width *widths)
 {
-	t_dir	*filep;
-
-	filep = NULL;
-	if (dirp)
-		filep = readdir(dirp);
-	if (!filep && errno > 0)
+	if (!widths->dir_path)
 		error_exit();
-	return (filep);
 }
 
 void	update_widths(t_file_node *head, t_width *widths)
@@ -210,44 +120,29 @@ void	update_widths(t_file_node *head, t_width *widths)
 		++widths->file_amount;
 		if (head->type & DT_DIR)
 			widths->dir_amount++;
-	len = ft_strlen(head->file_name);
-	if (widths->longest_filename < len)
-		widths->longest_filename = len;
-	if (widths->link_col < nb_len(head->lstat.st_nlink))
-		widths->link_col = nb_len(head->lstat.st_nlink);
-	if (widths->size_col < nb_len(head->lstat.st_size))
-		widths->size_col = nb_len(head->lstat.st_size);
-	len = ft_strlen(head->usr);
-	if (widths->max_usr_col < len)
-		widths->max_usr_col = len;
-	len = ft_strlen(head->grp);
-	if (widths->max_grp_col < len)
-		widths->max_grp_col = len;
-	widths->total_size += head->stat.st_blocks;
+		len = ft_strlen(head->file_name);
+		if (widths->longest_filename < len)
+			widths->longest_filename = len;
+		if (widths->link_col < nb_len(head->lstat.st_nlink))
+			widths->link_col = nb_len(head->lstat.st_nlink);
+		if (widths->size_col < nb_len(head->lstat.st_size))
+			widths->size_col = nb_len(head->lstat.st_size);
+		len = ft_strlen(head->usr);
+		if (widths->max_usr_col < len)
+			widths->max_usr_col = len;
+		len = ft_strlen(head->grp);
+		if (widths->max_grp_col < len)
+			widths->max_grp_col = len;
+		widths->total_size += head->stat.st_blocks;
 	}
 	widths->dir_path = ft_strdup(head->dir_path);
-	if (!widths->dir_path)
-		error_exit();
+	update_width_split(widths);
 }
 
-/*
-int	wind_over_hidden(DIR *dirp, t_dir **filep, int flags)
-{
-	if (!(flags & ALL))
-	{
-		while (*filep && (*filep)->d_name[0] == '.')
-			*filep = read_stream(dirp);
-	}
-	if (!*filep)
-		return (1);
-	return (0);
-}
-*/
-
-static void init_helper(t_file_node **prev, t_width *widths,
+static void	init_helper(t_file_node **prev, t_width *widths,
 		t_file_node **head, t_file_node **lst_start)
 {
-	int flags;
+	int	flags;
 
 	*prev = NULL;
 	flags = widths->flags;
@@ -259,16 +154,13 @@ static void init_helper(t_file_node **prev, t_width *widths,
 	*lst_start = *head;
 }
 
-/*
-static int	read_stream_wrap(t_dir **filep, DIR *dirp)
+static void advance_head(t_file_node **head, t_file_node **prev)
 {
-	*filep = read_stream(dirp);
-	if (!(*filep))
-		return (0);
-	return (1);
+	(*head)->next = create_node();
+	*prev = *head;
+	*head = (*head)->next;
 }
-*/
-//Arguments are opened directory and path name to that directory
+
 /* This reads files from one directory at a time */
 t_file_node	*create_list(DIR *dirp, char *path, t_width *widths)
 {
@@ -283,18 +175,6 @@ t_file_node	*create_list(DIR *dirp, char *path, t_width *widths)
 	init_helper(&prev, widths, &head, &lst_start);
 	while (filep != NULL && dirp != NULL)
 	{
-//		if (wind_over_hidden(dirp, &filep, widths->flags))
-//		{
-//			if (!prev)
-//			{
-//				widths->dir_path = ft_memalloc(ft_strlen(path) + 1);
-//				ft_strcpy(widths->dir_path, path);
-//				return(NULL);
-//			}
-//			free_lst(prev->next);
-//			prev->next = NULL;
-//			break ;
-//		}
 		get_t_dir_info(filep, head);
 		handle_path(path, head, filep, widths->flags);
 		get_stat_info(head);
@@ -302,11 +182,7 @@ t_file_node	*create_list(DIR *dirp, char *path, t_width *widths)
 		update_widths(head, widths);
 		filep = read_stream(dirp);
 		if (filep != NULL)
-		{
-			head->next = create_node();
-			prev = head;
-			head = head->next;
-		}
+			advance_head(&head, &prev);
 	}
 	if (!filep && errno != 0)
 		error_exit();

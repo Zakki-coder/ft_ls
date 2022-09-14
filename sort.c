@@ -6,7 +6,7 @@
 /*   By: jniemine <jniemine@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/12 13:18:38 by jniemine          #+#    #+#             */
-/*   Updated: 2022/09/13 00:20:42 by jniemine         ###   ########.fr       */
+/*   Updated: 2022/09/14 20:05:26 by jniemine         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -102,7 +102,6 @@ t_file_node	*sort(t_file_node **head, int flags, t_width *widths)
 	}
 	if (*head != NULL)
 	{
-	//	*head = (*head)->next;
 		(*head)->is_head = 0;
 		if (flags & TIME_ORDER)
 			lst_iter_loop(head, 0, widths);

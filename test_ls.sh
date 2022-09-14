@@ -25,3 +25,5 @@ make re; ./ft_ls
 #Dir with chmod 000 try ft_ls dir and ft_ls dir/
 #ft_ls -l /etc
 #test /var/run without -a flag
+#Test link to file no right
+#Test link to dir no right

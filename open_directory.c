@@ -6,7 +6,7 @@
 /*   By: jniemine <jniemine@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/11 18:36:55 by jniemine          #+#    #+#             */
-/*   Updated: 2022/09/13 19:00:07 by jniemine         ###   ########.fr       */
+/*   Updated: 2022/09/14 23:03:58 by jniemine         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,7 +42,8 @@ static int	test_special_case_rootless(char *path, DIR *dst)
 	int			is_rootless;
 
 	is_rootless = 0;
-	if ((path)[ft_strlen(path) - 1] == '/' || (readlink(path, link, 1024) <= 0 && errno == EINVAL))
+	if ((path)[ft_strlen(path) - 1] == '/'
+		|| (readlink(path, link, 1024) <= 0 && errno == EINVAL))
 	{
 		errno = 0;
 		return (0);
@@ -58,18 +59,23 @@ static int	test_special_case_rootless(char *path, DIR *dst)
 	return (rootless_split(buf, is_rootless, &path, dst));
 }
 
-static int	open_directory_split(char *path)
+/* the firs if is for ft_ls -l when the argument
+	is slink to dir without access rights*/
+static int	open_directory_split(char *path, t_width *widths)
 {
 	char	*error;
 	char	*tmp;
+	char	readlink_buf[1024];
 
+	if (widths && widths->flags & LONG_LST
+		&& errno == EACCES && readlink(path, readlink_buf, 10) > 0)
+	{
+		errno = 0;
+		return (-1);
+	}
 	error = strerror(errno);
 	tmp = ft_strrchr(path, '/');
-	/* This ENOENT thing is here just for moulitest, delete maybe*/
-	if (errno != ENOENT && errno != EACCES)
-		write(STDERR_FILENO, "ft_ls: ", 7);
-	else
-		write(STDERR_FILENO, "ls: ", 4);
+	write(STDERR_FILENO, "ls: ", 4);
 	if (!tmp || errno == ENOENT)
 		write(STDERR_FILENO, path, ft_strlen(path));
 	else
@@ -81,12 +87,11 @@ static int	open_directory_split(char *path)
 	return (0);
 }
 
-int	open_directory(char *path, DIR **dst)
+int	open_directory(char *path, DIR **dst, t_width *widths)
 {
 	struct stat	tmp_stat;
 
 	*dst = opendir(path);
-
 	if (*dst && test_special_case_rootless(path, *dst))
 	{
 		*dst = NULL;
@@ -103,6 +108,6 @@ int	open_directory(char *path, DIR **dst)
 	if (!*dst && errno != ENOENT && errno != ENAMETOOLONG && errno != EACCES)
 		error_exit();
 	else if (!*dst)
-		return (open_directory_split(path));
+		return (open_directory_split(path, widths));
 	return (1);
 }

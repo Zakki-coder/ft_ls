@@ -6,14 +6,13 @@
 /*   By: jniemine <jniemine@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/03 11:19:19 by jniemine          #+#    #+#             */
-/*   Updated: 2022/08/15 22:40:56 by jniemine         ###   ########.fr       */
+/*   Updated: 2022/09/14 19:50:12 by jniemine         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "includes/ft_ls.h"
 
-/* CHANGELOG: Changed dir_path to widths Shouldnt it has alla the dir info and node the file info?*/
-void choose_output_format(t_file_node *head, t_width *widths, char **dir_paths)
+void	choose_output_format(t_file_node *head, t_width *widths, char **dpaths)
 {
 	if (widths && widths->flags & PRINT_DIR_NAME)
 	{	
@@ -24,16 +23,10 @@ void choose_output_format(t_file_node *head, t_width *widths, char **dir_paths)
 		}
 		ft_printf("%s:\n", widths->dir_path);
 	}
-//	while (head != NULL && !(widths->flags & ALL) && head->file_name[0] == '.')
-//	{
-//		head = head->next;
-//		if (head)
-//			head->is_head = 1;
-//	}
 	if (!head)
-		return;
+		return ;
 	if (widths->flags & LONG_LST)
-		print_loop(head, *widths, dir_paths);
+		print_loop(head, *widths, dpaths);
 	else
-		print_columns(head, widths, dir_paths);
+		print_columns(head, widths, dpaths);
 }

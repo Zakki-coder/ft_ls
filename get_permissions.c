@@ -6,7 +6,7 @@
 /*   By: jniemine <jniemine@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/11 17:40:07 by jniemine          #+#    #+#             */
-/*   Updated: 2022/09/13 20:46:31 by jniemine         ###   ########.fr       */
+/*   Updated: 2022/09/14 19:41:20 by jniemine         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,7 +29,6 @@ static void	get_extended_permissions(t_file_node *head, char *permissions)
 	}
 	else if (acl)
 	{
-//		head->acl = acl;
 		if (permissions != NULL)
 			permissions[10] = '+';
 	}
