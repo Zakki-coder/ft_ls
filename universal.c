@@ -6,7 +6,7 @@
 /*   By: jniemine <jniemine@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/19 20:28:46 by jniemine          #+#    #+#             */
-/*   Updated: 2022/09/14 20:28:26 by jniemine         ###   ########.fr       */
+/*   Updated: 2022/09/14 23:58:58 by jniemine         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,8 +53,6 @@ void	free_lst(t_file_node *head)
 	}
 }
 
-/* readdir returns NULL when end has been reached
-	or on ERROR, make error handling */
 t_dir	*read_stream(DIR *dirp)
 {
 	t_dir	*filep;
@@ -65,4 +63,20 @@ t_dir	*read_stream(DIR *dirp)
 	if (!filep && errno > 0)
 		error_exit();
 	return (filep);
+}
+
+t_file_node	*create_node(void)
+{
+	t_file_node	*new;
+
+	new = (t_file_node *)ft_memalloc(sizeof(t_file_node));
+	if (!new)
+		error_exit();
+	ft_bzero(new, sizeof(*new));
+	new->is_head = 0;
+	new->total_blocks = 0;
+	new->ext_attr = NULL;
+	new->path = NULL;
+	new->next = NULL;
+	return (new);
 }
