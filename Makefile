@@ -12,7 +12,7 @@ all: ${NAME}
 ${NAME}:
 	make -C ./libft/
 #	gcc -o ${NAME} ${FLAGS} ${SRC} 
-	gcc -o ${NAME} ${FLAGS} ${SRC} 
+	gcc -o ${NAME} ${FLAGS} ${SRC} -g
 
 clean:
 	make clean -C ./libft/

@@ -6,7 +6,7 @@
 /*   By: jniemine <jniemine@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/11 18:36:55 by jniemine          #+#    #+#             */
-/*   Updated: 2022/09/14 23:03:58 by jniemine         ###   ########.fr       */
+/*   Updated: 2022/09/15 19:57:18 by jniemine         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,23 +59,34 @@ static int	test_special_case_rootless(char *path, DIR *dst)
 	return (rootless_split(buf, is_rootless, &path, dst));
 }
 
-/* the firs if is for ft_ls -l when the argument
+/*  for ft_ls -l when the argument
 	is slink to dir without access rights*/
-static int	open_directory_split(char *path, t_width *widths)
+static int exception(t_width *widths, char *path)
 {
-	char	*error;
-	char	*tmp;
 	char	readlink_buf[1024];
+	int		errno_bk;
 
+	errno_bk = errno;
 	if (widths && widths->flags & LONG_LST
 		&& errno == EACCES && readlink(path, readlink_buf, 10) > 0)
 	{
 		errno = 0;
-		return (-1);
+		return (1);
 	}
+	errno = errno_bk;
+	return (0);
+}
+
+static int	open_directory_split(char *path, t_width *widths)
+{
+	char	*error;
+	char	*tmp;
+
+	if (exception(widths, path))
+		return (-1);
 	error = strerror(errno);
 	tmp = ft_strrchr(path, '/');
-	write(STDERR_FILENO, "ls: ", 4);
+	write(STDERR_FILENO, "ft_ls: ", 7);
 	if (!tmp || errno == ENOENT)
 		write(STDERR_FILENO, path, ft_strlen(path));
 	else
@@ -105,9 +116,9 @@ int	open_directory(char *path, DIR **dst, t_width *widths)
 		errno = 0;
 		return (-1);
 	}
-	if (!*dst && errno != ENOENT && errno != ENAMETOOLONG && errno != EACCES)
+	if (!(*dst) && errno != ENOENT && errno != ENAMETOOLONG && errno != EACCES)
 		error_exit();
-	else if (!*dst)
+	else if (!(*dst))
 		return (open_directory_split(path, widths));
 	return (1);
 }

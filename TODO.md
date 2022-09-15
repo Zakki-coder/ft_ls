@@ -1,3 +1,5 @@
+HORRIBLE SEGFAULT PANIC PANIC PANIC: ft_ls -Rl /Library/Application\ Support/Apple/AssetCache/
+
 ft_ls *
 test leaks, check frees.
 test from root with all flags.

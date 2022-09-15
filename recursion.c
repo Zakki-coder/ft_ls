@@ -6,7 +6,7 @@
 /*   By: jniemine <jniemine@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/14 20:18:07 by jniemine          #+#    #+#             */
-/*   Updated: 2022/09/14 21:13:05 by jniemine         ###   ########.fr       */
+/*   Updated: 2022/09/15 20:12:11 by jniemine         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,9 +26,7 @@ static int	check_path(char ***paths, DIR **dirp, int *i, t_width *widths)
 	if (ret < 0)
 		error_exit();
 	else if (ret == 0)
-	{
 		recursive_traverse(++(*paths), ++(*i), widths);
-	}
 	return (1);
 }
 
@@ -44,11 +42,11 @@ void	recursive_traverse(char **paths, int i, t_width *widths_flags)
 	errno = 0;
 	ft_bzero((void *)&widths, sizeof(t_width));
 	widths.flags = widths_flags->flags;
-	if (check_path(&paths, &dirp, &i, &widths) < 0 || *paths == NULL)
+	if (!(*paths) || check_path(&paths, &dirp, &i, &widths) < 0)
 		return ;
 	head = create_list(dirp, *paths, &widths);
 	dir_paths = (char **)ft_memalloc(sizeof(char *) * (widths.dir_amount + 1));
-	if (!dir_paths || closedir(dirp) < 0)
+	if (!dir_paths || (dirp && closedir(dirp) < 0))
 		error_exit();
 	dir_paths[widths.dir_amount] = NULL;
 	choose_output_format(head, &widths, dir_paths);
