@@ -6,7 +6,7 @@
 /*   By: jniemine <jniemine@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/12 00:13:14 by jniemine          #+#    #+#             */
-/*   Updated: 2022/09/15 19:28:16 by jniemine         ###   ########.fr       */
+/*   Updated: 2022/09/15 21:48:33 by jniemine         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,7 +27,9 @@ static int	count_tab_n(int longest_filename, int *word_width)
 
 int	count_rows(int file_n, int words_in_line)
 {
-	while (file_n % words_in_line != 0)
+	if (words_in_line == 0)
+		return (1);
+	while (words_in_line && file_n % words_in_line != 0)
 		++file_n;
 	return (file_n / words_in_line);
 }

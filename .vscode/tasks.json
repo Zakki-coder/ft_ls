@@ -1,0 +1,27 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"label": "Build",
+			"type": "shell",
+			"command": "make",
+			"group": "build",
+			"options": {
+				"cwd": "${workspaceFolder}"
+			},
+			"args": [
+//				"make",
+				"re",
+				"--directory=${workspaceFolder};",
+			],
+			"problemMatcher": [
+				"$gcc"
+			],
+			"presentation": {
+                "reveal":"always",
+				"panel": "new"
+			},
+			//"detail": "compiler: /usr/bin/clang"
+		}
+	]
+}
