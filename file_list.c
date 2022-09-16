@@ -6,7 +6,7 @@
 /*   By: jniemine <jniemine@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/12 20:13:05 by jniemine          #+#    #+#             */
-/*   Updated: 2022/09/12 20:36:39 by jniemine         ###   ########.fr       */
+/*   Updated: 2022/09/16 17:12:05 by jniemine         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,7 +20,7 @@ static t_dir	*search_file_pointer(char *path, char *filename)
 
 	filep = NULL;
 	dirp = NULL;
-	if (open_directory(path, &dirp) == 1)
+	if (open_directory(path, &dirp, NULL) == 1)
 		filep = read_stream(dirp);
 	while (filep)
 	{

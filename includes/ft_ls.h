@@ -100,7 +100,7 @@ void update_widths(t_file_node *head, t_width *widths);
 t_file_node *create_node(void);
 t_dir *read_stream(DIR *dirp);
 void sort_arguments(int argc, char **argv, t_width *widths, t_paths paths);
-int open_directory(char *path, DIR **dst);
+int open_directory(char *path, DIR **dst, t_width *w);
 void choose_output_format(t_file_node *head, t_width *widths, char **dir_paths);
 int time_compare(struct stat t1, struct stat t2);
 int reverse_strcmp(const char *s1, const char *s2);

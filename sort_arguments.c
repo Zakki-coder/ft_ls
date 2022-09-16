@@ -6,7 +6,7 @@
 /*   By: jniemine <jniemine@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/03 12:49:40 by jniemine          #+#    #+#             */
-/*   Updated: 2022/09/13 12:46:06 by jniemine         ###   ########.fr       */
+/*   Updated: 2022/09/16 17:12:57 by jniemine         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,7 +45,7 @@ static void	sepertate_dir_and_file(char **argv, t_paths *paths,
 	DIR	*dirp;
 
 	dirp = NULL;
-	open_dir_ret = open_directory(*argv, &dirp);
+	open_dir_ret = open_directory(*argv, &dirp, widths);
 	if (open_dir_ret == 1)
 	{
 		paths->arg_paths[paths->j] = ft_strdup(*argv);
@@ -71,7 +71,7 @@ void	sort_arguments(int argc, char **argv, t_width *widths, t_paths paths)
 {
 	char	**file_names;
 
-	if (!*argv && open_directory(".", paths.open_dir) == 1)
+	if (!*argv && open_directory(".", paths.open_dir, NULL) == 1)
 	{
 		*paths.arg_paths = ft_strdup(".");
 		return ;
