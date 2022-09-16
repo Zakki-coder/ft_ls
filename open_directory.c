@@ -6,7 +6,7 @@
 /*   By: jniemine <jniemine@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/11 18:36:55 by jniemine          #+#    #+#             */
-/*   Updated: 2022/09/13 19:00:07 by jniemine         ###   ########.fr       */
+/*   Updated: 2022/09/16 17:00:26 by jniemine         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,7 +42,8 @@ static int	test_special_case_rootless(char *path, DIR *dst)
 	int			is_rootless;
 
 	is_rootless = 0;
-	if ((path)[ft_strlen(path) - 1] == '/' || (readlink(path, link, 1024) <= 0 && errno == EINVAL))
+	if ((path)[ft_strlen(path) - 1] == '/'
+		|| (readlink(path, link, 1024) <= 0 && errno == EINVAL))
 	{
 		errno = 0;
 		return (0);
