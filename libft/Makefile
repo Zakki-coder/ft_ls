@@ -12,9 +12,9 @@
 
 NAME = libft.a
 
-INCLUDES = -I"./"
+INCLUDES = -I ./
 
-INC_FT_PRINTF = -I"./ft_printf/includes"
+INC_FT_PRINTF = -I ./ft_printf/includes
 
 CFLAG = -Wall -Wextra -Werror
 

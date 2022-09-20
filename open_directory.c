@@ -6,7 +6,7 @@
 /*   By: jniemine <jniemine@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/11 18:36:55 by jniemine          #+#    #+#             */
-/*   Updated: 2022/09/16 17:08:41 by jniemine         ###   ########.fr       */
+/*   Updated: 2022/09/20 19:03:22 by jniemine         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,7 +61,7 @@ static int	test_special_case_rootless(char *path, DIR *dst)
 
 /*  for ft_ls -l when the argument
 	is slink to dir without access rights*/
-static int exception(t_width *widths, char *path)
+static int	exception(t_width *widths, char *path)
 {
 	char	readlink_buf[1024];
 	int		errno_bk;
@@ -86,11 +86,7 @@ static int	open_directory_split(char *path, t_width *widths)
 		return (-1);
 	error = strerror(errno);
 	tmp = ft_strrchr(path, '/');
-	/* This ENOENT thing is here just for moulitest, delete maybe*/
-	if (errno != ENOENT && errno != EACCES)
-		write(STDERR_FILENO, "ft_ls: ", 7);
-	else
-		write(STDERR_FILENO, "ls: ", 4);
+	write(STDERR_FILENO, "ls: ", 4);
 	if (!tmp || errno == ENOENT)
 		write(STDERR_FILENO, path, ft_strlen(path));
 	else
@@ -107,7 +103,6 @@ int	open_directory(char *path, DIR **dst, t_width *w)
 	struct stat	tmp_stat;
 
 	*dst = opendir(path);
-
 	if (*dst && test_special_case_rootless(path, *dst))
 	{
 		*dst = NULL;
