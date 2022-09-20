@@ -6,7 +6,7 @@
 /*   By: jniemine <jniemine@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/11 17:40:07 by jniemine          #+#    #+#             */
-/*   Updated: 2022/09/20 22:28:34 by jniemine         ###   ########.fr       */
+/*   Updated: 2022/09/20 22:44:11 by jniemine         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,6 +36,7 @@ static void	get_extended_permissions(t_file_node *head, char *permissions)
 		permissions[10] = ' ';
 	permissions[11] = '\0';
 	ft_printf("%-11s", permissions);
+	acl_free((void *)acl);	
 }
 
 static void	third_field(unsigned int st_mode, char *permissions, int i)
