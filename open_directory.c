@@ -6,7 +6,7 @@
 /*   By: jniemine <jniemine@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/11 18:36:55 by jniemine          #+#    #+#             */
-/*   Updated: 2022/09/20 19:03:22 by jniemine         ###   ########.fr       */
+/*   Updated: 2022/09/20 22:33:04 by jniemine         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -86,7 +86,7 @@ static int	open_directory_split(char *path, t_width *widths)
 		return (-1);
 	error = strerror(errno);
 	tmp = ft_strrchr(path, '/');
-	write(STDERR_FILENO, "ls: ", 4);
+	write(STDERR_FILENO, "ft_ls: ", 7);
 	if (!tmp || errno == ENOENT)
 		write(STDERR_FILENO, path, ft_strlen(path));
 	else

@@ -1,32 +1,45 @@
-#ifndef FT_LS
-# define FT_LS
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   ft_ls.h                                            :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: jniemine <jniemine@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2022/09/20 22:21:26 by jniemine          #+#    #+#             */
+/*   Updated: 2022/09/20 22:26:44 by jniemine         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
 
-#include <dirent.h>
-#include <time.h>
-#include <errno.h>
-#include <stdlib.h>
-#include <sys/stat.h>
-#include <pwd.h>
-#include <grp.h>
-#include <sys/ioctl.h>
-#include <sys/xattr.h>
-#include <sys/acl.h>
-#include "../libft/ft_printf/includes/ft_printf.h"
+#ifndef FT_LS_H
+# define FT_LS_H
 
-#define EXT_ATTR		1
-#define LONG_LST		2
-#define RECURSIVE		4
-#define REVERSE_ORDER	8 
-#define ALL				16
-#define TIME_ORDER		32
-#define	PRINT_DIR_NAME	64
-#define ONE_COLUMN		128
-#define ACL				256
-#define PRINT_NL		512
+# include <dirent.h>
+# include <time.h>
+# include <errno.h>
+# include <stdlib.h>
+# include <sys/stat.h>
+# include <pwd.h>
+# include <grp.h>
+# include <sys/ioctl.h>
+# include <sys/xattr.h>
+# include <sys/acl.h>
+# include "../libft/ft_printf/includes/ft_printf.h"
 
-#define ALLOWED_OPTIONS "-lRrat"
-typedef struct stat		t_stat;
-typedef struct dirent		t_dir; 
+# define EXT_ATTR		1
+# define LONG_LST		2
+# define RECURSIVE		4
+# define REVERSE_ORDER	8 
+# define ALL				16
+# define TIME_ORDER		32
+# define PRINT_DIR_NAME	64
+# define ONE_COLUMN		128
+# define ACL				256
+# define PRINT_NL		512
+
+# define ALLOWED_OPTIONS "-lRrat"
+
+typedef struct stat			t_stat;
+typedef struct dirent		t_dir;
 typedef struct s_file_node	t_file_node;
 
 typedef struct s_dir_and_paths
@@ -75,32 +88,32 @@ struct s_file_node
 	char			*ext_attr;
 	char			*dir_path;
 	char			*path;
-	t_file_node 	*next;
+	t_file_node		*next;
 };
 
-void create_filepointer(char **file_names, int k, t_width *widths);
-void create_file_list(t_dir **fileps, t_width *widths, char **root_paths);
-void make_columns(t_file_node *head, int rows, int word_width, char **dirs);
-void print_extended_attributes(t_file_node *head, int flags);
-void print_permissions(unsigned int st_mode, t_file_node *node);
-void handle_path(char *root_path, t_file_node *head, t_dir *dirp, int flags);
-void get_t_dir_info(t_dir *filep, t_file_node *node);
-void get_stat_info(t_file_node *node);
-void update_widths(t_file_node *head, t_width *widths);
-t_file_node *create_node(void);
-int	read_stream(DIR *dirp, t_dir **filep);
-void sort_arguments(int argc, char **argv, t_width *widths, t_paths paths);
-int open_directory(char *path, DIR **dst, t_width *w);
-void choose_output_format(t_file_node *head, t_width *widths, char **dir_paths);
-int time_compare(struct stat t1, struct stat t2);
-int reverse_strcmp(const char *s1, const char *s2);
-t_file_node *sort(t_file_node **head, int flags, t_width *widths);
-t_file_node *create_list(DIR *dirp, char *dir_paths, t_width *widths);
-unsigned int nb_len(long long nb);
-void error_exit(void);
-int ls_get_flags(int argc, char **argv, unsigned int *flags);
-void recursive_traverse(char **paths, int i, t_width *widths_flags);
-void print_long_format(t_file_node *head, t_width widths, char **dir_paths);
-void free_lst(t_file_node *head);
-void print_columns(t_file_node *head, t_width *widths, char **dir_paths);
+void			create_filepointer(char **file_names, int k, t_width *widths);
+void			create_file_list(t_dir **fileps, t_width *w, char **root_paths);
+void			make_columns(t_file_node *h, int rws, int w_width, char **dirs);
+void			print_extended_attributes(t_file_node *head, int flags);
+void			print_permissions(unsigned int st_mode, t_file_node *node);
+void			handle_path(char *r_path, t_file_node *h, t_dir *dp, int flags);
+void			get_t_dir_info(t_dir *filep, t_file_node *node);
+void			get_stat_info(t_file_node *node);
+void			update_widths(t_file_node *head, t_width *widths);
+t_file_node		*create_node(void);
+int				read_stream(DIR *dirp, t_dir **filep);
+void			sort_arguments(int argc, char **argv, t_width *w, t_paths path);
+int				open_directory(char *path, DIR **dst, t_width *w);
+void			choose_output_format(t_file_node *h, t_width *w, char **dpaths);
+int				time_compare(struct stat t1, struct stat t2);
+int				reverse_strcmp(const char *s1, const char *s2);
+t_file_node		*sort(t_file_node **head, int flags, t_width *widths);
+t_file_node		*create_list(DIR *dirp, char *dir_paths, t_width *widths);
+unsigned int	nb_len(long long nb);
+void			error_exit(void);
+int				ls_get_flags(int argc, char **argv, unsigned int *flags);
+void			recursive_traverse(char **paths, int i, t_width *widths_flags);
+void			print_long_format(t_file_node *h, t_width w, char **dir_paths);
+void			free_lst(t_file_node *head);
+void			print_columns(t_file_node *head, t_width *w, char **dir_paths);
 #endif
