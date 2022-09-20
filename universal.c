@@ -6,7 +6,7 @@
 /*   By: jniemine <jniemine@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/19 20:28:46 by jniemine          #+#    #+#             */
-/*   Updated: 2022/09/12 13:16:13 by jniemine         ###   ########.fr       */
+/*   Updated: 2022/09/20 18:38:48 by jniemine         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,4 +33,15 @@ unsigned int	nb_len(long long nb)
 		nb /= 10;
 	}
 	return (len);
+}
+
+/* readdir returns NULL when end has been reached
+	or on ERROR, make error handling */
+int	read_stream(DIR *dirp, t_dir **filep)
+{
+	if (dirp)
+		*filep = readdir(dirp);
+	if (!(*filep) && errno > 0)
+		error_exit();
+	return (1);
 }

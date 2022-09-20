@@ -6,13 +6,13 @@
 /*   By: jniemine <jniemine@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/12 13:18:38 by jniemine          #+#    #+#             */
-/*   Updated: 2022/09/13 00:20:42 by jniemine         ###   ########.fr       */
+/*   Updated: 2022/09/20 18:53:52 by jniemine         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "includes/ft_ls.h"
 
-int	sort_dispatch(t_file_node *head, int flags, t_width *widths)
+static int	sort_dispatch(t_file_node *head, int flags, t_width *widths)
 {
 	if (flags & TIME_ORDER)
 		return (time_compare(head->stat, head->next->stat));
@@ -30,29 +30,29 @@ int	sort_dispatch(t_file_node *head, int flags, t_width *widths)
 	}
 }
 
-int	iter_split(t_file_node *head, t_file_node *prev, int flags, t_width *widths)
+static int	iter_split(t_file_node *h, t_file_node *prev, int flags, t_width *w)
 {
 	t_file_node	*temp;
 	int			i;
 
 	i = 0;
-	while (head)
+	while (h)
 	{
-		if (head->next && sort_dispatch(head, flags, widths) > 0
+		if (h->next && sort_dispatch(h, flags, w) > 0
 			&& ++i)
 		{
-			temp = head->next;
-			prev->next = head->next;
-			head->next = head->next->next;
-			temp->next = head;
+			temp = h->next;
+			prev->next = h->next;
+			h->next = h->next->next;
+			temp->next = h;
 		}
-		prev = head;
-		head = head->next;
+		prev = h;
+		h = h->next;
 	}
 	return (i);
 }
 
-int	lst_iter(t_file_node **head, int flags, t_width *widths)
+static int	lst_iter(t_file_node **head, int flags, t_width *widths)
 {
 	t_file_node	*temp;
 	t_file_node	*previous;
@@ -79,7 +79,7 @@ int	lst_iter(t_file_node **head, int flags, t_width *widths)
 	return (iter_split(head_local, previous, flags, widths) + i);
 }
 
-void	lst_iter_loop(t_file_node **head, int flags, t_width *widths)
+static void	lst_iter_loop(t_file_node **head, int flags, t_width *widths)
 {
 	int	i;
 
@@ -92,17 +92,8 @@ void	lst_iter_loop(t_file_node **head, int flags, t_width *widths)
 
 t_file_node	*sort(t_file_node **head, int flags, t_width *widths)
 {
-	while (*head != NULL && !(widths->flags & ALL)
-		&& (*head)->is_hidden)
-	{
-		(*head)->is_head = 0;
-		*head = (*head)->next;
-		if (*head)
-			(*head)->is_head = 1;
-	}
 	if (*head != NULL)
 	{
-	//	*head = (*head)->next;
 		(*head)->is_head = 0;
 		if (flags & TIME_ORDER)
 			lst_iter_loop(head, 0, widths);

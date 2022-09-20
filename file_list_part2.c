@@ -6,7 +6,7 @@
 /*   By: jniemine <jniemine@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/12 20:22:48 by jniemine          #+#    #+#             */
-/*   Updated: 2022/09/12 20:24:41 by jniemine         ###   ########.fr       */
+/*   Updated: 2022/09/20 18:03:06 by jniemine         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,7 +27,7 @@ static void	print_file_list(t_file_node *lst_start, t_width *widths)
 	lst_start = sort(&lst_start, widths->flags, widths);
 	lst_start->is_head = 0;
 	if (widths->flags & LONG_LST)
-		print_loop(lst_start, *widths, NULL);
+		print_long_format(lst_start, *widths, NULL);
 	else
 		print_columns(lst_start, widths, NULL);
 }

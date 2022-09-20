@@ -6,7 +6,7 @@
 /*   By: jniemine <jniemine@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/12 00:13:14 by jniemine          #+#    #+#             */
-/*   Updated: 2022/09/12 23:39:06 by jniemine         ###   ########.fr       */
+/*   Updated: 2022/09/20 18:56:05 by jniemine         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,14 +25,15 @@ static int	count_tab_n(int longest_filename, int *word_width)
 	return (*word_width);
 }
 
-int	count_rows(int file_n, int words_in_line)
+static int	count_rows(int file_n, int words_in_line)
 {
+	if (!words_in_line)
+		return (1);
 	while (file_n % words_in_line != 0)
 		++file_n;
 	return (file_n / words_in_line);
 }
 
-/* If possible, leave one empty column. */
 void	print_columns(t_file_node *head, t_width *widths, char **dir_paths)
 {
 	struct winsize	w;
@@ -58,8 +59,3 @@ void	print_columns(t_file_node *head, t_width *widths, char **dir_paths)
 	head->flags = widths->flags;
 	make_columns(head, rows, word_width, dir_paths);
 }
-//First print directories, then filenames.
-//TODO get terminal tabsize for columns.
-//Find longest filename, add blanks.
-//Calculate how many of those can fit in one line
-//print accordingly.

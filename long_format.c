@@ -6,13 +6,13 @@
 /*   By: jniemine <jniemine@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/11 19:31:18 by jniemine          #+#    #+#             */
-/*   Updated: 2022/09/13 19:16:43 by jniemine         ###   ########.fr       */
+/*   Updated: 2022/09/20 18:09:47 by jniemine         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "includes/ft_ls.h"
 
-void	six_months(char *output, char *timep, long long int time_difference)
+static void	six_months(char *output, char *timep, long long int time_difference)
 {
 	int	start;
 	int	len;
@@ -39,7 +39,7 @@ void	six_months(char *output, char *timep, long long int time_difference)
 /*	On unix time, day is always 86400seconds.
 	1 Month (30.44 days)	2629743 Seconds
 */
-void	print_time(t_file_node *node)
+static void	print_time(t_file_node *node)
 {
 	char			*timep;
 	time_t			current_time;
@@ -79,25 +79,46 @@ static void	choose_path_to_print(t_file_node *node, t_width *widths)
 		ft_printf("%s\n", node->path);
 }
 
-void	print_stat(t_file_node *node, t_width *widths, char **dir_paths, int *i)
+static void	print_stat(t_file_node *h, t_width *widths, char **dpaths, int *i)
 {
 	char			*name;
 
-	name = node->file_name;
-	if (node->is_head)
+	name = h->file_name;
+	if (h->is_head)
 		ft_printf("total %llu\n", widths->total_size);
-	print_permissions(node->lstat.st_mode, node);
-	ft_printf("%*u ", widths->link_col + 1, node->lstat.st_nlink);
-	ft_printf("%-*s", widths->max_usr_col + 2, node->usr);
-	ft_printf("%-*s", widths->max_grp_col + 1, node->grp);
-	if (node->type == DT_BLK || node->type == DT_CHR)
-		ft_printf("  %d,   %d ", node->d_major, node->d_minor);
+	print_permissions(h->lstat.st_mode, h);
+	ft_printf("%*u ", widths->link_col + 1, h->lstat.st_nlink);
+	ft_printf("%-*s", widths->max_usr_col + 2, h->usr);
+	ft_printf("%-*s", widths->max_grp_col + 1, h->grp);
+	if (h->type == DT_BLK || h->type == DT_CHR)
+		ft_printf("  %d,   %d ", h->d_major, h->d_minor);
 	else
-		ft_printf("%*d ", widths->size_col + 1, node->lstat.st_size);
-	print_time(node);
-	choose_path_to_print(node, widths);
-	print_extended_attributes(node, widths->flags);
-	if (dir_paths && node->type & DT_DIR && ft_strcmp(name, ".") != 0
+		ft_printf("%*d ", widths->size_col + 1, h->lstat.st_size);
+	print_time(h);
+	choose_path_to_print(h, widths);
+	print_extended_attributes(h, widths->flags);
+	if (dpaths && h->type & DT_DIR && ft_strcmp(name, ".") != 0
 		&& ft_strcmp(name, "..") != 0)
-		dir_paths[(*i)++] = node->path;
+		dpaths[(*i)++] = h->path;
+}
+
+void	print_long_format(t_file_node *head, t_width widths, char **dir_paths)
+{
+	int	i;
+
+	i = 0;
+	while (head)
+	{
+		while (head && !(widths.flags & ALL) && head->is_hidden)
+		{
+			head->is_head = 0;
+			head = head->next;
+			head->is_head = 1;
+		}
+		if (!head)
+			break ;
+		print_stat(head, &widths, dir_paths, &i);
+		head = head->next;
+	}
+	return ;
 }

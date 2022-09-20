@@ -14,6 +14,10 @@ ${NAME}:
 #	gcc -o ${NAME} ${FLAGS} ${SRC} 
 	gcc -o ${NAME} ${FLAGS} ${SRC} 
 
+debug: 
+	make -C ./libft/
+	gcc -o ${NAME} ${FLAGS} ${SRC} -g
+
 clean:
 	make clean -C ./libft/
 	rm -f ${OBJ}
