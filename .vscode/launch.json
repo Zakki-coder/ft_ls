@@ -10,8 +10,8 @@
             "request": "launch",
             "program": "${workspaceFolder}/ft_ls",
             "args": [
-						"-l",
-						"/var/run",
+						"-lR",
+						"Debug_dir"
 		],
 			"preLaunchTask": "Build",
             "stopAtEntry": false,

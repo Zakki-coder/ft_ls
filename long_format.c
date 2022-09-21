@@ -6,7 +6,7 @@
 /*   By: jniemine <jniemine@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/11 19:31:18 by jniemine          #+#    #+#             */
-/*   Updated: 2022/09/20 18:09:47 by jniemine         ###   ########.fr       */
+/*   Updated: 2022/09/21 17:51:26 by jniemine         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -99,26 +99,41 @@ static void	print_stat(t_file_node *h, t_width *widths, char **dpaths, int *i)
 	print_extended_attributes(h, widths->flags);
 	if (dpaths && h->type & DT_DIR && ft_strcmp(name, ".") != 0
 		&& ft_strcmp(name, "..") != 0)
-		dpaths[(*i)++] = h->path;
+		dpaths[(*i)++] = ft_strdup(h->path);
+}
+
+void	free_node(t_file_node **head)
+{
+	free((*head)->usr);
+	free((*head)->grp);
+	free((*head)->ext_attr);
+	free((*head)->dir_path);
+	free((*head)->file_name);
+	free((*head)->path);
+//	free(head);
 }
 
 void	print_long_format(t_file_node *head, t_width widths, char **dir_paths)
 {
-	int	i;
+	int			i;
+	t_file_node	*prev;
 
 	i = 0;
 	while (head)
 	{
-		while (head && !(widths.flags & ALL) && head->is_hidden)
-		{
-			head->is_head = 0;
-			head = head->next;
-			head->is_head = 1;
-		}
+	//	while (head && !(widths.flags & ALL) && head->is_hidden)
+	//	{
+	//		head->is_head = 0;
+	//		head = head->next;
+	//		head->is_head = 1;
+	//	}
 		if (!head)
 			break ;
 		print_stat(head, &widths, dir_paths, &i);
+		prev = head;
 		head = head->next;
+		free_node(&prev);
+		free(prev);
 	}
 	return ;
 }

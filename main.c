@@ -6,7 +6,7 @@
 /*   By: jniemine <jniemine@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/29 17:59:01 by jniemine          #+#    #+#             */
-/*   Updated: 2022/09/16 18:50:00 by jniemine         ###   ########.fr       */
+/*   Updated: 2022/09/21 21:39:11 by jniemine         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,39 +14,43 @@
 
 static void	close_and_free_paths(t_paths paths)
 {
-	char	**start_arg;
-	char	**start_dir;
+	char **start_arg = paths.arg_paths;
+	DIR **start_open = paths.open_dir;
 
-	start_arg = paths.arg_paths;
-	start_dir = paths.dir_paths;
+	while(paths.open_dir && *paths.open_dir)
+	{
+		if (closedir(*paths.open_dir) < 0)
+			error_exit();
+		++(paths.open_dir);
+	}
 	while (paths.arg_paths && *paths.arg_paths)
 	{
-		if (paths.open_dir && *paths.open_dir)
-		{
-			if (closedir(*paths.open_dir) < 0)
-				error_exit();
-			++(paths.open_dir);
-		}
-		if (paths.dir_paths && *paths.dir_paths)
-		{
-			free(*paths.dir_paths);
-			++(paths.dir_paths);
-		}
 		free((*paths.arg_paths));
 		++(paths.arg_paths);
 	}
-	free(start_dir);
 	free(start_arg);
+	free(start_open);
+}
+
+static void	free_dpath(t_paths paths)
+{
+	while(paths.dir_paths && *paths.dir_paths)
+	{
+		free(*paths.dir_paths);
+		++paths.dir_paths;
+	}
 }
 
 static void	loop_paths_and_print(t_width *widths, int i, t_paths paths)
 {
 	t_file_node	*head;
+	int 		j;
 
-	while (*paths.arg_paths != NULL && *paths.open_dir != NULL)
+	j = 0;
+	while (paths.arg_paths[j] != NULL && paths.open_dir[j] != NULL)
 	{
 		errno = 0;
-		head = create_list(*paths.open_dir, *paths.arg_paths, widths);
+		head = create_list(paths.open_dir[j], paths.arg_paths[j], widths);
 		paths.dir_paths = ft_memalloc(sizeof(char *)
 				* (widths->dir_amount + 1));
 		if (head && widths->flags & RECURSIVE)
@@ -56,14 +60,15 @@ static void	loop_paths_and_print(t_width *widths, int i, t_paths paths)
 		}	
 		else
 		{
-			if (*(paths.arg_paths + 1) != NULL)
+			if ((paths.arg_paths[j + 1]) != NULL)
 				widths->flags |= PRINT_DIR_NAME;
 			choose_output_format(head, widths, paths.dir_paths);
+			/* This was originally outside of if else */
+			free_dpath(paths);
 		}
-		free_lst(head);
-		++paths.arg_paths;
-		++paths.open_dir;
-		if (*paths.arg_paths != NULL)
+		free(paths.dir_paths);
+		++j;
+		if (paths.arg_paths[j] != NULL)
 			ft_printf("\n");
 	}
 }
@@ -82,6 +87,7 @@ int	main(int argc, char **argv)
 	i = ls_get_flags(argc, argv, &widths_and_flags.flags);
 	sort_arguments(argc - i, &argv[i], &widths_and_flags, paths);
 	loop_paths_and_print(&widths_and_flags, i, paths);
+	free(widths_and_flags.dir_path);
 	close_and_free_paths(paths);
 	return (0);
 }

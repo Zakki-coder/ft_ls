@@ -6,7 +6,7 @@
 /*   By: jniemine <jniemine@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/12 20:13:05 by jniemine          #+#    #+#             */
-/*   Updated: 2022/09/16 18:01:30 by jniemine         ###   ########.fr       */
+/*   Updated: 2022/09/21 19:46:52 by jniemine         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -72,6 +72,7 @@ void	create_filepointer(char **file_names, int k, t_width *widths)
 		ft_bzero(path, 1024);
 		ft_bzero(filename, 1024);
 		get_name_and_path(file_names[i], filename, path);
+		free(file_names[i]);
 		root_paths[i] = (char *)ft_memalloc(ft_strlen(path) + 1);
 		ft_strcpy(root_paths[i], path);
 		filepointers[i++] = search_file_pointer(path, filename);

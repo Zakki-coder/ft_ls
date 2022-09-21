@@ -16,7 +16,7 @@ INCLUDES = -I ./
 
 INC_FT_PRINTF = -I ./ft_printf/includes
 
-CFLAG = -Wall -Wextra -Werror
+CFLAG = -Wall -Wextra -Werror 
 
 SRC_FT_PRINTF = ./ft_printf/*.c
 
