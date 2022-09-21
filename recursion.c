@@ -6,7 +6,7 @@
 /*   By: jniemine <jniemine@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/20 17:56:23 by jniemine          #+#    #+#             */
-/*   Updated: 2022/09/21 23:52:24 by jniemine         ###   ########.fr       */
+/*   Updated: 2022/09/22 00:26:23 by jniemine         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,7 +66,8 @@ void	recursive_traverse(char **paths, int i, t_width *widths_flags)
 	if (check_path(&paths, &dirp, &i, &widths) < 0 || *paths == NULL)
 		return ;
 	head = create_list(dirp, *paths, &widths);
-	if (head && paths && *paths)
+	/* If head is outcommented, then segfault, if not then leak, make better */
+	if (/*head &&*/ paths && *paths)
 		free(*paths);
 	dir_paths = (char **)ft_memalloc(sizeof(char *) * (widths.dir_amount + 1));
 	if (!dir_paths || (dirp && closedir(dirp) < 0))
