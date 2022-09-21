@@ -6,7 +6,7 @@
 /*   By: jniemine <jniemine@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/11 18:36:55 by jniemine          #+#    #+#             */
-/*   Updated: 2022/09/21 21:28:42 by jniemine         ###   ########.fr       */
+/*   Updated: 2022/09/21 23:51:16 by jniemine         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,13 +23,13 @@ static int	rootless_split(char *buf, int is_rootless, char **path, DIR *dst)
 			is_rootless = 1;
 		len = ft_strlen(buf) + 1;
 	}
+	free(buf);
 	if (is_rootless)
 	{
 		closedir(dst);
 		++(*path);
 		return (1);
 	}
-	free(buf);
 	return (0);
 }
 

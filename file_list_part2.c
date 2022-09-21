@@ -6,18 +6,17 @@
 /*   By: jniemine <jniemine@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/12 20:22:48 by jniemine          #+#    #+#             */
-/*   Updated: 2022/09/20 18:03:06 by jniemine         ###   ########.fr       */
+/*   Updated: 2022/09/21 23:30:57 by jniemine         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "includes/ft_ls.h"
 
-static void	free_everything(char **root_paths, t_file_node *head)
+static void	free_everything(char **root_paths)
 {
 	int	i;
 
 	i = 0;
-	free_lst(head);
 	while (root_paths[i])
 		free(root_paths[i++]);
 }
@@ -45,7 +44,8 @@ void	create_file_list(t_dir **fileps, t_width *widths, char **root_paths)
 	{
 		filep = *fileps;
 		get_t_dir_info(filep, head);
-		handle_path(*root_paths++, head, filep, widths->flags);
+		handle_path(*root_paths, head, filep, widths->flags);
+		free(*root_paths++);
 		get_stat_info(head);
 		head->type = filep->d_type;
 		head->flags = widths->flags;
@@ -58,5 +58,5 @@ void	create_file_list(t_dir **fileps, t_width *widths, char **root_paths)
 		}
 	}
 	print_file_list(lst_start, widths);
-	free_everything(root_paths, lst_start);
+	free_everything(root_paths);
 }

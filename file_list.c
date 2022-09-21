@@ -6,7 +6,7 @@
 /*   By: jniemine <jniemine@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/12 20:13:05 by jniemine          #+#    #+#             */
-/*   Updated: 2022/09/21 19:46:52 by jniemine         ###   ########.fr       */
+/*   Updated: 2022/09/21 23:33:32 by jniemine         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,6 +28,8 @@ static t_dir	*search_file_pointer(char *path, char *filename)
 			return (filep);
 		read_stream(dirp, &filep);
 	}
+	if (dirp && closedir(dirp) < 0)
+		error_exit();
 	return (filep);
 }
 
@@ -73,12 +75,15 @@ void	create_filepointer(char **file_names, int k, t_width *widths)
 		ft_bzero(filename, 1024);
 		get_name_and_path(file_names[i], filename, path);
 		free(file_names[i]);
-		root_paths[i] = (char *)ft_memalloc(ft_strlen(path) + 1);
-		ft_strcpy(root_paths[i], path);
+//		root_paths[i] = (char *)ft_memalloc(ft_strlen(path) + 1);
+//		ft_strcpy(root_paths[i], path);
+		root_paths[i] = ft_strdup(path);
 		filepointers[i++] = search_file_pointer(path, filename);
 		filepointers[i] = NULL;
 	}
 	free(file_names);
 	create_file_list(filepointers, widths, root_paths);
+	free(root_paths);
+	free(filepointers);
 	widths->flags |= PRINT_DIR_NAME;
 }

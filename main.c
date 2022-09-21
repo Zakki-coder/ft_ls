@@ -6,7 +6,7 @@
 /*   By: jniemine <jniemine@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/29 17:59:01 by jniemine          #+#    #+#             */
-/*   Updated: 2022/09/21 21:39:11 by jniemine         ###   ########.fr       */
+/*   Updated: 2022/09/22 00:15:17 by jniemine         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,8 +28,10 @@ static void	close_and_free_paths(t_paths paths)
 		free((*paths.arg_paths));
 		++(paths.arg_paths);
 	}
-	free(start_arg);
-	free(start_open);
+	if (start_arg && *start_arg)
+		free(start_arg);
+	if (start_open && *start_open)
+		free(start_open);
 }
 
 static void	free_dpath(t_paths paths)

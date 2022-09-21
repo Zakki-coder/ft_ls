@@ -6,7 +6,7 @@
 /*   By: jniemine <jniemine@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/11 21:12:00 by jniemine          #+#    #+#             */
-/*   Updated: 2022/09/20 22:31:09 by jniemine         ###   ########.fr       */
+/*   Updated: 2022/09/21 23:49:02 by jniemine         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,8 @@
 
 static void	column_output(t_list **columns, int word_width)
 {
-	int	i;
+	int		i;
+	t_list	*prev;
 
 	i = 0;
 	while (columns[i])
@@ -22,7 +23,10 @@ static void	column_output(t_list **columns, int word_width)
 		while (columns[i])
 		{
 			ft_printf("%-*s", word_width, (char *)columns[i]->content);
+			prev = columns[i];
 			columns[i] = columns[i]->next;
+			free(prev->content);
+			free(prev);
 		}
 		ft_printf("\n");
 		++i;
@@ -43,8 +47,10 @@ static void	ft_lstappend(t_list *alst, char *content)
 {
 	t_list	*new;
 
+	if (!alst)
+		return ;
 	new = ft_lstnew(content, ft_strlen(content) + 1);
-	if (!alst || !new)
+	if (!new)
 		return ;
 	while (alst->next)
 		alst = alst->next;
@@ -56,6 +62,7 @@ static void	ft_lstappend(t_list *alst, char *content)
 void	make_columns(t_file_node *head, int rows, int word_width, char **dirs)
 {
 	t_list		**columns;
+	t_file_node	*prev;
 	int			i;
 	int			j;
 	int			flags;
@@ -74,8 +81,12 @@ void	make_columns(t_file_node *head, int rows, int word_width, char **dirs)
 		++i;
 		if (dirs && head->type & DT_DIR && ft_strcmp(head->file_name, ".") != 0
 			&& ft_strcmp(head->file_name, "..") != 0)
-			dirs[j++] = head->path;
+			dirs[j++] = ft_strdup(head->path);
+		prev = head;
 		head = head->next;
+		free_node(&prev);
+		free(prev);
 	}
 	column_output(columns, word_width);
+	free(columns);
 }

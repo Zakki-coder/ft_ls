@@ -6,7 +6,7 @@
 /*   By: jniemine <jniemine@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/19 20:28:46 by jniemine          #+#    #+#             */
-/*   Updated: 2022/09/20 18:38:48 by jniemine         ###   ########.fr       */
+/*   Updated: 2022/09/21 22:18:10 by jniemine         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,4 +44,15 @@ int	read_stream(DIR *dirp, t_dir **filep)
 	if (!(*filep) && errno > 0)
 		error_exit();
 	return (1);
+}
+
+void	free_node(t_file_node **head)
+{
+	free((*head)->usr);
+	free((*head)->grp);
+	free((*head)->ext_attr);
+	free((*head)->dir_path);
+	free((*head)->file_name);
+	free((*head)->path);
+//	free(head);
 }

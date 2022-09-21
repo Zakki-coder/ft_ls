@@ -6,7 +6,7 @@
 /*   By: jniemine <jniemine@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/20 22:21:26 by jniemine          #+#    #+#             */
-/*   Updated: 2022/09/20 22:26:44 by jniemine         ###   ########.fr       */
+/*   Updated: 2022/09/21 22:18:22 by jniemine         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -91,6 +91,7 @@ struct s_file_node
 	t_file_node		*next;
 };
 
+void			free_node(t_file_node **head);
 void			create_filepointer(char **file_names, int k, t_width *widths);
 void			create_file_list(t_dir **fileps, t_width *w, char **root_paths);
 void			make_columns(t_file_node *h, int rws, int w_width, char **dirs);

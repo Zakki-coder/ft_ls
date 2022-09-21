@@ -10,8 +10,8 @@
             "request": "launch",
             "program": "${workspaceFolder}/ft_ls",
             "args": [
-						"-lR",
-						"Debug_dir"
+				"-l",
+				"/usr/local/bin/node",
 		],
 			"preLaunchTask": "Build",
             "stopAtEntry": false,
