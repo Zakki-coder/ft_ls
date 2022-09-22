@@ -6,7 +6,7 @@
 /*   By: jniemine <jniemine@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/20 17:52:06 by jniemine          #+#    #+#             */
-/*   Updated: 2022/09/22 13:19:54 by jniemine         ###   ########.fr       */
+/*   Updated: 2022/09/23 00:46:04 by jniemine         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,8 +66,8 @@ void	get_stat_info(t_file_node *node)
 		error_exit();
 	if (!node->usr || !node->grp)
 		error_exit();
-	node->d_minor = minor(node->stat.st_rdev);
-	node->d_major = major(node->stat.st_rdev);
+	node->d_minor = node->stat.st_rdev & 0xFFFF;
+	node->d_major = node->stat.st_rdev >> 24;
 }
 
 void	get_t_dir_info(t_dir *filep, t_file_node *node)

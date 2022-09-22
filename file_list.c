@@ -6,7 +6,7 @@
 /*   By: jniemine <jniemine@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/12 20:13:05 by jniemine          #+#    #+#             */
-/*   Updated: 2022/09/22 15:45:36 by jniemine         ###   ########.fr       */
+/*   Updated: 2022/09/22 18:59:00 by jniemine         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,7 +26,7 @@ static t_dir	*search_file_pointer(char *path, char *filename)
 	{
 		if (ft_strcmp(filep->d_name, filename) == 0)
 		{
-			if(closedir(dirp) < 0)
+			if (closedir(dirp) < 0)
 				error_exit();
 			return (filep);
 		}

@@ -6,7 +6,7 @@
 /*   By: jniemine <jniemine@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/11 18:36:55 by jniemine          #+#    #+#             */
-/*   Updated: 2022/09/22 18:30:31 by jniemine         ###   ########.fr       */
+/*   Updated: 2022/09/22 19:00:51 by jniemine         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,10 +42,8 @@ static int	test_special_case_rootless(char *path, DIR *dst, int flags)
 	int			is_rootless;
 
 	is_rootless = 0;
-	//ft_ls -l /etc SEG
-	//ft_ls -l /etc Should be rootles and handled like a file?
-	if ((flags & LONG_LST) == 0 ||
-		((path)[ft_strlen(path) - 1] == '/')
+	if ((flags & LONG_LST) == 0
+		|| ((path)[ft_strlen(path) - 1] == '/')
 		|| (readlink(path, link, 1024) <= 0 && errno == EINVAL))
 	{
 		errno = 0;

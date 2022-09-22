@@ -6,7 +6,7 @@
 /*   By: jniemine <jniemine@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/20 17:56:23 by jniemine          #+#    #+#             */
-/*   Updated: 2022/09/22 18:38:23 by jniemine         ###   ########.fr       */
+/*   Updated: 2022/09/22 22:05:23 by jniemine         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,6 +45,11 @@ static int	check_path(char ***paths, DIR **dirp, int *i, t_width *widths)
 		error_exit();
 	else if (ret == 0)
 	{
+		if(*paths && **paths)
+		{
+			free(**paths);
+			**paths = NULL;
+		}
 		recursive_traverse(++(*paths), ++(*i), widths);
 	}
 	return (1);
@@ -67,7 +72,10 @@ void	recursive_traverse(char **paths, int i, t_width *widths_flags)
 	head = create_list(dirp, *paths, &widths);
 	/* If head is outcommented, then segfault, if not then leak, make better */
 	if (/*head &&*/ paths && *paths)
+	{
 		free(*paths);
+		*paths = NULL;
+	}
 	dir_paths = (char **)ft_memalloc(sizeof(char *) * (widths.dir_amount + 1));
 	if (!dir_paths || (dirp && closedir(dirp) < 0))
 		error_exit();
@@ -77,6 +85,6 @@ void	recursive_traverse(char **paths, int i, t_width *widths_flags)
 	if (dir_paths != NULL && *dir_paths != NULL)
 		recursive_traverse(dir_paths, ++i, &widths);
 	free(dir_paths);
-	if (paths != NULL && *paths != NULL)
+	if (paths != NULL /*&& *paths != NULL*/)
 		recursive_traverse(paths + 1, ++i, &widths);
 }

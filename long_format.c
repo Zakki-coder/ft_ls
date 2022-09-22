@@ -6,7 +6,7 @@
 /*   By: jniemine <jniemine@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/11 19:31:18 by jniemine          #+#    #+#             */
-/*   Updated: 2022/09/22 18:53:04 by jniemine         ###   ########.fr       */
+/*   Updated: 2022/09/23 00:42:34 by jniemine         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -79,6 +79,28 @@ static void	choose_path_to_print(t_file_node *node, t_width *widths)
 		ft_printf("%s\n", node->path);
 }
 
+static void hex_print(t_file_node *h)
+{
+	const char			*num = "0123456789abcdef";
+	char				hex[11];
+	int					i;
+	unsigned long long	nb;
+
+	i = 9;
+	ft_memset(hex, '0', 11);
+	hex[10] = '\0';
+	hex[0] = '0';
+	hex[1] = 'x';
+	nb = h->d_minor;
+	while(i > 2)
+	{
+		hex[i] = num[nb % 16];
+		nb /= 16;
+		--i;
+	}
+	ft_printf("  %d, %s ", h->d_major, hex);
+}
+
 static void	print_stat(t_file_node *h, t_width *widths, char **dpaths, int *i)
 {
 	char			*name;
@@ -91,7 +113,12 @@ static void	print_stat(t_file_node *h, t_width *widths, char **dpaths, int *i)
 	ft_printf("%-*s", widths->max_usr_col + 2, h->usr);
 	ft_printf("%-*s", widths->max_grp_col + 1, h->grp);
 	if (h->type == DT_BLK || h->type == DT_CHR)
-		ft_printf("  %d,   %d ", h->d_major, h->d_minor);
+	{
+		if (h->d_minor > 256)
+			hex_print(h);
+		else
+			ft_printf("  %d,   %d ", h->d_major, h->d_minor);
+	}
 	else
 		ft_printf("%*d ", widths->size_col + 1, h->lstat.st_size);
 	print_time(h);

@@ -1,6 +1,6 @@
 NAME =	ft_ls
 
-FLAGS = -Wall -Werror -Wextra -g
+FLAGS = -Wall -Werror -Wextra -g #-fsanitize=address
 
 SRC =	-lft							\
 		-lftprintf						\
