@@ -6,7 +6,7 @@
 /*   By: jniemine <jniemine@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/20 17:52:06 by jniemine          #+#    #+#             */
-/*   Updated: 2022/09/20 18:47:19 by jniemine         ###   ########.fr       */
+/*   Updated: 2022/09/22 13:19:54 by jniemine         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,12 +49,21 @@ void	get_stat_info(t_file_node *node)
 	if (lstat(node->path, &node->stat) < 0
 		|| lstat(node->path, &node->lstat) < 0)
 		error_exit();
+	errno = 0;
 	pw = getpwuid(node->lstat.st_uid);
-	grp = getgrgid(node->lstat.st_gid);
-	if (!pw || !grp)
+	if (!pw && errno == 0)
+		node->usr = ft_itoa(node->lstat.st_uid);
+	else if (pw)
+		node->usr = ft_strdup(pw->pw_name);
+	else
 		error_exit();
-	node->usr = ft_strdup(pw->pw_name);
-	node->grp = ft_strdup(grp->gr_name);
+	grp = getgrgid(node->lstat.st_gid);
+	if (!grp && errno == 0)
+		node->grp = ft_itoa(node->lstat.st_gid);
+	else if (grp)
+		node->grp = ft_strdup(grp->gr_name);
+	else
+		error_exit();
 	if (!node->usr || !node->grp)
 		error_exit();
 	node->d_minor = minor(node->stat.st_rdev);

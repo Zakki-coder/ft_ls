@@ -10,8 +10,7 @@
             "request": "launch",
             "program": "${workspaceFolder}/ft_ls",
             "args": [
-				"-l",
-				"/usr/local/bin/node",
+				"/etc",
 		],
 			"preLaunchTask": "Build",
             "stopAtEntry": false,

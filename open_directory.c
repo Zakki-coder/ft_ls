@@ -6,7 +6,7 @@
 /*   By: jniemine <jniemine@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/11 18:36:55 by jniemine          #+#    #+#             */
-/*   Updated: 2022/09/21 23:51:16 by jniemine         ###   ########.fr       */
+/*   Updated: 2022/09/22 16:49:55 by jniemine         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,7 +34,7 @@ static int	rootless_split(char *buf, int is_rootless, char **path, DIR *dst)
 }
 
 /* ft_ls -l /etc and ft_ls -l /etc/ */
-static int	test_special_case_rootless(char *path, DIR *dst)
+static int	test_special_case_rootless(char *path, DIR *dst, int flags)
 {
 	char		link[1024];
 	char		*buf;
@@ -42,7 +42,10 @@ static int	test_special_case_rootless(char *path, DIR *dst)
 	int			is_rootless;
 
 	is_rootless = 0;
-	if ((path)[ft_strlen(path) - 1] == '/'
+	//ft_ls -l /etc SEG
+	//ft_ls -l /etc Should be rootles and handled like a file?
+	if ((flags & LONG_LST) == 0 ||
+		((path)[ft_strlen(path) - 1] == '/')
 		|| (readlink(path, link, 1024) <= 0 && errno == EINVAL))
 	{
 		errno = 0;
@@ -103,7 +106,7 @@ int	open_directory(char *path, DIR **dst, t_width *w)
 	struct stat	tmp_stat;
 
 	*dst = opendir(path);
-	if (*dst && test_special_case_rootless(path, *dst))
+	if (*dst && test_special_case_rootless(path, *dst, w->flags))
 	{
 		*dst = NULL;
 		return (-2);

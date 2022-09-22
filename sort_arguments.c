@@ -6,7 +6,7 @@
 /*   By: jniemine <jniemine@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/03 12:49:40 by jniemine          #+#    #+#             */
-/*   Updated: 2022/09/22 00:11:15 by jniemine         ###   ########.fr       */
+/*   Updated: 2022/09/22 15:24:45 by jniemine         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,7 +56,7 @@ static void	sepertate_dir_and_file(char **argv, t_paths *paths,
 	if (!dirp && (open_dir_ret == -1 || open_dir_ret == -2))
 	{
 		file_names[paths->i++] = ft_strdup(*argv);
-		file_names[paths->i] = NULL;
+//		file_names[paths->i] = NULL;
 		if (open_dir_ret == -2)
 			widths->is_file = 1;
 	}
@@ -78,8 +78,8 @@ void	sort_arguments(int argc, char **argv, t_width *widths, t_paths paths)
 	}
 	argv = sort_argv(argv);
 	file_names = (char **)ft_memalloc(sizeof(*file_names) * (argc + 1));
-	file_names[argc] = NULL;
-	file_names[argc + 1] = NULL;
+//	file_names[argc] = NULL;
+//	file_names[argc + 1] = NULL;
 	if (!file_names)
 		error_exit();
 	while (*argv != NULL)
@@ -93,6 +93,6 @@ void	sort_arguments(int argc, char **argv, t_width *widths, t_paths paths)
 		widths->flags |= PRINT_NL;
 	if (*file_names)
 		create_filepointer(file_names, paths.i, widths);
-	if (!(*file_names))
+//	if (!(*file_names))
 		free(file_names);
 }

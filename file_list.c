@@ -6,7 +6,7 @@
 /*   By: jniemine <jniemine@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/12 20:13:05 by jniemine          #+#    #+#             */
-/*   Updated: 2022/09/21 23:33:32 by jniemine         ###   ########.fr       */
+/*   Updated: 2022/09/22 15:45:36 by jniemine         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,7 +25,11 @@ static t_dir	*search_file_pointer(char *path, char *filename)
 	while (filep)
 	{
 		if (ft_strcmp(filep->d_name, filename) == 0)
+		{
+			if(closedir(dirp) < 0)
+				error_exit();
 			return (filep);
+		}
 		read_stream(dirp, &filep);
 	}
 	if (dirp && closedir(dirp) < 0)
@@ -64,10 +68,8 @@ void	create_filepointer(char **file_names, int k, t_width *widths)
 	t_dir	**filepointers;
 	int		i;
 
-	filepointers = (t_dir **)ft_memalloc(sizeof(*filepointers) * k + 1);
-	root_paths = (char **)ft_memalloc(sizeof(*root_paths) * k + 1);
-	filepointers[k] = NULL;
-	root_paths[k] = NULL;
+	filepointers = (t_dir **)ft_memalloc(sizeof(*filepointers) * (k + 1));
+	root_paths = (char **)ft_memalloc(sizeof(*root_paths) * (k + 1));
 	i = 0;
 	while (file_names[i] && i < k)
 	{
@@ -75,13 +77,10 @@ void	create_filepointer(char **file_names, int k, t_width *widths)
 		ft_bzero(filename, 1024);
 		get_name_and_path(file_names[i], filename, path);
 		free(file_names[i]);
-//		root_paths[i] = (char *)ft_memalloc(ft_strlen(path) + 1);
-//		ft_strcpy(root_paths[i], path);
 		root_paths[i] = ft_strdup(path);
-		filepointers[i++] = search_file_pointer(path, filename);
-		filepointers[i] = NULL;
+		filepointers[i] = search_file_pointer(path, filename);
+		i++;
 	}
-	free(file_names);
 	create_file_list(filepointers, widths, root_paths);
 	free(root_paths);
 	free(filepointers);

@@ -1,5 +1,6 @@
 get the latest TODO from differenet repo
 
+/Library/Scripts/42/munki
 Column format LEAKTEST
 
 ACL AND EXTENDED ATTRIBUTESS NOT WORKING, MAYBE FIRST NORM AND FREE, THEN TRY TO FIX
