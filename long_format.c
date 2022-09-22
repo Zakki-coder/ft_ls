@@ -6,7 +6,7 @@
 /*   By: jniemine <jniemine@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/11 19:31:18 by jniemine          #+#    #+#             */
-/*   Updated: 2022/09/21 22:17:58 by jniemine         ###   ########.fr       */
+/*   Updated: 2022/09/22 18:53:04 by jniemine         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -110,12 +110,6 @@ void	print_long_format(t_file_node *head, t_width widths, char **dir_paths)
 	i = 0;
 	while (head)
 	{
-	//	while (head && !(widths.flags & ALL) && head->is_hidden)
-	//	{
-	//		head->is_head = 0;
-	//		head = head->next;
-	//		head->is_head = 1;
-	//	}
 		if (!head)
 			break ;
 		print_stat(head, &widths, dir_paths, &i);

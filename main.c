@@ -6,7 +6,7 @@
 /*   By: jniemine <jniemine@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/29 17:59:01 by jniemine          #+#    #+#             */
-/*   Updated: 2022/09/22 18:46:08 by jniemine         ###   ########.fr       */
+/*   Updated: 2022/09/22 18:51:46 by jniemine         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,10 +14,12 @@
 
 static void	close_and_free_paths(t_paths paths)
 {
-	char **start_arg = paths.arg_paths;
-	DIR **start_open = paths.open_dir;
+	char	**start_arg;
+	DIR		**start_open;
 
-	while(paths.open_dir && *paths.open_dir)
+	start_arg = paths.arg_paths;
+	start_open = paths.open_dir;
+	while (paths.open_dir && *paths.open_dir)
 	{
 		if (closedir(*paths.open_dir) < 0)
 			error_exit();
@@ -28,33 +30,31 @@ static void	close_and_free_paths(t_paths paths)
 		free((*paths.arg_paths));
 		++(paths.arg_paths);
 	}
-//	if (start_arg && *start_arg)
-		free(start_arg);
-//	if (start_open && *start_open)
-		free(start_open);
+	free(start_arg);
+	free(start_open);
 }
 
 static void	free_dpath(t_paths paths)
 {
-	while(paths.dir_paths && *paths.dir_paths)
+	while (paths.dir_paths && *paths.dir_paths)
 	{
 		free(*paths.dir_paths);
 		++paths.dir_paths;
 	}
 }
 
-static void not_recursive(t_paths paths, t_width *widths, t_file_node *head, int j)
+static void	not_recursive(t_paths paths, t_width *w, t_file_node *head, int j)
 {
 	if ((paths.arg_paths[j + 1]) != NULL)
-		widths->flags |= PRINT_DIR_NAME;
-	choose_output_format(head, widths, paths.dir_paths);
+		w->flags |= PRINT_DIR_NAME;
+	choose_output_format(head, w, paths.dir_paths);
 	free_dpath(paths);
 }
 
 static void	loop_paths_and_print(t_width *widths, int i, t_paths paths)
 {
 	t_file_node	*head;
-	int 		j;
+	int			j;
 
 	j = 0;
 	while (paths.arg_paths[j] != NULL && paths.open_dir[j] != NULL)
@@ -69,13 +69,7 @@ static void	loop_paths_and_print(t_width *widths, int i, t_paths paths)
 			recursive_traverse(paths.dir_paths, i, widths);
 		}	
 		else
-		{
 			not_recursive(paths, widths, head, j);
-			// if ((paths.arg_paths[j + 1]) != NULL)
-			// 	widths->flags |= PRINT_DIR_NAME;
-			// choose_output_format(head, widths, paths.dir_paths);
-			// free_dpath(paths);
-		}
 		free(paths.dir_paths);
 		++j;
 		if (paths.arg_paths[j] != NULL)

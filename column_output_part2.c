@@ -6,7 +6,7 @@
 /*   By: jniemine <jniemine@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/11 21:12:00 by jniemine          #+#    #+#             */
-/*   Updated: 2022/09/21 23:49:02 by jniemine         ###   ########.fr       */
+/*   Updated: 2022/09/22 18:57:43 by jniemine         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,8 +57,6 @@ static void	ft_lstappend(t_list *alst, char *content)
 	alst->next = new;
 }
 
-/* Lexicographical ordering uses strcmp so files
-	starting with capital letter come before */
 void	make_columns(t_file_node *head, int rows, int word_width, char **dirs)
 {
 	t_list		**columns;
@@ -72,10 +70,7 @@ void	make_columns(t_file_node *head, int rows, int word_width, char **dirs)
 	while (head)
 	{
 		ft_lstappend(columns[i % rows], head->file_name);
-		if (!columns[i % rows] && flags & ONE_COLUMN)
-			columns[i % rows] = ft_lstnew(head->file_name,
-					ft_strlen(head->file_name) + 1);
-		else if (!columns[i % rows])
+		if (!columns[i % rows])
 			columns[i % rows] = ft_lstnew(head->file_name,
 					ft_strlen(head->file_name) + 1);
 		++i;
