@@ -10,6 +10,7 @@
             "request": "launch",
             "program": "${workspaceFolder}/ft_ls",
             "args": [
+				"-l",
 				"/etc",
 		],
 			"preLaunchTask": "Build",

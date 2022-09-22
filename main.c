@@ -6,7 +6,7 @@
 /*   By: jniemine <jniemine@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/29 17:59:01 by jniemine          #+#    #+#             */
-/*   Updated: 2022/09/22 15:20:13 by jniemine         ###   ########.fr       */
+/*   Updated: 2022/09/22 18:46:08 by jniemine         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,6 +43,14 @@ static void	free_dpath(t_paths paths)
 	}
 }
 
+static void not_recursive(t_paths paths, t_width *widths, t_file_node *head, int j)
+{
+	if ((paths.arg_paths[j + 1]) != NULL)
+		widths->flags |= PRINT_DIR_NAME;
+	choose_output_format(head, widths, paths.dir_paths);
+	free_dpath(paths);
+}
+
 static void	loop_paths_and_print(t_width *widths, int i, t_paths paths)
 {
 	t_file_node	*head;
@@ -62,11 +70,11 @@ static void	loop_paths_and_print(t_width *widths, int i, t_paths paths)
 		}	
 		else
 		{
-			if ((paths.arg_paths[j + 1]) != NULL)
-				widths->flags |= PRINT_DIR_NAME;
-			choose_output_format(head, widths, paths.dir_paths);
-			/* This was originally outside of if else */
-			free_dpath(paths);
+			not_recursive(paths, widths, head, j);
+			// if ((paths.arg_paths[j + 1]) != NULL)
+			// 	widths->flags |= PRINT_DIR_NAME;
+			// choose_output_format(head, widths, paths.dir_paths);
+			// free_dpath(paths);
 		}
 		free(paths.dir_paths);
 		++j;

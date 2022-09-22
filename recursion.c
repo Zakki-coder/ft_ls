@@ -6,7 +6,7 @@
 /*   By: jniemine <jniemine@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/20 17:56:23 by jniemine          #+#    #+#             */
-/*   Updated: 2022/09/22 00:26:23 by jniemine         ###   ########.fr       */
+/*   Updated: 2022/09/22 18:38:23 by jniemine         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,7 +45,6 @@ static int	check_path(char ***paths, DIR **dirp, int *i, t_width *widths)
 		error_exit();
 	else if (ret == 0)
 	{
-//		free(**paths);
 		recursive_traverse(++(*paths), ++(*i), widths);
 	}
 	return (1);
@@ -80,5 +79,4 @@ void	recursive_traverse(char **paths, int i, t_width *widths_flags)
 	free(dir_paths);
 	if (paths != NULL && *paths != NULL)
 		recursive_traverse(paths + 1, ++i, &widths);
-//	free(paths);
 }

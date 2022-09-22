@@ -6,7 +6,7 @@
 /*   By: jniemine <jniemine@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/19 20:28:46 by jniemine          #+#    #+#             */
-/*   Updated: 2022/09/22 15:31:01 by jniemine         ###   ########.fr       */
+/*   Updated: 2022/09/22 18:36:02 by jniemine         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,5 +54,4 @@ void	free_node(t_file_node **head)
 	free((*head)->dir_path);
 	free((*head)->file_name);
 	free((*head)->path);
-//	free(head);
 }

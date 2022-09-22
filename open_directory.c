@@ -6,7 +6,7 @@
 /*   By: jniemine <jniemine@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/11 18:36:55 by jniemine          #+#    #+#             */
-/*   Updated: 2022/09/22 16:49:55 by jniemine         ###   ########.fr       */
+/*   Updated: 2022/09/22 18:30:31 by jniemine         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -106,7 +106,7 @@ int	open_directory(char *path, DIR **dst, t_width *w)
 	struct stat	tmp_stat;
 
 	*dst = opendir(path);
-	if (*dst && test_special_case_rootless(path, *dst, w->flags))
+	if (*dst && w && test_special_case_rootless(path, *dst, w->flags))
 	{
 		*dst = NULL;
 		return (-2);
