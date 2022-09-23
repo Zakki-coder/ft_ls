@@ -1,1 +1,0 @@
-In file ft_opendir function print_stat, changed readlinkg to print path instead of filename
