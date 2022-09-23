@@ -6,7 +6,7 @@
 /*   By: jniemine <jniemine@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/12 13:18:38 by jniemine          #+#    #+#             */
-/*   Updated: 2022/09/20 18:53:52 by jniemine         ###   ########.fr       */
+/*   Updated: 2022/09/23 13:57:58 by jniemine         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,9 @@
 static int	sort_dispatch(t_file_node *head, int flags, t_width *widths)
 {
 	if (flags & TIME_ORDER)
+	{
 		return (time_compare(head->stat, head->next->stat));
+	}
 	else if (flags & REVERSE_ORDER)
 	{
 		if (widths->is_file)
@@ -98,6 +100,8 @@ t_file_node	*sort(t_file_node **head, int flags, t_width *widths)
 		if (flags & TIME_ORDER)
 			lst_iter_loop(head, 0, widths);
 		lst_iter_loop(head, flags, widths);
+		if (flags & TIME_ORDER && flags & REVERSE_ORDER)
+			reverse_lst(head);
 		(*head)->is_head = 1;
 	}
 	return (*head);

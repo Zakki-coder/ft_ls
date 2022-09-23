@@ -6,7 +6,7 @@
 /*   By: jniemine <jniemine@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/20 22:21:26 by jniemine          #+#    #+#             */
-/*   Updated: 2022/09/22 22:33:59 by jniemine         ###   ########.fr       */
+/*   Updated: 2022/09/23 13:58:15 by jniemine         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -91,6 +91,9 @@ struct s_file_node
 	t_file_node		*next;
 };
 
+void			reverse_lst(t_file_node **head);
+int				reverse_time_compare(struct stat t1, struct stat t2);
+void			hex_print(t_file_node *h);
 void			free_node(t_file_node **head);
 void			create_filepointer(char **file_names, int k, t_width *widths);
 void			create_file_list(t_dir **fileps, t_width *w, char **root_paths);

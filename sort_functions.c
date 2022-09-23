@@ -6,7 +6,7 @@
 /*   By: jniemine <jniemine@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/20 18:57:24 by jniemine          #+#    #+#             */
-/*   Updated: 2022/09/21 23:53:47 by jniemine         ###   ########.fr       */
+/*   Updated: 2022/09/23 13:58:40 by jniemine         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,33 +17,6 @@ int	reverse_strcmp(const char *s1, const char *s2)
 	return (-1 * ft_strcmp(s1, s2));
 }
 
-/*
-char	*month_rearrange(char *time)
-{
-	char	month[4];
-	char	*new_date;
-	char	months[37];
-	int		i;
-
-	ft_strcpy(months, "JanFebMarAprMayJunJulAugSepOctNovDec");
-	months[36] = '\0';
-	new_date = ft_memalloc(ft_strlen(time));
-	if (!new_date)
-		error_exit();
-	ft_bzero(month, 4);
-	time += 4;
-	ft_strncpy(month, time, 3);
-	i = 0;
-	while (ft_strncmp(&months[i], month, 3) != 0)
-		i += 3;
-	time += 16;
-	ft_strncpy((void *)new_date, (void *)time, 4);
-	ft_strcat(new_date, ft_itoa(i));
-	time -= 12;
-	ft_strncat(new_date, time, 11);
-	return (new_date);
-}
-*/
 int	time_compare(struct stat t1, struct stat t2)
 {
 	if (t1.st_mtimespec.tv_sec > t2.st_mtimespec.tv_sec)
@@ -56,4 +29,30 @@ int	time_compare(struct stat t1, struct stat t2)
 			return (0);
 	}
 	return (1);
+}
+
+void	reverse_lst(t_file_node **head)
+{
+	t_file_node	*last;
+	t_file_node	*l_head;
+	t_file_node	*next;
+
+	if (!((*head)->next))
+		return ;
+	l_head = *head;
+	next = NULL;
+	last = l_head;
+	l_head = l_head->next;
+	last->next = NULL;
+	if (l_head && l_head->next)
+		next = l_head->next;
+	l_head->next = last;
+	while (l_head && next)
+	{
+		last = l_head;
+		l_head = next;
+		next = l_head->next;
+		l_head->next = last;
+	}
+	*head = l_head;
 }

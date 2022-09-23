@@ -6,7 +6,7 @@
 /*   By: jniemine <jniemine@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/20 17:56:23 by jniemine          #+#    #+#             */
-/*   Updated: 2022/09/22 22:05:23 by jniemine         ###   ########.fr       */
+/*   Updated: 2022/09/23 11:56:32 by jniemine         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,7 +45,7 @@ static int	check_path(char ***paths, DIR **dirp, int *i, t_width *widths)
 		error_exit();
 	else if (ret == 0)
 	{
-		if(*paths && **paths)
+		if (*paths && **paths)
 		{
 			free(**paths);
 			**paths = NULL;

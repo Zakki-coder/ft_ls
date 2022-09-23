@@ -6,11 +6,33 @@
 /*   By: jniemine <jniemine@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/19 20:28:46 by jniemine          #+#    #+#             */
-/*   Updated: 2022/09/22 19:18:10 by jniemine         ###   ########.fr       */
+/*   Updated: 2022/09/23 11:53:41 by jniemine         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "includes/ft_ls.h"
+
+void	hex_print(t_file_node *h)
+{
+	const char			*num = "0123456789abcdef";
+	char				hex[11];
+	int					i;
+	unsigned long long	nb;
+
+	i = 9;
+	ft_memset(hex, '0', 11);
+	hex[10] = '\0';
+	hex[0] = '0';
+	hex[1] = 'x';
+	nb = h->d_minor;
+	while (i > 2)
+	{
+		hex[i] = num[nb % 16];
+		nb /= 16;
+		--i;
+	}
+	ft_printf("  %d, %s ", h->d_major, hex);
+}
 
 void	error_exit(void)
 {

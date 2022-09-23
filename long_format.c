@@ -6,7 +6,7 @@
 /*   By: jniemine <jniemine@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/11 19:31:18 by jniemine          #+#    #+#             */
-/*   Updated: 2022/09/23 00:42:34 by jniemine         ###   ########.fr       */
+/*   Updated: 2022/09/23 11:54:21 by jniemine         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -77,28 +77,6 @@ static void	choose_path_to_print(t_file_node *node, t_width *widths)
 		ft_printf("%s\n", node->file_name);
 	else
 		ft_printf("%s\n", node->path);
-}
-
-static void hex_print(t_file_node *h)
-{
-	const char			*num = "0123456789abcdef";
-	char				hex[11];
-	int					i;
-	unsigned long long	nb;
-
-	i = 9;
-	ft_memset(hex, '0', 11);
-	hex[10] = '\0';
-	hex[0] = '0';
-	hex[1] = 'x';
-	nb = h->d_minor;
-	while(i > 2)
-	{
-		hex[i] = num[nb % 16];
-		nb /= 16;
-		--i;
-	}
-	ft_printf("  %d, %s ", h->d_major, hex);
 }
 
 static void	print_stat(t_file_node *h, t_width *widths, char **dpaths, int *i)

@@ -10,8 +10,8 @@
             "request": "launch",
             "program": "${workspaceFolder}/ft_ls",
             "args": [
-				"-R",
-				"/Library/Application Support/Apple/AssetCache",
+				"-ltr",
+				"Debug_dir",
 		],
 			"preLaunchTask": "Build",
             "stopAtEntry": false,
