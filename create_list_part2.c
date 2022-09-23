@@ -6,7 +6,7 @@
 /*   By: jniemine <jniemine@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/20 17:52:06 by jniemine          #+#    #+#             */
-/*   Updated: 2022/09/24 00:23:02 by jniemine         ###   ########.fr       */
+/*   Updated: 2022/09/24 00:34:40 by jniemine         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,7 +44,6 @@ static int	get_stat(t_file_node *node)
 	if ((lstat(node->path, &node->stat) < 0
 			|| lstat(node->path, &node->lstat) < 0))
 	{
-		ft_printf("ERRRRNO: %d\n", errno);
 		if (errno == EACCES)
 			return (1);
 		else

@@ -6,7 +6,7 @@
 /*   By: jniemine <jniemine@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/29 17:59:01 by jniemine          #+#    #+#             */
-/*   Updated: 2022/09/24 00:23:19 by jniemine         ###   ########.fr       */
+/*   Updated: 2022/09/24 00:43:04 by jniemine         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -68,7 +68,11 @@ static void	loop_paths_and_print(t_width *widths, int i, t_paths paths)
 		if (head && widths->flags & RECURSIVE)
 		{
 			choose_output_format(head, widths, paths.dir_paths);
+			if (widths->flags & PRINT_DIR_NAME)
+				widths->flags ^= PRINT_DIR_NAME;
 			recursive_traverse(paths.dir_paths, i, widths);
+			if (!(widths->flags & PRINT_DIR_NAME))
+				widths->flags ^= PRINT_DIR_NAME;
 		}	
 		else
 			not_recursive(paths, widths, head, j);
