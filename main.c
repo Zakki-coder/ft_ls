@@ -6,7 +6,7 @@
 /*   By: jniemine <jniemine@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/29 17:59:01 by jniemine          #+#    #+#             */
-/*   Updated: 2022/09/22 18:51:46 by jniemine         ###   ########.fr       */
+/*   Updated: 2022/09/24 00:23:19 by jniemine         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,6 +61,8 @@ static void	loop_paths_and_print(t_width *widths, int i, t_paths paths)
 	{
 		errno = 0;
 		head = create_list(paths.open_dir[j], paths.arg_paths[j], widths);
+		if (!head && errno == EACCES && ++j)
+			continue ;
 		paths.dir_paths = ft_memalloc(sizeof(char *)
 				* (widths->dir_amount + 1));
 		if (head && widths->flags & RECURSIVE)

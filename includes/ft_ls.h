@@ -6,7 +6,7 @@
 /*   By: jniemine <jniemine@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/20 22:21:26 by jniemine          #+#    #+#             */
-/*   Updated: 2022/09/23 14:17:44 by jniemine         ###   ########.fr       */
+/*   Updated: 2022/09/24 00:11:08 by jniemine         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -100,7 +100,7 @@ void			print_extended_attributes(t_file_node *head, int flags);
 void			print_permissions(unsigned int st_mode, t_file_node *node);
 void			handle_path(char *r_path, t_file_node *h, t_dir *dp, int flags);
 void			get_t_dir_info(t_dir *filep, t_file_node *node);
-void			get_stat_info(t_file_node *node);
+int				get_stat_info(t_file_node *node);
 void			update_widths(t_file_node *head, t_width *widths);
 t_file_node		*create_node(void);
 int				read_stream(DIR *dirp, t_dir **filep);

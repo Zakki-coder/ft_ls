@@ -6,7 +6,7 @@
 /*   By: jniemine <jniemine@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/22 14:44:27 by jniemine          #+#    #+#             */
-/*   Updated: 2022/09/21 21:08:09 by jniemine         ###   ########.fr       */
+/*   Updated: 2022/09/24 00:11:55 by jniemine         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -85,7 +85,8 @@ t_file_node	*create_list(DIR *dirp, char *path, t_width *widths)
 		{
 			get_t_dir_info(filep, head);
 			handle_path(path, head, filep, widths->flags);
-			get_stat_info(head);
+			if (get_stat_info(head))
+				return (NULL);
 			head->type = filep->d_type;
 			update_widths(head, widths);
 		}

@@ -6,7 +6,7 @@
 /*   By: jniemine <jniemine@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/20 17:52:06 by jniemine          #+#    #+#             */
-/*   Updated: 2022/09/23 00:46:04 by jniemine         ###   ########.fr       */
+/*   Updated: 2022/09/24 00:23:02 by jniemine         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,17 +39,28 @@ void	update_widths(t_file_node *head, t_width *widths)
 	}
 }
 
-/* Get user and group info also */
-/* Get device minor and major also */
-void	get_stat_info(t_file_node *node)
+static int	get_stat(t_file_node *node)
+{
+	if ((lstat(node->path, &node->stat) < 0
+			|| lstat(node->path, &node->lstat) < 0))
+	{
+		ft_printf("ERRRRNO: %d\n", errno);
+		if (errno == EACCES)
+			return (1);
+		else
+			error_exit();
+	}
+	errno = 0;
+	return (0);
+}
+
+int	get_stat_info(t_file_node *node)
 {
 	struct passwd	*pw;
 	struct group	*grp;
 
-	if (lstat(node->path, &node->stat) < 0
-		|| lstat(node->path, &node->lstat) < 0)
-		error_exit();
-	errno = 0;
+	if (get_stat(node))
+		return (1);
 	pw = getpwuid(node->lstat.st_uid);
 	if (!pw && errno == 0)
 		node->usr = ft_itoa(node->lstat.st_uid);
@@ -68,6 +79,7 @@ void	get_stat_info(t_file_node *node)
 		error_exit();
 	node->d_minor = node->stat.st_rdev & 0xFFFF;
 	node->d_major = node->stat.st_rdev >> 24;
+	return (0);
 }
 
 void	get_t_dir_info(t_dir *filep, t_file_node *node)
