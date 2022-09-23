@@ -6,7 +6,7 @@
 /*   By: jniemine <jniemine@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/20 17:56:23 by jniemine          #+#    #+#             */
-/*   Updated: 2022/09/23 11:56:32 by jniemine         ###   ########.fr       */
+/*   Updated: 2022/09/23 14:45:11 by jniemine         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,6 +55,16 @@ static int	check_path(char ***paths, DIR **dirp, int *i, t_width *widths)
 	return (1);
 }
 
+static void	init_recursion(DIR **dirp, t_file_node **head
+	, t_width *widths, t_width *widths_flags)
+{
+	*dirp = NULL;
+	*head = NULL;
+	errno = 0;
+	ft_bzero((void *)widths, sizeof(t_width));
+	widths->flags = widths_flags->flags;
+}
+
 void	recursive_traverse(char **paths, int i, t_width *widths_flags)
 {
 	char		**dir_paths;
@@ -62,16 +72,11 @@ void	recursive_traverse(char **paths, int i, t_width *widths_flags)
 	t_width		widths;
 	DIR			*dirp;
 
-	dirp = NULL;
-	head = NULL;
-	errno = 0;
-	ft_bzero((void *)&widths, sizeof(t_width));
-	widths.flags = widths_flags->flags;
+	init_recursion(&dirp, &head, &widths, widths_flags);
 	if (check_path(&paths, &dirp, &i, &widths) < 0 || *paths == NULL)
 		return ;
 	head = create_list(dirp, *paths, &widths);
-	/* If head is outcommented, then segfault, if not then leak, make better */
-	if (/*head &&*/ paths && *paths)
+	if (paths && *paths)
 	{
 		free(*paths);
 		*paths = NULL;
@@ -85,6 +90,6 @@ void	recursive_traverse(char **paths, int i, t_width *widths_flags)
 	if (dir_paths != NULL && *dir_paths != NULL)
 		recursive_traverse(dir_paths, ++i, &widths);
 	free(dir_paths);
-	if (paths != NULL /*&& *paths != NULL*/)
+	if (paths != NULL)
 		recursive_traverse(paths + 1, ++i, &widths);
 }

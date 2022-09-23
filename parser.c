@@ -6,7 +6,7 @@
 /*   By: jniemine <jniemine@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/29 17:58:51 by jniemine          #+#    #+#             */
-/*   Updated: 2022/09/23 13:50:04 by jniemine         ###   ########.fr       */
+/*   Updated: 2022/09/23 14:19:16 by jniemine         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,8 +14,10 @@
 
 static void	print_usage(void)
 {
-	ft_printf("usage: ft_ls [%s] [file ...]\n", ALLOWED_OPTIONS);
-	exit (-1);
+	const char	*usage = "usage: ft_ls [-lRrat1] [file ...]\n";
+
+	write(2, usage, ft_strlen(usage));
+	exit (1);
 }
 
 static void	print_flag_errors(char c)

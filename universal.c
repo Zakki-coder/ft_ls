@@ -6,7 +6,7 @@
 /*   By: jniemine <jniemine@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/19 20:28:46 by jniemine          #+#    #+#             */
-/*   Updated: 2022/09/23 11:53:41 by jniemine         ###   ########.fr       */
+/*   Updated: 2022/09/23 14:05:50 by jniemine         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,7 +41,7 @@ void	error_exit(void)
 	error = strerror(errno);
 	write(STDERR_FILENO, error, ft_strlen(error));
 	write(STDERR_FILENO, "\n", 1);
-	exit (-1);
+	exit (1);
 }
 
 unsigned int	nb_len(long long nb)

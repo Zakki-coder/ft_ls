@@ -6,7 +6,7 @@
 /*   By: jniemine <jniemine@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/20 22:21:26 by jniemine          #+#    #+#             */
-/*   Updated: 2022/09/23 13:58:15 by jniemine         ###   ########.fr       */
+/*   Updated: 2022/09/23 14:17:44 by jniemine         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,14 +29,12 @@
 # define LONG_LST		2
 # define RECURSIVE		4
 # define REVERSE_ORDER	8 
-# define ALL				16
+# define ALL			16
 # define TIME_ORDER		32
 # define PRINT_DIR_NAME	64
 # define ONE_COLUMN		128
-# define ACL				256
+# define ACL			256
 # define PRINT_NL		512
-
-# define ALLOWED_OPTIONS "-lRrat"
 
 typedef struct stat			t_stat;
 typedef struct dirent		t_dir;
