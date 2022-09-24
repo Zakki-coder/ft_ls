@@ -6,7 +6,7 @@
 /*   By: jniemine <jniemine@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/20 22:21:26 by jniemine          #+#    #+#             */
-/*   Updated: 2022/09/24 03:54:02 by jniemine         ###   ########.fr       */
+/*   Updated: 2022/09/24 18:22:53 by jniemine         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,7 +16,6 @@
 # include <dirent.h>
 # include <time.h>
 # include <errno.h>
-# include <stdlib.h>
 # include <sys/stat.h>
 # include <pwd.h>
 # include <grp.h>

@@ -10,8 +10,8 @@
             "request": "launch",
             "program": "${workspaceFolder}/ft_ls",
             "args": [
-				"-R",
-				"/Dev",
+				"Makefile",
+				"libft/author",
 		],
 			"preLaunchTask": "Build",
             "stopAtEntry": false,

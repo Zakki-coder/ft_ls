@@ -10,7 +10,7 @@
 				"cwd": "${workspaceFolder}"
 			},
 			"args": [
-				"debug",
+				"re",
 				"--directory=${workspaceFolder};",
 			],
 			"problemMatcher": [

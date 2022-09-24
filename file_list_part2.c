@@ -6,7 +6,7 @@
 /*   By: jniemine <jniemine@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/12 20:22:48 by jniemine          #+#    #+#             */
-/*   Updated: 2022/09/22 14:38:18 by jniemine         ###   ########.fr       */
+/*   Updated: 2022/09/24 18:30:50 by jniemine         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,26 +31,24 @@ static void	print_file_list(t_file_node *lst_start, t_width *widths)
 		print_columns(lst_start, widths, NULL);
 }
 
-/* Remember to free filepointers */
 void	create_file_list(t_dir **fileps, t_width *widths, char **root_paths)
 {
 	t_file_node	*head;
 	t_file_node	*lst_start;
-	t_dir		*filep;
 
 	head = create_node();
 	lst_start = head;
 	while (*fileps != NULL)
 	{
-		filep = *fileps;
-		get_t_dir_info(filep, head);
-		handle_path(*root_paths, head, filep, widths->flags);
+		get_t_dir_info(*fileps, head);
+		handle_path(*root_paths, head, *fileps, widths->flags);
 		free(*root_paths++);
 		get_stat_info(head);
-		head->type = filep->d_type;
+		head->type = (*fileps)->d_type;
 		head->flags = widths->flags;
 		update_widths(head, widths);
 		widths->is_file = 1;
+		free(*fileps);
 		if (*(++fileps) != NULL)
 		{
 			head->next = create_node();

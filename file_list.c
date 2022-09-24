@@ -6,7 +6,7 @@
 /*   By: jniemine <jniemine@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/12 20:13:05 by jniemine          #+#    #+#             */
-/*   Updated: 2022/09/24 00:32:04 by jniemine         ###   ########.fr       */
+/*   Updated: 2022/09/24 18:01:25 by jniemine         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,18 +17,22 @@ static t_dir	*search_file_pointer(char *path, char *filename)
 {
 	DIR		*dirp;
 	t_dir	*filep;
+	t_dir	*ret;
 
 	filep = NULL;
 	dirp = NULL;
+	ret = (t_dir *)ft_memalloc(sizeof(*ret));
 	if (open_directory(path, &dirp, NULL) == 1)
 		read_stream(dirp, &filep);
 	while (filep)
 	{
 		if (ft_strcmp(filep->d_name, filename) == 0)
 		{
+			*ret = *filep;
+			ft_strcpy(ret->d_name, filep->d_name);
 			if (closedir(dirp) < 0)
 				error_exit();
-			return (filep);
+			return (ret);
 		}
 		read_stream(dirp, &filep);
 	}

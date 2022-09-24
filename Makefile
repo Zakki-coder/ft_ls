@@ -1,6 +1,6 @@
 NAME =	ft_ls
 
-FLAGS = -Wall -Werror -Wextra -g #-fsanitize=address
+FLAGS = -Wall -Werror -Wextra
 
 SRC =	-lft							\
 		-lftprintf						\
@@ -14,16 +14,12 @@ INC =	-L./libft			\
 
 OBJ =	./*.o \
 
-all: ${NAME}
+all: ./*.c ${NAME}
 
-${NAME}:
+${NAME}: ./*.c ./libft/*.c ./libft/ft_printf/*.c ./libft/libft.h ./libft/ft_printf/includes/ft_printf.h ./includes/ft_ls.h
 	make -C ./libft/
 	make -C ./libft/ft_printf
 	gcc -o ${NAME} ${FLAGS} ${SRC} ${INC}
-
-debug: 
-	make -C ./libft/
-	gcc -o ${NAME} ${FLAGS} ${SRC} ${INC} -g
 
 clean:
 	make clean -C ./libft/
