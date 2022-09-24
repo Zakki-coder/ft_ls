@@ -6,27 +6,11 @@
 /*   By: jniemine <jniemine@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/22 14:44:27 by jniemine          #+#    #+#             */
-/*   Updated: 2022/09/24 00:11:55 by jniemine         ###   ########.fr       */
+/*   Updated: 2022/09/24 03:54:25 by jniemine         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "includes/ft_ls.h"
-
-t_file_node	*create_node(void)
-{
-	t_file_node	*new;
-
-	new = (t_file_node *)ft_memalloc(sizeof(t_file_node));
-	if (!new)
-		error_exit();
-	ft_bzero(new, sizeof(*new));
-	new->is_head = 0;
-	new->total_blocks = 0;
-	new->ext_attr = NULL;
-	new->path = NULL;
-	new->next = NULL;
-	return (new);
-}
 
 static void	init_helper(char *path, t_width *widths,
 		t_file_node **head, t_file_node **lst_start)
@@ -68,6 +52,17 @@ static void	last_checks(t_file_node **lst_start, t_dir *filep)
 		error_exit();
 }
 
+static int	get_stat_wrap(t_file_node **head)
+{
+	if (get_stat_info(*head))
+	{
+		free_node(head);
+		free(*head);
+		return (1);
+	}
+	return (0);
+}
+
 t_file_node	*create_list(DIR *dirp, char *path, t_width *widths)
 {
 	t_dir		*filep;
@@ -85,7 +80,7 @@ t_file_node	*create_list(DIR *dirp, char *path, t_width *widths)
 		{
 			get_t_dir_info(filep, head);
 			handle_path(path, head, filep, widths->flags);
-			if (get_stat_info(head))
+			if (get_stat_wrap(&head))
 				return (NULL);
 			head->type = filep->d_type;
 			update_widths(head, widths);

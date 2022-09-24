@@ -6,7 +6,7 @@
 /*   By: jniemine <jniemine@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/29 17:59:01 by jniemine          #+#    #+#             */
-/*   Updated: 2022/09/24 00:43:04 by jniemine         ###   ########.fr       */
+/*   Updated: 2022/09/24 03:51:21 by jniemine         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,8 +34,11 @@ static void	close_and_free_paths(t_paths paths)
 	free(start_open);
 }
 
-static void	free_dpath(t_paths paths)
+static void	not_recursive(t_paths paths, t_width *w, t_file_node *head, int j)
 {
+	if ((paths.arg_paths[j + 1]) != NULL)
+		w->flags |= PRINT_DIR_NAME;
+	choose_output_format(head, w, paths.dir_paths);
 	while (paths.dir_paths && *paths.dir_paths)
 	{
 		free(*paths.dir_paths);
@@ -43,12 +46,15 @@ static void	free_dpath(t_paths paths)
 	}
 }
 
-static void	not_recursive(t_paths paths, t_width *w, t_file_node *head, int j)
+static void	yes_recursive(t_file_node *head, t_width *widths
+	, t_paths paths, int i)
 {
-	if ((paths.arg_paths[j + 1]) != NULL)
-		w->flags |= PRINT_DIR_NAME;
-	choose_output_format(head, w, paths.dir_paths);
-	free_dpath(paths);
+	choose_output_format(head, widths, paths.dir_paths);
+	if (widths->flags & PRINT_DIR_NAME)
+		widths->flags ^= PRINT_DIR_NAME;
+	recursive_traverse(paths.dir_paths, i, widths);
+	if (!(widths->flags & PRINT_DIR_NAME))
+		widths->flags ^= PRINT_DIR_NAME;
 }
 
 static void	loop_paths_and_print(t_width *widths, int i, t_paths paths)
@@ -66,19 +72,11 @@ static void	loop_paths_and_print(t_width *widths, int i, t_paths paths)
 		paths.dir_paths = ft_memalloc(sizeof(char *)
 				* (widths->dir_amount + 1));
 		if (head && widths->flags & RECURSIVE)
-		{
-			choose_output_format(head, widths, paths.dir_paths);
-			if (widths->flags & PRINT_DIR_NAME)
-				widths->flags ^= PRINT_DIR_NAME;
-			recursive_traverse(paths.dir_paths, i, widths);
-			if (!(widths->flags & PRINT_DIR_NAME))
-				widths->flags ^= PRINT_DIR_NAME;
-		}	
+			yes_recursive(head, widths, paths, i);
 		else
 			not_recursive(paths, widths, head, j);
 		free(paths.dir_paths);
-		++j;
-		if (paths.arg_paths[j] != NULL)
+		if (paths.arg_paths[++j] != NULL)
 			ft_printf("\n");
 	}
 }
