@@ -6,7 +6,7 @@
 /*   By: jniemine <jniemine@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/19 20:28:46 by jniemine          #+#    #+#             */
-/*   Updated: 2022/09/23 14:05:50 by jniemine         ###   ########.fr       */
+/*   Updated: 2022/09/24 03:00:59 by jniemine         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,7 +31,7 @@ void	hex_print(t_file_node *h)
 		nb /= 16;
 		--i;
 	}
-	ft_printf("  %d, %s ", h->d_major, hex);
+	ft_printf("%2d, %s ", h->d_major, hex);
 }
 
 void	error_exit(void)

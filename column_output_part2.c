@@ -6,7 +6,7 @@
 /*   By: jniemine <jniemine@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/11 21:12:00 by jniemine          #+#    #+#             */
-/*   Updated: 2022/09/22 18:57:43 by jniemine         ###   ########.fr       */
+/*   Updated: 2022/09/24 02:49:22 by jniemine         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -74,7 +74,7 @@ void	make_columns(t_file_node *head, int rows, int word_width, char **dirs)
 			columns[i % rows] = ft_lstnew(head->file_name,
 					ft_strlen(head->file_name) + 1);
 		++i;
-		if (dirs && head->type & DT_DIR && ft_strcmp(head->file_name, ".") != 0
+		if (dirs && head->type == DT_DIR && ft_strcmp(head->file_name, ".") != 0
 			&& ft_strcmp(head->file_name, "..") != 0)
 			dirs[j++] = ft_strdup(head->path);
 		prev = head;

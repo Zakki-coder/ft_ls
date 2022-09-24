@@ -6,7 +6,7 @@
 /*   By: jniemine <jniemine@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/11 18:36:55 by jniemine          #+#    #+#             */
-/*   Updated: 2022/09/22 19:00:51 by jniemine         ###   ########.fr       */
+/*   Updated: 2022/09/24 02:19:41 by jniemine         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -101,16 +101,21 @@ static int	open_directory_split(char *path, t_width *widths)
 
 int	open_directory(char *path, DIR **dst, t_width *w)
 {
-	struct stat	tmp_stat;
+	struct stat	tmp;
 
 	*dst = opendir(path);
+//	if (!(*dst) && lstat(path, &tmp) == 0 && (tmp.st_mode & S_IFBLK) == S_IFBLK) 
+//	{
+//		errno = 0;
+//		return (1);
+//	}
 	if (*dst && w && test_special_case_rootless(path, *dst, w->flags))
 	{
 		*dst = NULL;
 		return (-2);
 	}
 	if ((!*dst && errno == ENOTDIR) || (!*dst && ft_strcmp(path, ".") != 0
-			&& ft_strcmp(path, "..") != 0 && lstat(path, &tmp_stat) == 0
+			&& ft_strcmp(path, "..") != 0 && lstat(path, &tmp) == 0
 			&& errno != EACCES))
 	{
 		*dst = NULL;

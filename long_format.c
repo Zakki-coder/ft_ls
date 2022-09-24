@@ -6,7 +6,7 @@
 /*   By: jniemine <jniemine@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/11 19:31:18 by jniemine          #+#    #+#             */
-/*   Updated: 2022/09/23 11:54:21 by jniemine         ###   ########.fr       */
+/*   Updated: 2022/09/24 02:56:31 by jniemine         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -95,15 +95,15 @@ static void	print_stat(t_file_node *h, t_width *widths, char **dpaths, int *i)
 		if (h->d_minor > 256)
 			hex_print(h);
 		else
-			ft_printf("  %d,   %d ", h->d_major, h->d_minor);
+			ft_printf("%2d,%4d ", h->d_major, h->d_minor);
 	}
 	else
 		ft_printf("%*d ", widths->size_col + 1, h->lstat.st_size);
 	print_time(h);
 	choose_path_to_print(h, widths);
 	print_extended_attributes(h, widths->flags);
-	if (dpaths && h->type & DT_DIR && ft_strcmp(name, ".") != 0
-		&& ft_strcmp(name, "..") != 0)
+	if (dpaths && h->type == DT_DIR
+		&& ft_strcmp(name, ".") != 0 && ft_strcmp(name, "..") != 0)
 		dpaths[(*i)++] = ft_strdup(h->path);
 }
 
