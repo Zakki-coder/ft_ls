@@ -1,5 +1,5 @@
 # ft_ls
-One of the most useful commands in linux. Why not to make your own?\
+ls is one of the most useful commands in linux. Why not to make your own?\
 Supported flags: -l, -R, -a, -r -t -@ and -1
 
 # INSTALLATION
